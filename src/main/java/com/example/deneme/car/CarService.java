@@ -23,8 +23,8 @@ public class CarService {
     }
     // Self-describing
 
-    public List<Car> filterCars(String make, String model, Integer year){
-        return carRepository.filterCars(make, model, year);
+    public List<Car> filterCars(String make, String model, Integer year, UUID id){
+        return carRepository.filterCars(make, model, year, id);
     }
     public List<Car> getCars() {
         return carRepository.findAll();
@@ -59,5 +59,8 @@ public class CarService {
         return carRepository.findById(id).orElseThrow(() -> new CarNotFoundException(id));
     }
 
+    public void saveCar(Car car){
+        carRepository.save(car);
+    }
 
 }

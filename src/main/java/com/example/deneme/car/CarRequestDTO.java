@@ -1,9 +1,17 @@
 package com.example.deneme.car;
 
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 public class CarRequestDTO {
+
+    @NotBlank(message = "Make must not be blank")
     private String make; // Make of the car
+    @NotBlank(message = "Model must not be blank")
     private String model; // Model of the car
+
+    @NotNull(message = "Year must not be null")
     private Integer year; // Year of the car
 
     public CarRequestDTO(){

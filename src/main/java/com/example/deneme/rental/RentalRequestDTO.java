@@ -1,26 +1,35 @@
 package com.example.deneme.rental;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class RentalRequestDTO {
-    private UUID carId;
-    private UUID customerId;
-    private LocalDate rentalStartDate;
-    private LocalDate rentalEndDate;
 
-    private String status;
+    @NotNull(message = "Car ID must not be null")
+    private UUID carId;
+
+    @NotNull(message = "Customer ID must not be null")
+    private UUID customerId;
+
+    @NotNull(message = "Date must not be null")
+    private LocalDateTime rentalStartDate;
+    @NotNull(message = "Date must not be null")
+    private LocalDateTime rentalEndDate;
+
 
     public RentalRequestDTO(){
 
     }
 
-    public RentalRequestDTO(UUID carId, UUID customerId, LocalDate rentalStartDate, LocalDate rentalEndDate, String status) {
+    public RentalRequestDTO(UUID carId, UUID customerId, LocalDateTime rentalStartDate, LocalDateTime rentalEndDate) {
         this.carId = carId;
         this.customerId = customerId;
         this.rentalStartDate = rentalStartDate;
         this.rentalEndDate = rentalEndDate;
-        this.status = status;
     }
 
 
@@ -40,27 +49,20 @@ public class RentalRequestDTO {
         this.customerId = customerId;
     }
 
-    public LocalDate getRentalStartDate() {
+    public LocalDateTime getRentalStartDate() {
         return rentalStartDate;
     }
 
-    public void setRentalStartDate(LocalDate rentalStartDate) {
+    public void setRentalStartDate(LocalDateTime rentalStartDate) {
         this.rentalStartDate = rentalStartDate;
     }
 
-    public LocalDate getRentalEndDate() {
+    public LocalDateTime getRentalEndDate() {
         return rentalEndDate;
     }
 
-    public void setRentalEndDate(LocalDate rentalEndDate) {
+    public void setRentalEndDate(LocalDateTime rentalEndDate) {
         this.rentalEndDate = rentalEndDate;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
 }

@@ -13,11 +13,17 @@ import java.util.UUID;
 public interface CarRepository extends JpaRepository<Car, UUID> {
     Optional<Car> findById(UUID id); // Optional: custom declare explicitly, or rely on JpaRepository
 
+
+    // JPQL query. If parameter is not given it is NULL so we do not filter by it
+    // if its not null, we assert that its field is same with the picked car
     @Query("SELECT c FROM Car c WHERE " +
-            "(:make IS NULL OR LOWER(c.make) = LOWER(:make)) AND " +
-            "(:model IS NULL OR LOWER(c.model) = LOWER(:model)) AND " +
-            "(:year IS NULL OR c.year = :year)")
+            "(:make IS NULL OR c.make = :make) AND " +
+            "(:model IS NULL OR c.model = :model) AND " +
+            "(:year IS NULL OR c.year = :year) AND " +
+            "(:id IS NULL OR c.id = :id)")
     List<Car> filterCars(@Param("make") String make,
                          @Param("model") String model,
-                         @Param("year") Integer year);
+                         @Param("year") Integer year,
+                         @Param("id") UUID id);
+
 }

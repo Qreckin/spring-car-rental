@@ -3,6 +3,7 @@ package com.example.deneme.rental;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -12,8 +13,8 @@ public class Rental {
     @GeneratedValue(strategy = GenerationType.UUID) // Automatically increment id
     private UUID id;
 
-    private LocalDate rentalStartDate;
-    private LocalDate rentalEndDate;
+    private LocalDateTime rentalStartDate;
+    private LocalDateTime rentalEndDate;
 
     private String status;
 
@@ -34,19 +35,19 @@ public class Rental {
         this.id = id;
     }
 
-    public LocalDate getRentalStartDate() {
+    public LocalDateTime getRentalStartDate() {
         return rentalStartDate;
     }
 
-    public void setRentalStartDate(LocalDate rentalStartDate) {
+    public void setRentalStartDate(LocalDateTime rentalStartDate) {
         this.rentalStartDate = rentalStartDate;
     }
 
-    public LocalDate getRentalEndDate() {
+    public LocalDateTime getRentalEndDate() {
         return rentalEndDate;
     }
 
-    public void setRentalEndDate(LocalDate rentalEndDate) {
+    public void setRentalEndDate(LocalDateTime rentalEndDate) {
         this.rentalEndDate = rentalEndDate;
     }
 

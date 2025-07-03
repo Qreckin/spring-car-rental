@@ -1,5 +1,6 @@
 package com.example.deneme.customer;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,14 +28,14 @@ public class CustomerController {
     }
 
     @PostMapping("/customers")
-    public ResponseEntity<String> addCustomer(@RequestBody CustomerRequestDTO customerRequestDTO){
+    public ResponseEntity<String> addCustomer(@Valid @RequestBody CustomerRequestDTO customerRequestDTO){
 
         customerService.addCustomer(customerRequestDTO);
         return ResponseEntity.ok("Customer has been created successfully.");
     }
 
     @PutMapping("/customers/{id}")
-    public ResponseEntity<String> updateCustomer(@PathVariable UUID id, @RequestBody CustomerRequestDTO updatedCustomer){
+    public ResponseEntity<String> updateCustomer(@PathVariable UUID id,@Valid @RequestBody CustomerRequestDTO updatedCustomer){
 
         customerService.updateCustomer(id, updatedCustomer);
 
