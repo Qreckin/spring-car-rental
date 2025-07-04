@@ -1,14 +1,17 @@
 package com.example.deneme.customer;
 
+import com.example.deneme.common.BaseEntity;
 import com.example.deneme.rental.Rental;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.lang.NonNull;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
-public class Customer {
+public class Customer extends BaseEntity {
     // Data fields are private for encapsulation
     @Id // This declares the primary key of the entity
     @GeneratedValue(strategy = GenerationType.UUID) // Automatically increment id
@@ -16,7 +19,11 @@ public class Customer {
     private String name; // Name of the customer
 
     private String email; // Email of the customer
-    private List<UUID> rentalIds; // Rents that this user made
+
+    @OneToMany(mappedBy = "customer")
+    @JsonIgnore
+    private List<Rental> rentals; // Rents that this user made
+
 
     public Customer(){
 
@@ -46,11 +53,11 @@ public class Customer {
         this.email = email;
     }
 
-    public List<UUID> getRentalIds() {
-        return rentalIds;
+    public List<Rental> getRentals() {
+        return rentals;
     }
 
-    public void setRentalIds(List<UUID> rentalIds) {
-        this.rentalIds = rentalIds;
+    public void setRentals(List<Rental> rentals) {
+        this.rentals = rentals;
     }
 }

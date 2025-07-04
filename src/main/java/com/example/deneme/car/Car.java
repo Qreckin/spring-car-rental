@@ -1,6 +1,8 @@
 package com.example.deneme.car;
 
+import com.example.deneme.common.BaseEntity;
 import com.example.deneme.rental.Rental;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -10,7 +12,7 @@ import java.util.UUID;
 // We can customize table name with @Table(name = "my_table") otherwise its "car"
 // Spring maps each field to a column in the table
 @Entity
-public class Car {
+public class Car extends BaseEntity {
 
     // Data fields are private for encapsulation
     @Id // This declares the primary key of the entity
@@ -20,7 +22,10 @@ public class Car {
     private String model; // Model of the car
     private Integer year; // Year of the car
 
-    private List<UUID> rentalIds;
+
+    @OneToMany(mappedBy = "car")
+    @JsonIgnore
+    private List<Rental> rentals;
 
     // This is needed if we are going to use @Entity
     public Car() {
@@ -30,9 +35,8 @@ public class Car {
         return id;
     }
 
-
-    public void setRentalIds(List<UUID> rentalIds) {
-        this.rentalIds = rentalIds;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     public String getMake() {
@@ -59,12 +63,11 @@ public class Car {
         this.year = year;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    public List<Rental> getRentals() {
+        return rentals;
     }
 
-    public List<UUID> getRentalIds() {
-        return rentalIds;
+    public void setRentals(List<Rental> rentals) {
+        this.rentals = rentals;
     }
-
 }

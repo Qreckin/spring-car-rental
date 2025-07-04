@@ -30,8 +30,8 @@ public class CustomerController {
     @PostMapping("/customers")
     public ResponseEntity<String> addCustomer(@Valid @RequestBody CustomerRequestDTO customerRequestDTO){
 
-        customerService.addCustomer(customerRequestDTO);
-        return ResponseEntity.ok("Customer has been created successfully.");
+        Customer customer = customerService.addCustomer(customerRequestDTO);
+        return ResponseEntity.ok("Customer with ID: " + customer.getId() + " has been created successfully.");
     }
 
     @PutMapping("/customers/{id}")
@@ -39,13 +39,13 @@ public class CustomerController {
 
         customerService.updateCustomer(id, updatedCustomer);
 
-        return ResponseEntity.ok("Customer has been updated successfully.");
+        return ResponseEntity.ok("Customer with ID: " + id + " has been updated successfully.");
     }
 
     @DeleteMapping("/customers/{id}")
     public ResponseEntity<String> deleteCustomer(@PathVariable UUID id){
 
-        customerService.removeCustomer(id);
-        return ResponseEntity.ok("Customer has been deleted successfully.");
+        customerService.deleteCustomer(id);
+        return ResponseEntity.ok("Customer with ID: " + id + " has been deleted successfully.");
     }
 }

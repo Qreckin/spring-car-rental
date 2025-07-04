@@ -1,5 +1,6 @@
 package com.example.deneme.car;
 
+import com.example.deneme.exception.CarAlreadyDeletedException;
 import com.example.deneme.exception.CarNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,9 +27,6 @@ public class CarService {
     public List<Car> filterCars(String make, String model, Integer year, UUID id){
         return carRepository.filterCars(make, model, year, id);
     }
-    public List<Car> getCars() {
-        return carRepository.findAll();
-    }
 
     public void addCar(CarRequestDTO carRequestDTO) {
         Car car = new Car();
@@ -49,18 +47,20 @@ public class CarService {
 
     public void removeCar(UUID id){
         Car car = getCarById(id);
-        carRepository.delete(car);
+
+        if (car.isDeleted()){
+            throw new CarAlreadyDeletedException(id);
+        }
+        car.softDelete();
+        carRepository.save(car);
     }
 
 
     // Search the car in the ArrayList and return the object if found, null otherwise
     public Car getCarById(UUID id) {
         // Return the car if its found, throw exception otherwise
-        return carRepository.findById(id).orElseThrow(() -> new CarNotFoundException(id));
+        return carRepository.findByIdAndNotDeleted(id).orElseThrow(() -> new CarNotFoundException(id));
     }
 
-    public void saveCar(Car car){
-        carRepository.save(car);
-    }
 
 }

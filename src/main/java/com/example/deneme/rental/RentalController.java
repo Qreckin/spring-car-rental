@@ -1,5 +1,8 @@
 package com.example.deneme.rental;
 
+import com.example.deneme.rental.dto.RentalActionRequestDTO;
+import com.example.deneme.rental.dto.RentalRequestDTO;
+import com.example.deneme.rental.service.RentalService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,6 +22,7 @@ public class RentalController {
         this.rentalService = rentalService;
     }
 
+    // Retrieve non-deleted rentals
     @GetMapping("/rentals")
     public List<Rental> filterRentals(
             @RequestParam(required = false) UUID customerId,
@@ -30,15 +34,32 @@ public class RentalController {
         return rentalService.filterRentals(customerId, carId, status, startDate, endDate);
     }
 
+    // Create a rental
     @PostMapping("/rentals")
     public ResponseEntity<String> addRental(@Valid @RequestBody RentalRequestDTO rentalRequestDTO){
         rentalService.addRental(rentalRequestDTO);
         return ResponseEntity.ok("Rental has been created successfully.");
     }
 
-    @PutMapping("/rentals/{id}")
-    public ResponseEntity<String> completeRental(@PathVariable UUID id) {
-        rentalService.completeRental(id);
-        return ResponseEntity.ok("Rental marked as COMPLETED.");
+
+    // COMPLETE or CANCEL a rental
+    @PatchMapping("/rentals/{id}")
+    public ResponseEntity<String> updateRentalStatus(@PathVariable UUID id, @RequestBody RentalActionRequestDTO rentalActionRequestDTO){
+        switch (rentalActionRequestDTO.getAction().toLowerCase()){
+            case "complete" -> rentalService.completeRental(id);
+            case "cancel" -> rentalService.cancelRental(id);
+            default -> throw new IllegalArgumentException("Invalid action: " + rentalActionRequestDTO.getAction());
+        }
+        return ResponseEntity.ok("Rental marked as " + rentalActionRequestDTO.getAction().toUpperCase() + ".");
     }
+
+
+    // Delete a rental
+    @DeleteMapping("/rentals/{id}")
+    public ResponseEntity<String> deleteRental(@PathVariable UUID id){
+        rentalService.deleteRental(id);
+        return ResponseEntity.ok("Rental has been deleted successfully.");
+    }
+
+
 }

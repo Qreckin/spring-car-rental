@@ -12,9 +12,23 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGenericError(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Unexpected error: " + ex.getMessage());
+    @ExceptionHandler(CarAlreadyDeletedException.class)
+    public ResponseEntity<String> handleCarAlreadyDeleted(CarAlreadyDeletedException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(RentalCannotBeCanceledException.class)
+    public ResponseEntity<String> handleRentalCannotBeCanceled(RentalCannotBeCanceledException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(RentalCannotBeCompletedException.class)
+    public ResponseEntity<String> handleRentalCannotBeCompleted(RentalCannotBeCompletedException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(RentalNotFoundException.class)
+    public ResponseEntity<String> handleRentalNotFound(RentalNotFoundException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }

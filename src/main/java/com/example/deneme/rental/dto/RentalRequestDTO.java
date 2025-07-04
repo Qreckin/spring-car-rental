@@ -1,4 +1,4 @@
-package com.example.deneme.rental;
+package com.example.deneme.rental.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

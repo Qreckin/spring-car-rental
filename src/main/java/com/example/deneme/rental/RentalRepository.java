@@ -13,12 +13,14 @@ import java.util.UUID;
 
 @Repository
 public interface RentalRepository extends JpaRepository<Rental, UUID>{
-    Optional<Rental> findById(UUID id); // Optional: custom declare explicitly, or rely on JpaRepository
 
+    @Query("SELECT r FROM Rental r WHERE r.id = :id AND r.deletedAt IS NULL")
+    Optional<Rental> findByIdAndNotDeleted(@Param("id") UUID id);
 
     @Query("SELECT r FROM Rental r WHERE " +
-            "(:customerId IS NULL OR r.customerId = :customerId) AND " +
-            "(:carId IS NULL OR r.carId = :carId) AND " +
+            "r.deletedAt IS NULL AND " +
+            "(:customerId IS NULL OR r.customer.id = :customerId) AND " +
+            "(:carId IS NULL OR r.car.id = :carId) AND " +
             "(:status IS NULL OR r.status = :status) AND " +
             "(CAST(:startDate AS timestamp) IS NULL OR r.rentalStartDate >= :startDate) AND " +  // Minimum date is startDate
             "(CAST(:endDate AS timestamp) IS NULL OR r.rentalEndDate <= :endDate)")  // Maximum date is endDate
@@ -31,7 +33,8 @@ public interface RentalRepository extends JpaRepository<Rental, UUID>{
     );
 
     @Query("SELECT r FROM Rental r WHERE " +
-            "r.carId = :carId AND " +
+            "r.deletedAt IS NULL AND " +
+            "r.car.id = :carId AND " +
             "r.status = 'ACTIVE' AND " +
             "r.rentalStartDate < :endDate AND " +
             "r.rentalEndDate > :startDate")
@@ -39,5 +42,12 @@ public interface RentalRepository extends JpaRepository<Rental, UUID>{
             @Param("carId") UUID carId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT r FROM Rental r WHERE " +
+            "r.deletedAt IS NULL AND " +
+            "r.status = 'RESERVED' AND " +
+            "r.rentalStartDate <= :now")
+    List<Rental> findRentalsToActivate(
+            @Param("now") LocalDateTime now);
 
 }

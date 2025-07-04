@@ -1,6 +1,6 @@
 package com.example.deneme.customer;
 
-import com.example.deneme.exception.CustomerAlreadyExistsException;
+import com.example.deneme.exception.EmailAlreadyInUseException;
 import com.example.deneme.exception.CustomerNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,25 +18,26 @@ public class CustomerService {
         this.customerRepository = customerRepository;
     }
 
-    public void addCustomer(CustomerRequestDTO customerRequestDTO){
+    public Customer addCustomer(CustomerRequestDTO customerRequestDTO){
+        Optional<Customer> existing = customerRepository.findByEmailAndNotDeleted(customerRequestDTO.getEmail()); // Find all customers with this email
 
-        Optional<Customer> existing = customerRepository.findByEmail(customerRequestDTO.getEmail());
-
+        // If at least one exists, email is in use
         if (existing.isPresent()){
-            throw new CustomerAlreadyExistsException(customerRequestDTO.getEmail());
+            throw new EmailAlreadyInUseException(customerRequestDTO.getEmail());
         }
 
+        // Create new customer with specified fields and save to repository
         Customer customer = new Customer();
         customer.setName(customerRequestDTO.getName());
         customer.setEmail(customerRequestDTO.getEmail());
-        customerRepository.save(customer);
+        return customerRepository.save(customer);
     }
 
     public void updateCustomer(UUID id, CustomerRequestDTO customerRequestDTO){
-        Optional<Customer> existing = customerRepository.findByEmail(customerRequestDTO.getEmail());
+        Optional<Customer> existing = customerRepository.findByEmailAndNotDeleted(customerRequestDTO.getEmail());
 
         if (existing.isPresent()){
-            throw new CustomerAlreadyExistsException(customerRequestDTO.getEmail());
+            throw new EmailAlreadyInUseException(customerRequestDTO.getEmail());
         }
 
         Customer customer = getCustomerById(id);
@@ -45,21 +46,22 @@ public class CustomerService {
         customerRepository.save(customer);
     }
 
-    public void removeCustomer(UUID id){
-        Customer customer = getCustomerById(id);
-        customerRepository.delete(customer);
+    public void deleteCustomer(UUID id){
+        Customer customer = getCustomerById(id); // Find non-deleted customer
+
+        // Perform soft delete
+        customer.softDelete();
+        customerRepository.save(customer);
     }
 
+    // Try to retrieve the customer by id, if it does not succeed, throw exception
     public Customer getCustomerById(UUID id){
-        return customerRepository.findById(id).orElseThrow(() -> new CustomerNotFoundException(id));
+        return customerRepository.findByIdAndNotDeleted(id).orElseThrow(() -> new CustomerNotFoundException(id));
     }
 
     public List<Customer> getCustomers(){
-        return customerRepository.findAll();
+        return customerRepository.findAllNotDeleted();
     }
 
-    public void saveCustomer(Customer customer){
-        customerRepository.save(customer);
-    }
 
 }
