@@ -32,6 +32,7 @@ public interface RentalRepository extends JpaRepository<Rental, UUID>{
 
     @Query("SELECT r FROM Rental r WHERE " +
             "r.carId = :carId AND " +
+            "r.status = 'ACTIVE' AND " +
             "r.rentalStartDate < :endDate AND " +
             "r.rentalEndDate > :startDate")
     List<Rental> findOverlappingRentals(

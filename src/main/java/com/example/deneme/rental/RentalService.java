@@ -4,12 +4,15 @@ import com.example.deneme.car.Car;
 import com.example.deneme.car.CarService;
 import com.example.deneme.customer.Customer;
 import com.example.deneme.customer.CustomerService;
+import com.example.deneme.exception.RentalAlreadyCompletedException;
+import com.example.deneme.exception.RentalNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -65,6 +68,23 @@ public class RentalService {
             customer.setRentalIds(new ArrayList<>());
         customer.getRentalIds().add(savedRental.getId());
         customerService.saveCustomer(customer);
+    }
+
+    public void completeRental(UUID id){
+        Optional<Rental> optionalRental = rentalRepository.findById(id);
+
+        if (optionalRental.isEmpty()){
+            throw new RentalNotFoundException(id);
+        }
+
+        Rental rental = optionalRental.get();
+
+        if (rental.getStatus().equals("COMPLETED")){
+            throw new RentalAlreadyCompletedException(id);
+        }
+
+        rental.setStatus("COMPLETED");
+        rentalRepository.save(rental);
     }
 
     public List<Rental> filterRentals(UUID customerId, UUID carId, String status, LocalDateTime startDate, LocalDateTime endDate){

@@ -35,4 +35,10 @@ public class RentalController {
         rentalService.addRental(rentalRequestDTO);
         return ResponseEntity.ok("Rental has been created successfully.");
     }
+
+    @PutMapping("/rentals/{id}")
+    public ResponseEntity<String> completeRental(@PathVariable UUID id) {
+        rentalService.completeRental(id);
+        return ResponseEntity.ok("Rental marked as COMPLETED.");
+    }
 }
