@@ -25,6 +25,7 @@ public class Rental extends BaseEntity {
     private Status status;
 
     public enum Status {
+        RESERVED,
         ACTIVE,
         COMPLETED,
         CANCELLED

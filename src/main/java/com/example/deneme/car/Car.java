@@ -23,8 +23,7 @@ public class Car extends BaseEntity {
     private Integer year; // Year of the car
 
 
-    @OneToMany(mappedBy = "car")
-    @JsonIgnore
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Rental> rentals;
 
     // This is needed if we are going to use @Entity

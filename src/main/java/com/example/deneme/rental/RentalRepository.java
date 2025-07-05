@@ -27,7 +27,7 @@ public interface RentalRepository extends JpaRepository<Rental, UUID>{
     List<Rental> filterRentals(
             @Param("customerId") UUID customerId,
             @Param("carId") UUID carId,
-            @Param("status") String status,
+            @Param("status") Rental.Status status,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );

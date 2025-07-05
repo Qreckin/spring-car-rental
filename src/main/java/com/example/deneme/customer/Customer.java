@@ -20,8 +20,7 @@ public class Customer extends BaseEntity {
 
     private String email; // Email of the customer
 
-    @OneToMany(mappedBy = "customer")
-    @JsonIgnore
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Rental> rentals; // Rents that this user made
 
 

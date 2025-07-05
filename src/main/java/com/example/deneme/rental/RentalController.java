@@ -27,7 +27,7 @@ public class RentalController {
     public List<Rental> filterRentals(
             @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) UUID carId,
-            @RequestParam(required = false) String status,
+            @RequestParam(required = false) Rental.Status status,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
 

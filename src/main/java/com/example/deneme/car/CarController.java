@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.swing.text.html.Option;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,8 +32,10 @@ public class CarController {
             @RequestParam(required = false) String make,
             @RequestParam(required = false) String model,
             @RequestParam(required = false) Integer year,
-            @RequestParam(required = false) UUID id){
-        return carService.filterCars(make, model, year, id);
+            @RequestParam(required = false) UUID id,
+            @RequestParam(required = false) LocalDateTime start,
+            @RequestParam(required = false) LocalDateTime end){
+        return carService.filterCars(make, model, year, id, start, end);
     }
 
 
@@ -40,20 +43,20 @@ public class CarController {
     // add the car into the ArrayList. Also provide a http response message
     @PostMapping("/cars")
     public ResponseEntity<String> addCar(@Valid @RequestBody CarRequestDTO carRequestDTO){
-        carService.addCar(carRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Car has been created successfully");
+        Car car = carService.addCar(carRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Car with ID: " + car.getId() + " has been created successfully");
     }
 
     @PutMapping("/cars/{id}")
     public ResponseEntity<String> updateCar(@PathVariable UUID id, @Valid @RequestBody CarRequestDTO updatedCar){
         carService.updateCar(id, updatedCar);  // UPDATES the car in table, does not create a new CAR in table
-        return ResponseEntity.ok("Car has been updated successfully.");
+        return ResponseEntity.ok("Car with ID: " + id + " has been updated successfully.");
     }
 
     @DeleteMapping("/cars/{id}")
     public ResponseEntity<String> deleteCar(@PathVariable UUID id){
-        carService.removeCar(id);
-        return ResponseEntity.ok("Car has been deleted successfully.");
+        carService.deleteCar(id);
+        return ResponseEntity.ok("Car with ID: " + id + " has been deleted successfully.");
     }
 
 }

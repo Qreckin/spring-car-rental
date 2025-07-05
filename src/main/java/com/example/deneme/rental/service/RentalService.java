@@ -4,10 +4,7 @@ import com.example.deneme.car.Car;
 import com.example.deneme.car.CarService;
 import com.example.deneme.customer.Customer;
 import com.example.deneme.customer.CustomerService;
-import com.example.deneme.exception.CarIsOccupiedException;
-import com.example.deneme.exception.RentalCannotBeCanceledException;
-import com.example.deneme.exception.RentalCannotBeCompletedException;
-import com.example.deneme.exception.RentalNotFoundException;
+import com.example.deneme.exception.*;
 import com.example.deneme.rental.Rental;
 import com.example.deneme.rental.RentalRepository;
 import com.example.deneme.rental.dto.RentalRequestDTO;
@@ -38,6 +35,11 @@ public class RentalService {
         LocalDateTime start = rentalRequestDTO.getRentalStartDate();
         LocalDateTime end = rentalRequestDTO.getRentalEndDate();
 
+        // If end date is before start date OR start date is before current date, raise exception
+        if (end.isBefore(start) || start.isBefore(LocalDateTime.now())){
+            throw new IllegalDateTimeException(start, end);
+        }
+
         // Ensure both car and customer exists, if not, throw exception
         Car car = carService.getCarById(carId);
         Customer customer = customerService.getCustomerById(customerId);
@@ -54,7 +56,7 @@ public class RentalService {
         rental.setCustomer(customer);
         rental.setRentalStartDate(start);
         rental.setRentalEndDate(end);
-        rental.setStatus(Rental.Status.ACTIVE);
+        rental.setStatus(Rental.Status.RESERVED);
 
         rentalRepository.save(rental);
     }
@@ -97,22 +99,33 @@ public class RentalService {
     }
 
 
-    public List<Rental> filterRentals(UUID customerId, UUID carId, String status, LocalDateTime startDate, LocalDateTime endDate){
+    public List<Rental> filterRentals(UUID customerId, UUID carId, Rental.Status status, LocalDateTime startDate, LocalDateTime endDate){
         return rentalRepository.filterRentals(customerId, carId, status, startDate, endDate);
     }
 
     public void deleteRental(UUID id) {
-        Optional<Rental> optionalRental = rentalRepository.findByIdAndNotDeleted(id); // Find non-deleted rental
+        Optional<Rental> optionalRental = rentalRepository.findByIdAndNotDeleted(id);
 
-        // If no rentals exist
-        if (optionalRental.isEmpty()){
+        if (optionalRental.isEmpty()) {
             throw new RentalNotFoundException(id);
         }
 
         Rental rental = optionalRental.get();
 
-        rental.softDelete();  // sets deletedAt = LocalDateTime.now()
+        // Remove rental from car and customer
+        Car car = rental.getCar();
+        Customer customer = rental.getCustomer();
+
+        car.getRentals().remove(rental);
+        customer.getRentals().remove(rental);
+
+        rental.setStatus(Rental.Status.CANCELLED);
+        rental.softDelete();
+
+        // Save all changes
         rentalRepository.save(rental);
+        carService.saveCar(car);
+        customerService.saveCustomer(customer);
     }
 
 }
