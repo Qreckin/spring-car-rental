@@ -23,7 +23,12 @@ public class Car extends BaseEntity {
     private Integer year; // Year of the car
 
 
-    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
+    // mappedBy indicates that the "car" field in the Rental entity owns the relationship.
+    // cascade = CascadeType.ALL ensures that any operation (persist, merge, remove, etc.) on Car
+    // will automatically be applied to its associated Rentals.
+    // orphanRemoval = true ensures that if a Rental is removed from the car's rental list,
+    // and no other entity references it, it will be deleted from the database.
+    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
     private List<Rental> rentals;
 
     // This is needed if we are going to use @Entity

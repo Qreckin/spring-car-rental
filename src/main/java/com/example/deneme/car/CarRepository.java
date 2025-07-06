@@ -1,6 +1,7 @@
 package com.example.deneme.car;
 
 import com.example.deneme.customer.Customer;
+import com.example.deneme.rental.Rental;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -27,7 +28,7 @@ public interface CarRepository extends JpaRepository<Car, UUID> {
               SELECT r FROM Rental r 
               WHERE r.car = c 
                 AND r.deletedAt IS NULL
-                AND r.status IN ('ACTIVE', 'RESERVED')
+                AND r.status IN :statuses
                 AND (
                     (:start < r.rentalEndDate AND :end > r.rentalStartDate)
                 )
@@ -38,7 +39,8 @@ public interface CarRepository extends JpaRepository<Car, UUID> {
                          @Param("year") Integer year,
                          @Param("id") UUID id,
                          @Param("start") LocalDateTime start,
-                         @Param("end") LocalDateTime end);
+                         @Param("end") LocalDateTime end,
+                         @Param("statuses") List<Rental.Status> statuses);
 
     @Query("SELECT c FROM Car c WHERE c.deletedAt IS NULL AND c.id = :id")
     Optional<Car> findByIdAndNotDeleted(@Param("id") UUID id);

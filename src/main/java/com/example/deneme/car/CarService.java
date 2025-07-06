@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,19 +37,25 @@ public class CarService {
     // Self-describing
 
     public List<Car> filterCars(String make, String model, Integer year, UUID id, LocalDateTime start, LocalDateTime end){
-        return carRepository.filterCars(make, model, year, id, start, end);
+        List<Rental.Status> statuses = List.of(Rental.Status.ACTIVE, Rental.Status.RESERVED);
+        return carRepository.filterCars(make, model, year, id, start, end, statuses);
     }
 
     public Car addCar(CarRequestDTO carRequestDTO) {
+
+        // Adding a car needs no check, we just add it normally
         Car car = new Car();
         car.setMake(carRequestDTO.getMake());
         car.setModel(carRequestDTO.getModel());
         car.setYear(carRequestDTO.getYear());
-        return carRepository.save(car);
+
+        return carRepository.save(car); // Returning the Car itself is for passing car ID information and just used in addCar method
     }
 
+
     public void updateCar(UUID id, CarRequestDTO carRequestDTO){
-        Car car = getCarById(id);
+        Car car = getCarById(id); // Try to get the car, if car does not exist, throws error
+
         car.setMake(carRequestDTO.getMake());
         car.setModel(carRequestDTO.getModel());
         car.setYear(carRequestDTO.getYear());
@@ -56,30 +63,39 @@ public class CarService {
         carRepository.save(car);
     }
 
-    @Transactional
-    public void deleteCar(UUID id){
-        Car car = getCarById(id);
+    @Transactional // Ensures all DB operations are simultaneous
+    public void deleteCar(UUID id) {
+        Car car = getCarById(id); // Fetch the non-deleted car
 
-        List<Rental> rentals = rentalRepository.filterRentals(null, id, null, null, null);
+        List<Rental> rentals = car.getRentals(); // Get rentals linked to this car
 
-        for (Rental rental : rentals){
+        // Iterate safely to avoid ConcurrentModificationException
+        Iterator<Rental> iterator = rentals.iterator();
+
+        while (iterator.hasNext()) {
+            Rental rental = iterator.next();
+
+            // Soft delete rental
             rental.setStatus(Rental.Status.CANCELLED);
             rental.softDelete();
 
+            // Break relationship with Customer
             Customer customer = rental.getCustomer();
             if (customer != null) {
-                customer.getRentals().remove(rental);
-                rental.setCustomer(null); // Break reference
+                customer.getRentals().remove(rental); // Remove rental from customer side
+                rental.setCustomer(null); // Break back-reference
+                customerRepository.save(customer); // Persist customer changes
             }
 
-            // Break car reference to prevent orphaned links
+            // Break relationship with Car
             rental.setCar(null);
+            iterator.remove(); // Remove from car.getRentals()
+
+            rentalRepository.save(rental); // Save the soft-deleted rental
         }
 
-        rentalRepository.saveAll(rentals);
-        car.getRentals().clear();
-        car.softDelete();
-        carRepository.save(car);
+        car.softDelete(); // Soft delete the car
+        carRepository.save(car); // Save the car (cascading no longer handles removals)
     }
 
 

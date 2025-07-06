@@ -1,6 +1,8 @@
 package com.example.deneme.car;
 
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -12,6 +14,8 @@ public class CarRequestDTO {
     private String model; // Model of the car
 
     @NotNull(message = "Year must not be null")
+    @Min(value = 1886, message = "Year must not be earlier than 1886")
+    @Max(value = 2025, message = "Year must not be later than 2025")
     private Integer year; // Year of the car
 
     public CarRequestDTO(){

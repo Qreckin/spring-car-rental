@@ -18,13 +18,16 @@ public class CustomerController {
     }
 
     @GetMapping("/customers")
-    public List<Customer> listCustomers(){
-        return customerService.getCustomers();
+    public List<Customer> listCustomers(
+            @RequestParam(required = false) UUID id,
+            @RequestParam(required = false) String email
+    ){
+        return customerService.filterCustomers(id, email);
     }
+
 
     @PostMapping("/customers")
     public ResponseEntity<String> createCustomer(@Valid @RequestBody CustomerRequestDTO customerRequestDTO){
-
         Customer customer = customerService.addCustomer(customerRequestDTO);
         return ResponseEntity.ok("Customer with ID: " + customer.getId() + " has been created successfully.");
     }
@@ -33,7 +36,6 @@ public class CustomerController {
     public ResponseEntity<String> updateCustomer(@PathVariable UUID id, @Valid @RequestBody CustomerRequestDTO updatedCustomer){
 
         customerService.updateCustomer(id, updatedCustomer);
-
         return ResponseEntity.ok("Customer with ID: " + id + " has been updated successfully.");
     }
 

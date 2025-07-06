@@ -16,12 +16,12 @@ public class RentalStatusScheduler {
     @Autowired
     private RentalRepository rentalRepository;
 
-    // Check if there are rentals to activate every 0.5 seconds
+    // Check if there are rentals to activate every 10 seconds
     @Transactional
-    @Scheduled(fixedRate = 10000) // every 0.5 seconds
+    @Scheduled(fixedRate = 10000) // every 10 seconds
     public void activateRentals() {
         LocalDateTime now = LocalDateTime.now();
-        List<Rental> rentalsToActivate = rentalRepository.findRentalsToActivate(now);
+        List<Rental> rentalsToActivate = rentalRepository.findRentalsToActivate(now, Rental.Status.RESERVED);
         for (Rental rental : rentalsToActivate) {
             rental.setStatus(Rental.Status.ACTIVE);
         }

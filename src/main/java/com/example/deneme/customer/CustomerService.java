@@ -9,6 +9,7 @@ import com.example.deneme.rental.RentalRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,10 +29,8 @@ public class CustomerService {
     }
 
     public Customer addCustomer(CustomerRequestDTO customerRequestDTO){
-        Optional<Customer> existing = customerRepository.findByEmailAndNotDeleted(customerRequestDTO.getEmail()); // Find all customers with this email
 
-        // If at least one exists, email is in use
-        if (existing.isPresent()){
+        if (customerRepository.findByEmailAndNotDeleted(customerRequestDTO.getEmail()).isPresent()){
             throw new EmailAlreadyInUseException(customerRequestDTO.getEmail());
         }
 
@@ -43,12 +42,12 @@ public class CustomerService {
     }
 
     public void updateCustomer(UUID id, CustomerRequestDTO customerRequestDTO){
-        Optional<Customer> existing = customerRepository.findByEmailAndNotDeleted(customerRequestDTO.getEmail());
 
-        if (existing.isPresent()){
+        if (customerRepository.findByEmailAndNotDeleted(customerRequestDTO.getEmail()).isPresent()){
             throw new EmailAlreadyInUseException(customerRequestDTO.getEmail());
         }
 
+        // Update and save the customer
         Customer customer = getCustomerById(id);
         customer.setName(customerRequestDTO.getName());
         customer.setEmail(customerRequestDTO.getEmail());
@@ -58,26 +57,27 @@ public class CustomerService {
     public void deleteCustomer(UUID id){
         Customer customer = getCustomerById(id); // Find non-deleted customer
 
-        List<Rental> rentals = rentalRepository.filterRentals(customer.getId(), null, null, null, null);
+        Iterator<Rental> iterator = customer.getRentals().iterator();
 
-        for (Rental rental : rentals){
+        while (iterator.hasNext()) {
+            Rental rental = iterator.next();
+
+            // Cancel and soft delete rental
             rental.setStatus(Rental.Status.CANCELLED);
             rental.softDelete();
 
+            // Break link with car
             Car car = rental.getCar();
             if (car != null) {
-                car.getRentals().remove(rental);
-                rental.setCar(null); // Break reference
+                car.getRentals().remove(rental); // Remove from car's side
+                rental.setCar(null); // Remove from rental's side
             }
 
-            // Break customer reference
-            rental.setCustomer(null);
+            rental.setCustomer(null); // Break from rental's side
+            iterator.remove(); // Safe remove from customer list
         }
 
-        rentalRepository.saveAll(rentals);
-        customer.getRentals().clear();
-        // Perform soft delete
-
+        // Soft delete the customer and save
         customer.softDelete();
         customerRepository.save(customer);
     }
@@ -87,8 +87,8 @@ public class CustomerService {
         return customerRepository.findByIdAndNotDeleted(id).orElseThrow(() -> new CustomerNotFoundException(id));
     }
 
-    public List<Customer> getCustomers(){
-        return customerRepository.findAllNotDeleted();
+    public List<Customer> filterCustomers(UUID id, String email){
+        return customerRepository.filterCustomers(id, email);
     }
 
     public void saveCustomer(Customer customer){

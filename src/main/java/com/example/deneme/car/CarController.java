@@ -2,6 +2,7 @@ package com.example.deneme.car;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +34,8 @@ public class CarController {
             @RequestParam(required = false) String model,
             @RequestParam(required = false) Integer year,
             @RequestParam(required = false) UUID id,
-            @RequestParam(required = false) LocalDateTime start,
-            @RequestParam(required = false) LocalDateTime end){
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end){
         return carService.filterCars(make, model, year, id, start, end);
     }
 

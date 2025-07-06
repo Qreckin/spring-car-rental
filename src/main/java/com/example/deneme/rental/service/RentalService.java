@@ -45,7 +45,7 @@ public class RentalService {
         Customer customer = customerService.getCustomerById(customerId);
 
         // Check if car is occupied in this time interval
-        List<Rental> overlaps = rentalRepository.findOverlappingRentals(carId, start, end);
+        List<Rental> overlaps = rentalRepository.findOverlappingRentals(carId, start, end, Rental.Status.ACTIVE);
         if (!overlaps.isEmpty()) {
             throw new CarIsOccupiedException(carId);
         }
@@ -53,7 +53,11 @@ public class RentalService {
         Rental rental = new Rental();
 
         rental.setCar(car);
+        car.getRentals().add(rental);
+
         rental.setCustomer(customer);
+        customer.getRentals().add(rental);
+
         rental.setRentalStartDate(start);
         rental.setRentalEndDate(end);
         rental.setStatus(Rental.Status.RESERVED);
@@ -62,14 +66,7 @@ public class RentalService {
     }
 
     public void completeRental(UUID id){
-        Optional<Rental> optionalRental = rentalRepository.findByIdAndNotDeleted(id); // Find non-deleted rental
-
-        // If there is none, we do not have the specified rental
-        if (optionalRental.isEmpty()){
-            throw new RentalNotFoundException(id);
-        }
-
-        Rental rental = optionalRental.get(); // Get the rental object itself
+        Rental rental = findRentalById(id);
 
         // Rental status must be ACTIVE
         if (rental.getStatus() != Rental.Status.ACTIVE){
@@ -81,14 +78,7 @@ public class RentalService {
     }
 
     public void cancelRental(UUID id){
-        Optional<Rental> optionalRental = rentalRepository.findByIdAndNotDeleted(id); // Find non-deleted rental
-
-        // If no rentals exist
-        if (optionalRental.isEmpty()){
-            throw new RentalNotFoundException(id);
-        }
-
-        Rental rental = optionalRental.get();
+        Rental rental = findRentalById(id);
 
         // If status is completed or cancelled, we do not cancel them
         if (rental.getStatus() == Rental.Status.COMPLETED || rental.getStatus() == Rental.Status.CANCELLED){
@@ -104,28 +94,30 @@ public class RentalService {
     }
 
     public void deleteRental(UUID id) {
-        Optional<Rental> optionalRental = rentalRepository.findByIdAndNotDeleted(id);
-
-        if (optionalRental.isEmpty()) {
-            throw new RentalNotFoundException(id);
-        }
-
-        Rental rental = optionalRental.get();
-
-        // Remove rental from car and customer
-        Car car = rental.getCar();
-        Customer customer = rental.getCustomer();
-
-        car.getRentals().remove(rental);
-        customer.getRentals().remove(rental);
+        Rental rental = findRentalById(id);
 
         rental.setStatus(Rental.Status.CANCELLED);
         rental.softDelete();
 
-        // Save all changes
+        // Remove rental from car
+        Car car = rental.getCar();
+        if (car != null){
+            car.getRentals().remove(rental);
+            rental.setCar(null);
+        }
+
+        // Remove rental from customer
+        Customer customer = rental.getCustomer();
+        if (customer != null) {
+            customer.getRentals().remove(rental);
+            rental.setCustomer(null);
+        }
+
         rentalRepository.save(rental);
-        carService.saveCar(car);
-        customerService.saveCustomer(customer);
+    }
+
+    public Rental findRentalById(UUID id){
+        return rentalRepository.findByIdAndNotDeleted(id).orElseThrow(() -> new RentalNotFoundException(id));
     }
 
 }

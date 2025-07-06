@@ -1,4 +1,5 @@
 package com.example.deneme.customer;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public class CustomerRequestDTO {
@@ -7,6 +8,7 @@ public class CustomerRequestDTO {
     private String name; // Name of the customer
 
     @NotBlank(message = "Email must not be blank")
+    @Email(message = "Email must be valid")
     private String email; // Email of the customer
 
     public CustomerRequestDTO(){

@@ -5,6 +5,7 @@ import com.example.deneme.common.BaseEntity;
 import com.example.deneme.customer.Customer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,14 +22,32 @@ public class Rental extends BaseEntity {
     private LocalDateTime rentalStartDate;
     private LocalDateTime rentalEndDate;
 
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = StatusConverter.class)
     private Status status;
 
+    // Be careful! If this order is changed, ORDINAL mapping will be distorted
     public enum Status {
-        RESERVED,
-        ACTIVE,
-        COMPLETED,
-        CANCELLED
+        RESERVED(0),
+        ACTIVE(1),
+        COMPLETED(2),
+        CANCELLED(3);
+
+        private final int code;
+
+        Status(int code) {
+            this.code = code;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public static Status fromCode(int code) {
+            for (Status s : values()) {
+                if (s.getCode() == code) return s;
+            }
+            throw new IllegalArgumentException("Invalid Status code: " + code);
+        }
     }
 
     // With:
