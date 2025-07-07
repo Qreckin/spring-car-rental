@@ -1,10 +1,12 @@
 package com.example.deneme.rental;
 
+import com.example.deneme.user.User;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -35,11 +37,14 @@ public class RentalController {
     }
 
     // Create a rental
-
-    @PreAuthorize("@authService.isOwnerOrAdmin(#rentalRequestDTO.customerId, authentication)")
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/rentals")
-    public ResponseEntity<String> addRental(@Valid @RequestBody RentalRequestDTO rentalRequestDTO){
-        rentalService.addRental(rentalRequestDTO);
+    public ResponseEntity<String> addRental(@Valid @RequestBody RentalRequestDTO rentalRequestDTO,
+                                            Authentication authentication){
+        User user = (User)authentication.getPrincipal();
+        UUID customerId = user.getCustomer().getId();
+
+        rentalService.addRental(rentalRequestDTO, customerId);
         return ResponseEntity.ok("Rental has been created successfully.");
     }
 
@@ -55,7 +60,7 @@ public class RentalController {
     // COMPLETE a rental
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/rentals/complete/{id}")
-    public ResponseEntity<String> completeRental(@PathVariable UUID id, @PathVariable Integer newKilometer){
+    public ResponseEntity<String> completeRental(@PathVariable UUID id, @RequestParam Integer newKilometer){
         rentalService.completeRental(id, newKilometer);
         return ResponseEntity.ok("Rental marked as COMPLETED");
     }

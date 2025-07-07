@@ -19,7 +19,6 @@ public interface RentalRepository extends JpaRepository<Rental, UUID>{
 
     @Query("SELECT r FROM Rental r WHERE " +
             "r.deletedAt IS NULL AND " +
-            "(:customerId IS NULL OR r.customer.id = :customerId) AND " +
             "(:carId IS NULL OR r.car.id = :carId) AND " +
             "(:status IS NULL OR r.status = :status) AND " +
             "(CAST(:startDate AS timestamp) IS NULL OR r.rentalStartDate >= :startDate) AND " +  // Minimum date is startDate

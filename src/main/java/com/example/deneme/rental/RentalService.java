@@ -28,9 +28,8 @@ public class RentalService {
         this.rentalRepository = rentalRepository;
     }
 
-    public void addRental(RentalRequestDTO rentalRequestDTO){
+    public void addRental(RentalRequestDTO rentalRequestDTO, UUID customerId){
         UUID carId = rentalRequestDTO.getCarId();
-        UUID customerId = rentalRequestDTO.getCustomerId();
         LocalDateTime start = rentalRequestDTO.getRentalStartDate();
         LocalDateTime end = rentalRequestDTO.getRentalEndDate();
 

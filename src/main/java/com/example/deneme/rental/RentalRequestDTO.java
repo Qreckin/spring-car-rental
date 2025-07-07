@@ -12,8 +12,6 @@ public class RentalRequestDTO {
     @NotNull(message = "Car ID must not be null")
     private UUID carId;
 
-    @NotNull(message = "Customer ID must not be null")
-    private UUID customerId;
 
     @NotNull(message = "Date must not be null")
     private LocalDateTime rentalStartDate;
@@ -25,9 +23,8 @@ public class RentalRequestDTO {
 
     }
 
-    public RentalRequestDTO(UUID carId, UUID customerId, LocalDateTime rentalStartDate, LocalDateTime rentalEndDate) {
+    public RentalRequestDTO(UUID carId, LocalDateTime rentalStartDate, LocalDateTime rentalEndDate) {
         this.carId = carId;
-        this.customerId = customerId;
         this.rentalStartDate = rentalStartDate;
         this.rentalEndDate = rentalEndDate;
     }
@@ -41,13 +38,6 @@ public class RentalRequestDTO {
         this.carId = carId;
     }
 
-    public UUID getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(UUID customerId) {
-        this.customerId = customerId;
-    }
 
     public LocalDateTime getRentalStartDate() {
         return rentalStartDate;
