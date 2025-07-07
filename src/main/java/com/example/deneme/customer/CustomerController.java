@@ -1,8 +1,12 @@
 package com.example.deneme.customer;
 
+import com.example.deneme.user.User;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,21 +21,26 @@ public class CustomerController {
         this.customerService = customerService;
     }
 
+    @PreAuthorize("@authService.isOwnerOrAdmin(#id, authentication)")
     @GetMapping("/customers")
     public List<Customer> listCustomers(
             @RequestParam(required = false) UUID id,
-            @RequestParam(required = false) String email
-    ){
+            @RequestParam(required = false) String email){
         return customerService.filterCustomers(id, email);
     }
 
 
-    @PostMapping("/customers")
-    public ResponseEntity<String> createCustomer(@Valid @RequestBody CustomerRequestDTO customerRequestDTO){
-        Customer customer = customerService.addCustomer(customerRequestDTO);
-        return ResponseEntity.ok("Customer with ID: " + customer.getId() + " has been created successfully.");
+    @GetMapping("/getinfo")
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<Customer> getCustomerInfo(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+
+        return ResponseEntity.ok(user.getCustomer());
     }
 
+
+
+    @PreAuthorize("@authService.isOwnerOrAdmin(#id, authentication)")
     @PutMapping("/customers/{id}")
     public ResponseEntity<String> updateCustomer(@PathVariable UUID id, @Valid @RequestBody CustomerRequestDTO updatedCustomer){
 
@@ -39,9 +48,9 @@ public class CustomerController {
         return ResponseEntity.ok("Customer with ID: " + id + " has been updated successfully.");
     }
 
+    @PreAuthorize("@authService.isOwnerOrAdmin(#id, authentication)")
     @DeleteMapping("/customers/{id}")
     public ResponseEntity<String> deleteCustomer(@PathVariable UUID id){
-
         customerService.deleteCustomer(id);
         return ResponseEntity.ok("Customer with ID: " + id + " has been deleted successfully.");
     }

@@ -4,9 +4,12 @@ import com.example.deneme.car.Car;
 import com.example.deneme.car.CarRepository;
 import com.example.deneme.exception.EmailAlreadyInUseException;
 import com.example.deneme.exception.CustomerNotFoundException;
+import com.example.deneme.exception.UsernameInUseException;
 import com.example.deneme.rental.Rental;
 import com.example.deneme.rental.RentalRepository;
+import com.example.deneme.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Iterator;
@@ -17,40 +20,38 @@ import java.util.UUID;
 @Service
 public class CustomerService {
     private final CustomerRepository customerRepository;
-    private final RentalRepository rentalRepository;
-
-    private final CarRepository carRepository;
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository, RentalRepository rentalRepository, CarRepository carRepository){
+    private final PasswordEncoder passwordEncoder;
+
+    public CustomerService(CustomerRepository customerRepository, PasswordEncoder passwordEncoder) {
         this.customerRepository = customerRepository;
-        this.rentalRepository = rentalRepository;
-        this.carRepository = carRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public Customer addCustomer(CustomerRequestDTO customerRequestDTO){
+
+    public void updateCustomer(UUID id, CustomerRequestDTO customerRequestDTO){
+        Customer customer = getCustomerById(id);
 
         if (customerRepository.findByEmailAndNotDeleted(customerRequestDTO.getEmail()).isPresent()){
             throw new EmailAlreadyInUseException(customerRequestDTO.getEmail());
         }
 
-        // Create new customer with specified fields and save to repository
-        Customer customer = new Customer();
-        customer.setName(customerRequestDTO.getName());
-        customer.setEmail(customerRequestDTO.getEmail());
-        return customerRepository.save(customer);
-    }
-
-    public void updateCustomer(UUID id, CustomerRequestDTO customerRequestDTO){
-
-        if (customerRepository.findByEmailAndNotDeleted(customerRequestDTO.getEmail()).isPresent()){
-            throw new EmailAlreadyInUseException(customerRequestDTO.getEmail());
+        if (customerRepository.findByUsernameAndNotDeleted(customerRequestDTO.getUsername()).isPresent()){
+            throw new UsernameInUseException(customerRequestDTO.getUsername());
         }
 
         // Update and save the customer
-        Customer customer = getCustomerById(id);
-        customer.setName(customerRequestDTO.getName());
+        customer.setFullName(customerRequestDTO.getFullName());
+        customer.setPhoneNumber(customerRequestDTO.getPhoneNumber());
         customer.setEmail(customerRequestDTO.getEmail());
+
+        // Update username and password on the User object
+        if (customer.getUser() != null) {
+            customer.getUser().setUsername(customerRequestDTO.getUsername());
+            customer.getUser().setPassword(passwordEncoder.encode(customerRequestDTO.getPassword()));
+        }
+
         customerRepository.save(customer);
     }
 
@@ -77,7 +78,14 @@ public class CustomerService {
             iterator.remove(); // Safe remove from customer list
         }
 
+        User user = customer.getUser();
+        if (user != null){
+            user.softDelete();
+            user.setCustomer(null);
+        }
+
         // Soft delete the customer and save
+        customer.setUser(null);
         customer.softDelete();
         customerRepository.save(customer);
     }

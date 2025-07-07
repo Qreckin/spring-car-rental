@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,8 @@ public class RentalController {
     }
 
     // Retrieve non-deleted rentals
+
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/rentals")
     public List<Rental> filterRentals(
             @RequestParam(required = false) UUID customerId,
@@ -35,6 +38,8 @@ public class RentalController {
     }
 
     // Create a rental
+
+    @PreAuthorize("@authService.isOwnerOrAdmin(#rentalRequestDTO.customerId, authentication)")
     @PostMapping("/rentals")
     public ResponseEntity<String> addRental(@Valid @RequestBody RentalRequestDTO rentalRequestDTO){
         rentalService.addRental(rentalRequestDTO);
@@ -43,6 +48,7 @@ public class RentalController {
 
 
     // COMPLETE or CANCEL a rental
+    @PreAuthorize("@authService.isRentalOwnerOrAdmin(#id, authentication)")
     @PatchMapping("/rentals/{id}")
     public ResponseEntity<String> updateRentalStatus(@PathVariable UUID id, @RequestBody RentalActionRequestDTO rentalActionRequestDTO){
         switch (rentalActionRequestDTO.getAction().toLowerCase()){
@@ -55,6 +61,7 @@ public class RentalController {
 
 
     // Delete a rental
+    @PreAuthorize("@authService.isRentalOwnerOrAdmin(#id, authentication)")
     @DeleteMapping("/rentals/{id}")
     public ResponseEntity<String> deleteRental(@PathVariable UUID id){
         rentalService.deleteRental(id);

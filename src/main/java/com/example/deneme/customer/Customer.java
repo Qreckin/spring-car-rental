@@ -2,6 +2,7 @@ package com.example.deneme.customer;
 
 import com.example.deneme.common.BaseEntity;
 import com.example.deneme.rental.Rental;
+import com.example.deneme.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.lang.NonNull;
@@ -16,13 +17,18 @@ public class Customer extends BaseEntity {
     @Id // This declares the primary key of the entity
     @GeneratedValue(strategy = GenerationType.UUID) // Automatically increment id
     private UUID id; // ID of the customer in the database
-    private String name; // Name of the customer
+    private String fullName; // Name of the customer
+
+    private String phoneNumber;
 
     private String email; // Email of the customer
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Rental> rentals; // Rents that this user made
 
+    @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
+    @JsonIgnore // Prevent infinite loops
+    private User user;
 
     public Customer(){
 
@@ -36,12 +42,21 @@ public class Customer extends BaseEntity {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     public String getEmail() {
@@ -58,5 +73,13 @@ public class Customer extends BaseEntity {
 
     public void setRentals(List<Rental> rentals) {
         this.rentals = rentals;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
