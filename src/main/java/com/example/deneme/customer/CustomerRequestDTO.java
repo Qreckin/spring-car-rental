@@ -1,11 +1,11 @@
 package com.example.deneme.customer;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
+import java.time.LocalDate;
 
 public class CustomerRequestDTO {
 
-    @NotBlank(message = "Name must not be blank")
+    @NotBlank(message = "Username must not be blank")
     private String username;
 
     @NotBlank(message = "Password must not be blank")
@@ -21,15 +21,26 @@ public class CustomerRequestDTO {
     @Email(message = "Email must be valid")
     private String email;
 
+    @Past(message = "Birth date must be in the past")
+    @NotNull(message = "Birth date must not be null")
+    private LocalDate birthDate;
+
+    @NotNull(message = "License year must not be null")
+    @Min(value = 0, message = "License year must be a positive number")
+    private Integer licenseYear;
+
     public CustomerRequestDTO() {
     }
 
-    public CustomerRequestDTO(String username, String password, String fullName, String phoneNumber, String email) {
+
+    public CustomerRequestDTO(String username, String password, String fullName, String phoneNumber, String email, LocalDate birthDate, Integer licenseYear) {
         this.username = username;
         this.password = password;
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
         this.email = email;
+        this.birthDate = birthDate;
+        this.licenseYear = licenseYear;
     }
 
     public String getUsername() {
@@ -70,5 +81,21 @@ public class CustomerRequestDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public Integer getLicenseYear() {
+        return licenseYear;
+    }
+
+    public void setLicenseYear(Integer licenseYear) {
+        this.licenseYear = licenseYear;
     }
 }

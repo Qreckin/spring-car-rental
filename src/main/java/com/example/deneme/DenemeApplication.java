@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@EnableScheduling
 @SpringBootApplication
 public class DenemeApplication {
 
@@ -31,8 +30,9 @@ public class DenemeApplication {
 				admin.setCustomer(null); // Admin has no associated customer
 
 				userRepository.save(admin);
-				System.out.println("Admin user created.");
 			}
 		};
 	}
 }
+
+// Add rental için kişi tokenı kullanılacak idye gerek yok

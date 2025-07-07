@@ -5,6 +5,7 @@ import com.example.deneme.rental.Rental;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.awt.*;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,7 +21,16 @@ public class Car extends BaseEntity {
     private UUID id; // ID of the car in the database
     private String make; // Make of the car
     private String model; // Model of the car
+    private String color;
     private Integer year; // Year of the car
+
+    private Integer requiredLicenseYear;
+
+    private Double dailyPrice;
+
+    private Integer kilometer;
+
+
 
 
     // mappedBy indicates that the "car" field in the Rental entity owns the relationship.
@@ -59,6 +69,14 @@ public class Car extends BaseEntity {
         this.model = model;
     }
 
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
     public Integer getYear() {
         return year;
     }
@@ -67,11 +85,35 @@ public class Car extends BaseEntity {
         this.year = year;
     }
 
+    public Integer getRequiredLicenseYear() {
+        return requiredLicenseYear;
+    }
+
+    public void setRequiredLicenseYear(Integer requiredLicenseYear) {
+        this.requiredLicenseYear = requiredLicenseYear;
+    }
+
+    public Double getDailyPrice() {
+        return dailyPrice;
+    }
+
+    public void setDailyPrice(Double dailyPrice) {
+        this.dailyPrice = dailyPrice;
+    }
+
     public List<Rental> getRentals() {
         return rentals;
     }
 
     public void setRentals(List<Rental> rentals) {
         this.rentals = rentals;
+    }
+
+    public Integer getKilometer() {
+        return kilometer;
+    }
+
+    public void setKilometer(Integer kilometer) {
+        this.kilometer = kilometer;
     }
 }

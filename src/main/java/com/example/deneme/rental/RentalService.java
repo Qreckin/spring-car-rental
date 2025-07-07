@@ -1,4 +1,4 @@
-package com.example.deneme.rental.service;
+package com.example.deneme.rental;
 
 import com.example.deneme.car.Car;
 import com.example.deneme.car.CarService;
@@ -7,13 +7,12 @@ import com.example.deneme.customer.CustomerService;
 import com.example.deneme.exception.*;
 import com.example.deneme.rental.Rental;
 import com.example.deneme.rental.RentalRepository;
-import com.example.deneme.rental.dto.RentalRequestDTO;
+import com.example.deneme.rental.RentalRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -65,12 +64,29 @@ public class RentalService {
         rentalRepository.save(rental);
     }
 
-    public void completeRental(UUID id){
+    public void activateRental(UUID id){
+        Rental rental = findRentalById(id);
+
+        if (rental.getStatus() != Rental.Status.RESERVED){
+            throw new RentalCannotBeActivatedException(id);
+        }
+
+        rental.setStatus(Rental.Status.ACTIVE);
+        rentalRepository.save(rental);
+    }
+
+    public void completeRental(UUID id, Integer newKilometer){
         Rental rental = findRentalById(id);
 
         // Rental status must be ACTIVE
         if (rental.getStatus() != Rental.Status.ACTIVE){
             throw new RentalCannotBeCompletedException(id);
+        }
+
+        Car car = rental.getCar();
+        if (car != null && newKilometer != null) {
+            car.setKilometer(newKilometer);
+            carService.saveCar(car);
         }
 
         rental.setStatus(Rental.Status.COMPLETED);
@@ -86,6 +102,7 @@ public class RentalService {
         }
 
         rental.setStatus(Rental.Status.CANCELLED);
+        rentalRepository.save(rental);
     }
 
 

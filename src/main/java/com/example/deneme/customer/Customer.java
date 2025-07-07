@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.lang.NonNull;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -22,6 +23,10 @@ public class Customer extends BaseEntity {
     private String phoneNumber;
 
     private String email; // Email of the customer
+
+    private LocalDate birthDate;
+
+    private Integer licenseYear;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Rental> rentals; // Rents that this user made
@@ -65,6 +70,22 @@ public class Customer extends BaseEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public Integer getLicenseYear() {
+        return licenseYear;
+    }
+
+    public void setLicenseYear(Integer licenseYear) {
+        this.licenseYear = licenseYear;
     }
 
     public List<Rental> getRentals() {

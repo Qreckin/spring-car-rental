@@ -32,18 +32,22 @@ public class CarController {
     }
 
     // If GET request to /cars is made, return an ArrayList containing every car
-    @GetMapping("/cars")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @GetMapping("/cars")
     public List<Car> filterCars(
             @RequestParam(required = false) String make,
             @RequestParam(required = false) String model,
+            @RequestParam(required = false) String color,
             @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer licenseYear,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice,
             @RequestParam(required = false) UUID id,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end){
 
 
-        return carService.filterCars(make, model, year, id, start, end);
+        return carService.filterCars(make, model, color, year, licenseYear, minPrice, maxPrice, id, start, end);
     }
 
 
@@ -60,14 +64,14 @@ public class CarController {
     @PutMapping("/cars/{id}")
     public ResponseEntity<String> updateCar(@PathVariable UUID id, @Valid @RequestBody CarRequestDTO updatedCar){
         carService.updateCar(id, updatedCar);  // UPDATES the car in table, does not create a new CAR in table
-        return ResponseEntity.ok("Car with ID: " + id + " has been updated successfully.");
+        return ResponseEntity.ok("Car with ID: " + id + " has been updated successfully");
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/cars/{id}")
     public ResponseEntity<String> deleteCar(@PathVariable UUID id){
         carService.deleteCar(id);
-        return ResponseEntity.ok("Car with ID: " + id + " has been deleted successfully.");
+        return ResponseEntity.ok("Car with ID: " + id + " has been deleted successfully");
     }
 
 }

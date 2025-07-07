@@ -31,4 +31,21 @@ public class CustomerAuthorizationService {
         User user = (User) authentication.getPrincipal();
         return user.getRole().equals("ADMIN") || user.getCustomer().getId().equals(rentalCustomerId);
     }
+
+
+    public boolean canCancelRental(UUID rentalId, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+
+        // ADMIN can cancel any rental
+        if (user.getRole().equals("ADMIN")) {
+            return true;
+        }
+
+        // Check if rental exists and belongs to this user’s customer, and is in RESERVED status
+        return rentalRepository.findById(rentalId)
+                .filter(r -> r.getCustomer() != null)
+                .filter(r -> r.getCustomer().getId().equals(user.getCustomer().getId()))
+                .filter(r -> r.getStatus() == Rental.Status.RESERVED)
+                .isPresent();
+    }
 }

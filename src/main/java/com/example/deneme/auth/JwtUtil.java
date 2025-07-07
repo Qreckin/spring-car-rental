@@ -1,5 +1,6 @@
 package com.example.deneme.auth;
 
+import com.example.deneme.user.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -23,9 +24,13 @@ public class JwtUtil {
     }
 
 
-    public String generateToken(String username) {
+    public String generateToken(User user) {
+        String subject;
+
+        subject = user.getUsername();
+
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(subject)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(secretKey, SignatureAlgorithm.HS256)

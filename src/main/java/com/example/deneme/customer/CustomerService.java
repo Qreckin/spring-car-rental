@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -30,26 +31,51 @@ public class CustomerService {
     }
 
 
-    public void updateCustomer(UUID id, CustomerRequestDTO customerRequestDTO){
+    public void updateCustomer(UUID id, CustomerRequestDTO customerRequestDTO) {
         Customer customer = getCustomerById(id);
 
-        if (customerRepository.findByEmailAndNotDeleted(customerRequestDTO.getEmail()).isPresent()){
+        if (customerRequestDTO.getEmail() != null &&
+                customerRepository.findByEmailAndNotDeleted(customerRequestDTO.getEmail())
+                        .filter(c -> !c.getId().equals(id))
+                        .isPresent()) {
             throw new EmailAlreadyInUseException(customerRequestDTO.getEmail());
         }
 
-        if (customerRepository.findByUsernameAndNotDeleted(customerRequestDTO.getUsername()).isPresent()){
+        if (customerRequestDTO.getUsername() != null &&
+                customerRepository.findByUsernameAndNotDeleted(customerRequestDTO.getUsername())
+                        .filter(c -> !c.getId().equals(id))
+                        .isPresent()) {
             throw new UsernameInUseException(customerRequestDTO.getUsername());
         }
 
-        // Update and save the customer
-        customer.setFullName(customerRequestDTO.getFullName());
-        customer.setPhoneNumber(customerRequestDTO.getPhoneNumber());
-        customer.setEmail(customerRequestDTO.getEmail());
+        if (customerRequestDTO.getFullName() != null) {
+            customer.setFullName(customerRequestDTO.getFullName());
+        }
 
-        // Update username and password on the User object
+        if (customerRequestDTO.getPhoneNumber() != null) {
+            customer.setPhoneNumber(customerRequestDTO.getPhoneNumber());
+        }
+
+        if (customerRequestDTO.getEmail() != null) {
+            customer.setEmail(customerRequestDTO.getEmail());
+        }
+
+        if (customerRequestDTO.getBirthDate() != null) {
+            customer.setBirthDate(customerRequestDTO.getBirthDate());
+        }
+
+        if (customerRequestDTO.getLicenseYear() != null) {
+            customer.setLicenseYear(customerRequestDTO.getLicenseYear());
+        }
+
         if (customer.getUser() != null) {
-            customer.getUser().setUsername(customerRequestDTO.getUsername());
-            customer.getUser().setPassword(passwordEncoder.encode(customerRequestDTO.getPassword()));
+            if (customerRequestDTO.getUsername() != null) {
+                customer.getUser().setUsername(customerRequestDTO.getUsername());
+            }
+
+            if (customerRequestDTO.getPassword() != null) {
+                customer.getUser().setPassword(passwordEncoder.encode(customerRequestDTO.getPassword()));
+            }
         }
 
         customerRepository.save(customer);
@@ -90,13 +116,21 @@ public class CustomerService {
         customerRepository.save(customer);
     }
 
+    public Customer getCustomerInfo(UUID id){
+        return getCustomerById(id);
+    }
+
     // Try to retrieve the customer by id, if it does not succeed, throw exception
     public Customer getCustomerById(UUID id){
         return customerRepository.findByIdAndNotDeleted(id).orElseThrow(() -> new CustomerNotFoundException(id));
     }
 
-    public List<Customer> filterCustomers(UUID id, String email){
-        return customerRepository.filterCustomers(id, email);
+    public Customer getCustomerByUsername(String username){
+        return customerRepository.findByUsernameAndNotDeleted(username).orElseThrow(() -> new CustomerNotFoundException(username));
+    }
+
+    public List<Customer> filterCustomers(UUID id, String email, String fullName, String phoneNumber, LocalDate birthDate, Integer licenseYear, String username) {
+        return customerRepository.filterCustomers(id, email, fullName, phoneNumber, birthDate, licenseYear, username);
     }
 
     public void saveCustomer(Customer customer){

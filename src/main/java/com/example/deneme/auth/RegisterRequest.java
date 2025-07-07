@@ -1,8 +1,7 @@
 package com.example.deneme.auth;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
+import java.time.LocalDate;
 
 public class RegisterRequest {
 
@@ -24,18 +23,28 @@ public class RegisterRequest {
     @Email(message = "Email must be valid")
     private String email;
 
+    @NotNull(message = "Birth date must not be null")
+    @Past(message = "Birth date must be in the past")
+    private LocalDate birthDate;
+
+    @NotNull(message = "License year must not be null")
+    @Min(value = 0, message = "License year must be a positive number")
+    private Integer licenseYear;
+
     public RegisterRequest() {
     }
 
-    public RegisterRequest(String username, String password, String fullName, String phoneNumber, String email) {
+    public RegisterRequest(String username, String password, String fullName, String phoneNumber, String email, LocalDate birthDate, Integer licenseYear) {
         this.username = username;
         this.password = password;
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
         this.email = email;
+        this.birthDate = birthDate;
+        this.licenseYear = licenseYear;
     }
 
-    // Getters and setters
+    // Getters and Setters
 
     public String getUsername() {
         return username;
@@ -75,5 +84,21 @@ public class RegisterRequest {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public Integer getLicenseYear() {
+        return licenseYear;
+    }
+
+    public void setLicenseYear(Integer licenseYear) {
+        this.licenseYear = licenseYear;
     }
 }

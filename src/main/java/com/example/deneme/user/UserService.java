@@ -16,10 +16,10 @@ public class UserService {
         return userRepository.existsByUsername(username);
     }
 
-    public void saveUser(String username, String password, String role, Customer customer) {
+    public User saveUser(String username, String password, String role, Customer customer) {
         User user = new User(username, password, role);
         user.setCustomer(customer);
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 
     public User getByUsername(String username) {

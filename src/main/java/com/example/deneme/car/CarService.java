@@ -36,29 +36,47 @@ public class CarService {
     }
     // Self-describing
 
-    public List<Car> filterCars(String make, String model, Integer year, UUID id, LocalDateTime start, LocalDateTime end){
+    public List<Car> filterCars(String make, String model, String color, Integer year, Integer requiredLicenseYear,
+                                Integer minPrice, Integer maxPrice, UUID id, LocalDateTime start, LocalDateTime end) {
+
+        // We will exclude ACTIVE and RESERVED cars when filtering
         List<Rental.Status> statuses = List.of(Rental.Status.ACTIVE, Rental.Status.RESERVED);
-        return carRepository.filterCars(make, model, year, id, start, end, statuses);
+        return carRepository.filterAvailableCars(make, model, color, year, requiredLicenseYear, minPrice, maxPrice, id, start, end, statuses);
     }
 
     public Car addCar(CarRequestDTO carRequestDTO) {
-
-        // Adding a car needs no check, we just add it normally
         Car car = new Car();
         car.setMake(carRequestDTO.getMake());
         car.setModel(carRequestDTO.getModel());
+        car.setColor(carRequestDTO.getColor());
         car.setYear(carRequestDTO.getYear());
+        car.setRequiredLicenseYear(carRequestDTO.getRequiredLicenseYear());
+        car.setDailyPrice(carRequestDTO.getDailyPrice());
 
-        return carRepository.save(car); // Returning the Car itself is for passing car ID information and just used in addCar method
+        return carRepository.save(car);
     }
 
 
-    public void updateCar(UUID id, CarRequestDTO carRequestDTO){
-        Car car = getCarById(id); // Try to get the car, if car does not exist, throws error
+    public void updateCar(UUID id, CarRequestDTO carRequestDTO) {
+        Car car = getCarById(id); // Get the car or throw if not found
 
-        car.setMake(carRequestDTO.getMake());
-        car.setModel(carRequestDTO.getModel());
-        car.setYear(carRequestDTO.getYear());
+        if (carRequestDTO.getMake() != null)
+            car.setMake(carRequestDTO.getMake());
+
+        if (carRequestDTO.getModel() != null)
+            car.setModel(carRequestDTO.getModel());
+
+        if (carRequestDTO.getColor() != null)
+            car.setColor(carRequestDTO.getColor());
+
+        if (carRequestDTO.getYear() != null)
+            car.setYear(carRequestDTO.getYear());
+
+        if (carRequestDTO.getRequiredLicenseYear() != null)
+            car.setRequiredLicenseYear(carRequestDTO.getRequiredLicenseYear());
+
+        if (carRequestDTO.getDailyPrice() != null)
+            car.setDailyPrice(carRequestDTO.getDailyPrice());
 
         carRepository.save(car);
     }

@@ -3,12 +3,14 @@ package com.example.deneme.customer;
 import com.example.deneme.user.User;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,21 +23,25 @@ public class CustomerController {
         this.customerService = customerService;
     }
 
-    @PreAuthorize("@authService.isOwnerOrAdmin(#id, authentication)")
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/customers")
     public List<Customer> listCustomers(
             @RequestParam(required = false) UUID id,
-            @RequestParam(required = false) String email){
-        return customerService.filterCustomers(id, email);
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String fullName,
+            @RequestParam(required = false) String phoneNumber,
+            @RequestParam(required = false) LocalDate birthDate,
+            @RequestParam(required = false) Integer licenseYear,
+            @RequestParam(required = false) String username) {
+
+        return customerService.filterCustomers(id, email, fullName, phoneNumber, birthDate, licenseYear, username);
     }
 
-
-    @GetMapping("/getinfo")
     @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<Customer> getCustomerInfo(Authentication authentication) {
+    @GetMapping("/me")
+    public Customer getCustomerInfo(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-
-        return ResponseEntity.ok(user.getCustomer());
+        return customerService.getCustomerInfo(user.getCustomer().getId());
     }
 
 

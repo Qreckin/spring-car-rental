@@ -1,5 +1,6 @@
 package com.example.deneme.auth;
 
+import com.example.deneme.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,10 +13,13 @@ import org.springframework.security.core.AuthenticationException;
 @RestController
 public class LoginController {
     private final AuthenticationManager authenticationManager;
+
+    private final UserService userService;
     private final JwtUtil jwtUtil;
 
-    public LoginController(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+    public LoginController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserService userService) {
         this.authenticationManager = authenticationManager;
+        this.userService = userService;
         this.jwtUtil = jwtUtil;
     }
 
@@ -31,7 +35,7 @@ public class LoginController {
             );
 
             // Generate and return the token as JSON
-            String token = jwtUtil.generateToken(request.getUsername());
+            String token = jwtUtil.generateToken(userService.getByUsername(request.getUsername()));
             return ResponseEntity.ok(new LoginResponse(token));
 
         } catch (AuthenticationException e) {

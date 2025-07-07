@@ -1,8 +1,5 @@
 package com.example.deneme.rental;
 
-import com.example.deneme.rental.dto.RentalActionRequestDTO;
-import com.example.deneme.rental.dto.RentalRequestDTO;
-import com.example.deneme.rental.service.RentalService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -46,23 +43,36 @@ public class RentalController {
         return ResponseEntity.ok("Rental has been created successfully.");
     }
 
+    // ACTIVATE a rental
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/rentals/activate/{id}")
+    public ResponseEntity<String> activateRental(@PathVariable UUID id){
+        rentalService.activateRental(id);
+        return ResponseEntity.ok("Rental marked as COMPLETED");
+    }
 
-    // COMPLETE or CANCEL a rental
-    @PreAuthorize("@authService.isRentalOwnerOrAdmin(#id, authentication)")
-    @PatchMapping("/rentals/{id}")
-    public ResponseEntity<String> updateRentalStatus(@PathVariable UUID id, @RequestBody RentalActionRequestDTO rentalActionRequestDTO){
-        switch (rentalActionRequestDTO.getAction().toLowerCase()){
-            case "complete" -> rentalService.completeRental(id);
-            case "cancel" -> rentalService.cancelRental(id);
-            default -> throw new IllegalArgumentException("Invalid action: " + rentalActionRequestDTO.getAction());
-        }
-        return ResponseEntity.ok("Rental marked as " + rentalActionRequestDTO.getAction().toUpperCase() + ".");
+
+    // COMPLETE a rental
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/rentals/complete/{id}")
+    public ResponseEntity<String> completeRental(@PathVariable UUID id, @PathVariable Integer newKilometer){
+        rentalService.completeRental(id, newKilometer);
+        return ResponseEntity.ok("Rental marked as COMPLETED");
+    }
+
+
+    // CANCELLING a rental
+    @PreAuthorize("@authService.canCancelRental(#id, authentication)")
+    @PostMapping("/rentals/cancel/{id}")
+    public ResponseEntity<String> cancelRental(@PathVariable UUID id){
+        rentalService.cancelRental(id);
+        return ResponseEntity.ok("Rental marked as CANCELLED");
     }
 
 
     // Delete a rental
-    @PreAuthorize("@authService.isRentalOwnerOrAdmin(#id, authentication)")
-    @DeleteMapping("/rentals/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/rentals/delete/{id}")
     public ResponseEntity<String> deleteRental(@PathVariable UUID id){
         rentalService.deleteRental(id);
         return ResponseEntity.ok("Rental has been deleted successfully.");
