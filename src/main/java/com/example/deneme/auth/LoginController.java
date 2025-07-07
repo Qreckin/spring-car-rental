@@ -15,12 +15,12 @@ public class LoginController {
     private final AuthenticationManager authenticationManager;
 
     private final UserService userService;
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
 
-    public LoginController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserService userService) {
+    public LoginController(AuthenticationManager authenticationManager, JwtService jwtService, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
-        this.jwtUtil = jwtUtil;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/login")
@@ -35,7 +35,7 @@ public class LoginController {
             );
 
             // Generate and return the token as JSON
-            String token = jwtUtil.generateToken(userService.getByUsername(request.getUsername()));
+            String token = jwtService.generateToken(userService.getByUsername(request.getUsername()));
             return ResponseEntity.ok(new LoginResponse(token));
 
         } catch (AuthenticationException e) {

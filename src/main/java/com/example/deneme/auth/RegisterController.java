@@ -2,7 +2,6 @@ package com.example.deneme.auth;
 
 import com.example.deneme.customer.Customer;
 import com.example.deneme.customer.CustomerRepository;
-import com.example.deneme.customer.CustomerService;
 import com.example.deneme.user.User;
 import com.example.deneme.user.UserService;
 import jakarta.validation.Valid;
@@ -12,21 +11,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
-
 @RestController
 public class RegisterController {
 
     private final UserService userService;
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtService;
 
-    public RegisterController(UserService userService, CustomerRepository customerRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil) {
+    public RegisterController(UserService userService, CustomerRepository customerRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userService = userService;
         this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
-        this.jwtUtil = jwtUtil;
+        this.jwtService = jwtService;
     }
 
     @PostMapping("/register")
@@ -57,7 +54,7 @@ public class RegisterController {
 
 
         // Generate token for login
-        String token = jwtUtil.generateToken(user);
+        String token = jwtService.generateToken(user);
 
         return ResponseEntity.ok(
                 new RegisterResponse("User registered successfully", customer.getId(), token)

@@ -14,12 +14,12 @@ import java.util.Date;
 // We need this class to generate tokens that securely validate user identities
 // Secret key is assigned to the server, so each user has the same secret key
 @Component // Used to tell Spring this class is a Bean
-public class JwtUtil {
+public class JwtService {
     private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 10; // 10 hours
 
     private final SecretKey secretKey; // Secret key that is generated from the secret
 
-    public JwtUtil(@Value("${jwt.secret}") String secret){
+    public JwtService(@Value("${jwt.secret}") String secret){
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes()); // Creates the secret key from the given secret
     }
 
