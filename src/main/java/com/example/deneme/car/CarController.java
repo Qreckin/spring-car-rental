@@ -6,22 +6,14 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
-
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 // @RestController is used because GET/POST is used
 @RestController
 public class CarController {
-
     private final CarService carService;
 
     // carService is injected by Spring — it uses the CarService bean from the container
@@ -34,7 +26,7 @@ public class CarController {
     // If GET request to /cars is made, return an ArrayList containing every car
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/cars")
-    public List<Car> filterCars(
+    public List<CarDTO> filterCars(
             @RequestParam(required = false) String make,
             @RequestParam(required = false) String model,
             @RequestParam(required = false) String color,
@@ -46,6 +38,13 @@ public class CarController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end){
 
+        if (start != null && start.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Start date must not be in the past");
+        }
+
+        if (start != null && end != null && end.isBefore(start)) {
+            throw new IllegalArgumentException("End date must be after start date");
+        }
 
         return carService.filterCars(make, model, color, year, licenseYear, minPrice, maxPrice, id, start, end);
     }

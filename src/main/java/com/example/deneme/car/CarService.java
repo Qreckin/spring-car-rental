@@ -2,7 +2,6 @@ package com.example.deneme.car;
 
 import com.example.deneme.customer.Customer;
 import com.example.deneme.customer.CustomerRepository;
-import com.example.deneme.exception.CarAlreadyDeletedException;
 import com.example.deneme.exception.CarNotFoundException;
 import com.example.deneme.rental.Rental;
 import com.example.deneme.rental.RentalRepository;
@@ -10,6 +9,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
@@ -21,7 +21,6 @@ import java.util.UUID;
 // with the help of @Autowired
 @Service
 public class CarService {
-    @Autowired
     private final CarRepository carRepository;
     private final RentalRepository rentalRepository;
 
@@ -36,12 +35,27 @@ public class CarService {
     }
     // Self-describing
 
-    public List<Car> filterCars(String make, String model, String color, Integer year, Integer requiredLicenseYear,
+    public List<CarDTO> filterCars(String make, String model, String color, Integer year, Integer requiredLicenseYear,
                                 Integer minPrice, Integer maxPrice, UUID id, LocalDateTime start, LocalDateTime end) {
 
         // We will exclude ACTIVE and RESERVED cars when filtering
         List<Rental.Status> statuses = List.of(Rental.Status.ACTIVE, Rental.Status.RESERVED);
-        return carRepository.filterAvailableCars(make, model, color, year, requiredLicenseYear, minPrice, maxPrice, id, start, end, statuses);
+        List<Car> cars = carRepository.filterAvailableCars(make, model, color, year, requiredLicenseYear, minPrice, maxPrice, id, start, end, statuses);
+        List<CarDTO> carDTOs = cars.stream().map(CarDTO::new).toList();
+
+        if (start != null && end != null) {
+            Duration duration = Duration.between(start, end);
+            long totalHours = duration.toHours();
+            long days = totalHours / 24;
+            if (totalHours % 24 != 0) {
+                days++;
+            }
+
+            for (CarDTO car : carDTOs) {
+                car.setTotalPrice(car.getDailyPrice() * days);
+            }
+        }
+        return carDTOs;
     }
 
     public Car addCar(CarRequestDTO carRequestDTO) {
@@ -52,6 +66,7 @@ public class CarService {
         car.setYear(carRequestDTO.getYear());
         car.setRequiredLicenseYear(carRequestDTO.getRequiredLicenseYear());
         car.setDailyPrice(carRequestDTO.getDailyPrice());
+        car.setKilometer(carRequestDTO.getKilometer());
 
         return carRepository.save(car);
     }
@@ -102,14 +117,11 @@ public class CarService {
             if (customer != null) {
                 customer.getRentals().remove(rental); // Remove rental from customer side
                 rental.setCustomer(null); // Break back-reference
-                customerRepository.save(customer); // Persist customer changes
             }
 
             // Break relationship with Car
             rental.setCar(null);
             iterator.remove(); // Remove from car.getRentals()
-
-            rentalRepository.save(rental); // Save the soft-deleted rental
         }
 
         car.softDelete(); // Soft delete the car

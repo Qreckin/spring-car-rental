@@ -3,8 +3,6 @@ package com.example.deneme.customer;
 import com.example.deneme.user.User;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -25,7 +23,7 @@ public class CustomerController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/customers")
-    public List<Customer> listCustomers(
+    public List<CustomerDTO> listCustomers(
             @RequestParam(required = false) UUID id,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String fullName,
@@ -39,7 +37,7 @@ public class CustomerController {
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/me")
-    public Customer getCustomerInfo(Authentication authentication) {
+    public CustomerDTO getCustomerInfo(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return customerService.getCustomerInfo(user.getCustomer().getId());
     }

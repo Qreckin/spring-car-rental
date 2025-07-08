@@ -1,6 +1,5 @@
 package com.example.deneme.car;
 
-import com.example.deneme.customer.Customer;
 import com.example.deneme.rental.Rental;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

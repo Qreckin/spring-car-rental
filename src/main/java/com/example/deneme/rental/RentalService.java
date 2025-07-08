@@ -5,12 +5,10 @@ import com.example.deneme.car.CarService;
 import com.example.deneme.customer.Customer;
 import com.example.deneme.customer.CustomerService;
 import com.example.deneme.exception.*;
-import com.example.deneme.rental.Rental;
-import com.example.deneme.rental.RentalRepository;
-import com.example.deneme.rental.RentalRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -63,18 +61,20 @@ public class RentalService {
         rentalRepository.save(rental);
     }
 
-    public void activateRental(UUID id){
+    public void activateRental(UUID id, LocalDateTime activationTime){
         Rental rental = findRentalById(id);
 
-        if (rental.getStatus() != Rental.Status.RESERVED){
+        // Rental must be in RESERVED status and current time must be after rental's start date
+        if (rental.getStatus() != Rental.Status.RESERVED || rental.getRentalStartDate().isAfter(activationTime)){
             throw new RentalCannotBeActivatedException(id);
         }
 
+        rental.setActivatedAt(activationTime);
         rental.setStatus(Rental.Status.ACTIVE);
         rentalRepository.save(rental);
     }
 
-    public void completeRental(UUID id, Integer newKilometer){
+    public double completeRental(UUID id, Integer newKilometer, LocalDateTime completionTime){
         Rental rental = findRentalById(id);
 
         // Rental status must be ACTIVE
@@ -82,14 +82,49 @@ public class RentalService {
             throw new RentalCannotBeCompletedException(id);
         }
 
-        Car car = rental.getCar();
-        if (car != null && newKilometer != null) {
-            car.setKilometer(newKilometer);
-            carService.saveCar(car);
+        if (rental.getActivatedAt().isAfter(completionTime)){
+            throw new IllegalArgumentException("Completion time must be after activation time");
         }
 
+        Car car = rental.getCar();
+        if (newKilometer == null || newKilometer<car.getKilometer()) {
+            throw new IllegalArgumentException("new kilometer must be greater than previous kilometer");
+        }
+
+        LocalDateTime start = rental.getRentalStartDate();
+        LocalDateTime end = rental.getRentalEndDate();
+
+        // Calculate base price, we need it in both cases
+        long reservedDays = calculateDays(start, end);
+        double basePrice = reservedDays * car.getDailyPrice();
+
+        // Rental is completed in reserved interval
+        if (end.isAfter(completionTime)){
+            rental.setTotalPricePaidByCustomer(basePrice);
+        }else{ // Late reservation completion
+            long extraDays = calculateDays(start, completionTime) - reservedDays;
+            double extraPrice = extraDays * car.getDailyPrice() * 1.5;
+            rental.setTotalPricePaidByCustomer(basePrice + extraPrice);
+        }
+
+        car.setKilometer(newKilometer);
+        carService.saveCar(car);
+
+        rental.setCompletedAt(completionTime);
         rental.setStatus(Rental.Status.COMPLETED);
         rentalRepository.save(rental);
+
+        return rental.getTotalPricePaidByCustomer();
+    }
+
+    public long calculateDays(LocalDateTime start, LocalDateTime end){
+        Duration duration = Duration.between(start, end);
+        long totalHours = duration.toHours();
+        long days = totalHours / 24;
+        if (totalHours % 24 != 0) {
+            days++;
+        }
+        return days;
     }
 
     public void cancelRental(UUID id){
@@ -105,8 +140,11 @@ public class RentalService {
     }
 
 
-    public List<Rental> filterRentals(UUID customerId, UUID carId, Rental.Status status, LocalDateTime startDate, LocalDateTime endDate){
-        return rentalRepository.filterRentals(customerId, carId, status, startDate, endDate);
+    public List<RentalDTO> filterRentals(UUID customerId, UUID carId, Rental.Status status, LocalDateTime startDate, LocalDateTime endDate) {
+        List<Rental> rentals = rentalRepository.filterRentals(customerId, carId, status, startDate, endDate);
+        return rentals.stream()
+                .map(RentalDTO::new)
+                .toList();
     }
 
     public void deleteRental(UUID id) {

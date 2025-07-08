@@ -2,12 +2,12 @@ package com.example.deneme;
 
 import com.example.deneme.user.User;
 import com.example.deneme.user.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 public class DenemeApplication {
@@ -17,10 +17,9 @@ public class DenemeApplication {
 	}
 
 	@Bean
-	public CommandLineRunner setupAdmin(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+	public CommandLineRunner setupAdmin(UserRepository userRepository, PasswordEncoder passwordEncoder, @Value("${admin.password}") String rawPassword) {
 		return args -> {
 			String adminUsername = "admin";
-			String rawPassword = "admin123";
 
 			if (userRepository.findByUsername(adminUsername).isEmpty()) {
 				User admin = new User();

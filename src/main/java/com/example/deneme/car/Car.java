@@ -2,10 +2,7 @@ package com.example.deneme.car;
 
 import com.example.deneme.common.BaseEntity;
 import com.example.deneme.rental.Rental;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-
-import java.awt.*;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,14 +12,13 @@ import java.util.UUID;
 @Entity
 public class Car extends BaseEntity {
 
-    // Data fields are private for encapsulation
     @Id // This declares the primary key of the entity
     @GeneratedValue(strategy = GenerationType.UUID) // Automatically increment id
     private UUID id; // ID of the car in the database
-    private String make; // Make of the car
-    private String model; // Model of the car
+    private String make;
+    private String model;
     private String color;
-    private Integer year; // Year of the car
+    private Integer year;
 
     private Integer requiredLicenseYear;
 
@@ -31,13 +27,9 @@ public class Car extends BaseEntity {
     private Integer kilometer;
 
 
-
-
     // mappedBy indicates that the "car" field in the Rental entity owns the relationship.
     // cascade = CascadeType.ALL ensures that any operation (persist, merge, remove, etc.) on Car
     // will automatically be applied to its associated Rentals.
-    // orphanRemoval = true ensures that if a Rental is removed from the car's rental list,
-    // and no other entity references it, it will be deleted from the database.
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
     private List<Rental> rentals;
 

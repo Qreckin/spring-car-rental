@@ -5,10 +5,8 @@ import com.example.deneme.rental.Rental;
 import com.example.deneme.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.springframework.lang.NonNull;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,7 +30,7 @@ public class Customer extends BaseEntity {
     private List<Rental> rentals; // Rents that this user made
 
     @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
-    @JsonIgnore // Prevent infinite loops
+    @JsonIgnore
     private User user;
 
     public Customer(){

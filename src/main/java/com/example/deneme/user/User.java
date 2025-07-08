@@ -1,6 +1,7 @@
 package com.example.deneme.user;
 
 import com.example.deneme.common.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -29,6 +30,7 @@ public class User extends BaseEntity implements UserDetails{
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "customer_id")
+    @JsonIgnore
     private Customer customer;
 
 
@@ -63,9 +65,6 @@ public class User extends BaseEntity implements UserDetails{
         this.customer = customer;
     }
 
-    // UserDetails methods for Spring Security
-
-    // We have to write these methods because we are implementing an interface
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

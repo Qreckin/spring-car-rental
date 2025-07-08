@@ -15,7 +15,7 @@ import java.util.Date;
 // Secret key is assigned to the server, so each user has the same secret key
 @Component // Used to tell Spring this class is a Bean
 public class JwtService {
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 10; // 10 hours
+    private static final long EXPIRATION_TIME = (long)1000 * 60 * 60 * 10; // 10 hours
 
     private final SecretKey secretKey; // Secret key that is generated from the secret
 
@@ -26,9 +26,7 @@ public class JwtService {
 
     public String generateToken(User user) {
         String subject;
-
         subject = user.getUsername();
-
         return Jwts.builder()
                 .setSubject(subject)
                 .setIssuedAt(new Date())

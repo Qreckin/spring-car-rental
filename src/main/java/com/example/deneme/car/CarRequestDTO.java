@@ -1,8 +1,6 @@
 package com.example.deneme.car;
 
 import jakarta.validation.constraints.*;
-import java.awt.*;
-
 public class CarRequestDTO {
 
     @NotBlank(message = "Make must not be blank")
@@ -34,13 +32,14 @@ public class CarRequestDTO {
     public CarRequestDTO() {
     }
 
-    public CarRequestDTO(String make, String model, String color, Integer year, Integer requiredLicenseYear, Double dailyPrice) {
+    public CarRequestDTO(String make, String model, String color, Integer year, Integer requiredLicenseYear, Double dailyPrice, Integer kilometer) {
         this.make = make;
         this.model = model;
         this.color = color;
         this.year = year;
         this.requiredLicenseYear = requiredLicenseYear;
         this.dailyPrice = dailyPrice;
+        this.kilometer = kilometer;
     }
 
     public String getMake() {

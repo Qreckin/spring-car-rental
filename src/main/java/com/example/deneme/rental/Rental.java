@@ -5,9 +5,6 @@ import com.example.deneme.common.BaseEntity;
 import com.example.deneme.customer.Customer;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -22,8 +19,14 @@ public class Rental extends BaseEntity {
     private LocalDateTime rentalStartDate;
     private LocalDateTime rentalEndDate;
 
+    private Double totalPricePaidByCustomer;
+
     @Convert(converter = StatusConverter.class)
     private Status status;
+
+    private LocalDateTime activatedAt;
+
+    private LocalDateTime completedAt;
 
     // Be careful! If this order is changed, ORDINAL mapping will be distorted
     public enum Status {
@@ -110,5 +113,29 @@ public class Rental extends BaseEntity {
 
     public void setCustomer(Customer customer) {
         this.customer = customer;
+    }
+
+    public Double getTotalPricePaidByCustomer() {
+        return totalPricePaidByCustomer;
+    }
+
+    public void setTotalPricePaidByCustomer(Double totalPricePaidByCustomer) {
+        this.totalPricePaidByCustomer = totalPricePaidByCustomer;
+    }
+
+    public LocalDateTime getActivatedAt() {
+        return activatedAt;
+    }
+
+    public void setActivatedAt(LocalDateTime activatedAt) {
+        this.activatedAt = activatedAt;
+    }
+
+    public LocalDateTime getCompletedAt() {
+        return completedAt;
+    }
+
+    public void setCompletedAt(LocalDateTime completedAt) {
+        this.completedAt = completedAt;
     }
 }

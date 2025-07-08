@@ -10,7 +10,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -26,7 +28,7 @@ public class RentalController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/rentals")
-    public List<Rental> filterRentals(
+    public List<RentalDTO> filterRentals(
             @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) UUID carId,
             @RequestParam(required = false) Rental.Status status,
@@ -51,18 +53,26 @@ public class RentalController {
     // ACTIVATE a rental
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/rentals/activate/{id}")
-    public ResponseEntity<String> activateRental(@PathVariable UUID id){
-        rentalService.activateRental(id);
-        return ResponseEntity.ok("Rental marked as COMPLETED");
+    public ResponseEntity<String> activateRental(@PathVariable UUID id,
+                                                 @RequestParam LocalDateTime currentTime){
+        rentalService.activateRental(id, currentTime);
+        return ResponseEntity.ok("Rental marked as ACTIVE");
     }
 
 
     // COMPLETE a rental
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/rentals/complete/{id}")
-    public ResponseEntity<String> completeRental(@PathVariable UUID id, @RequestParam Integer newKilometer){
-        rentalService.completeRental(id, newKilometer);
-        return ResponseEntity.ok("Rental marked as COMPLETED");
+    public ResponseEntity<Map<String, Object>> completeRental(@PathVariable UUID id,
+                                                 @RequestParam Integer newKilometer,
+                                                 @RequestParam LocalDateTime currentTime){
+        double totalPricePaid = rentalService.completeRental(id, newKilometer, currentTime);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("message", "Rental marked as COMPLETED");
+        response.put("totalPricePaid", totalPricePaid);
+
+        return ResponseEntity.ok(response);
     }
 
 

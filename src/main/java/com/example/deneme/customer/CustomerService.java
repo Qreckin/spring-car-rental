@@ -1,12 +1,10 @@
 package com.example.deneme.customer;
 
 import com.example.deneme.car.Car;
-import com.example.deneme.car.CarRepository;
 import com.example.deneme.exception.EmailAlreadyInUseException;
 import com.example.deneme.exception.CustomerNotFoundException;
 import com.example.deneme.exception.UsernameInUseException;
 import com.example.deneme.rental.Rental;
-import com.example.deneme.rental.RentalRepository;
 import com.example.deneme.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,16 +13,15 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class CustomerService {
     private final CustomerRepository customerRepository;
 
-    @Autowired
     private final PasswordEncoder passwordEncoder;
 
+    @Autowired
     public CustomerService(CustomerRepository customerRepository, PasswordEncoder passwordEncoder) {
         this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
@@ -82,7 +79,7 @@ public class CustomerService {
     }
 
     public void deleteCustomer(UUID id){
-        Customer customer = getCustomerById(id); // Find non-deleted customer
+        Customer customer = getCustomerById(id);
 
         Iterator<Rental> iterator = customer.getRentals().iterator();
 
@@ -116,21 +113,30 @@ public class CustomerService {
         customerRepository.save(customer);
     }
 
-    public Customer getCustomerInfo(UUID id){
-        return getCustomerById(id);
+    public CustomerDTO getCustomerInfo(UUID id){
+        return new CustomerDTO(getCustomerById(id));
     }
 
     // Try to retrieve the customer by id, if it does not succeed, throw exception
-    public Customer getCustomerById(UUID id){
-        return customerRepository.findByIdAndNotDeleted(id).orElseThrow(() -> new CustomerNotFoundException(id));
+    public Customer getCustomerById(UUID id) {
+        return customerRepository.findByIdAndNotDeleted(id)
+                .orElseThrow(() -> new CustomerNotFoundException(id));
     }
 
-    public Customer getCustomerByUsername(String username){
-        return customerRepository.findByUsernameAndNotDeleted(username).orElseThrow(() -> new CustomerNotFoundException(username));
+    public CustomerDTO getCustomerDTO(Customer customer){
+        return new CustomerDTO(customer);
     }
 
-    public List<Customer> filterCustomers(UUID id, String email, String fullName, String phoneNumber, LocalDate birthDate, Integer licenseYear, String username) {
-        return customerRepository.filterCustomers(id, email, fullName, phoneNumber, birthDate, licenseYear, username);
+    public Customer getCustomerByUsername(String username) {
+        return customerRepository.findByUsernameAndNotDeleted(username)
+                .orElseThrow(() -> new CustomerNotFoundException(username));
+    }
+
+    public List<CustomerDTO> filterCustomers(UUID id, String email, String fullName, String phoneNumber, LocalDate birthDate, Integer licenseYear, String username) {
+        List<Customer> customers = customerRepository.filterCustomers(id, email, fullName, phoneNumber, birthDate, licenseYear, username);
+        return customers.stream()
+                .map(CustomerDTO::new)
+                .toList(); // or .collect(Collectors.toList()) if using Java < 16
     }
 
     public void saveCustomer(Customer customer){

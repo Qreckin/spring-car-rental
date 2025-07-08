@@ -26,7 +26,10 @@ public class LoginController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
         try {
-            // Validate that this username, password combination exists in DB
+            // Validation of username password pair
+            // This works because UserDetailsServiceImpl implements UserDetailsService
+            // And there is loadByUsername method
+            // If not authenticated throws exception
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getUsername(),

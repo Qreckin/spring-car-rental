@@ -28,10 +28,13 @@ public class RegisterController {
 
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
+
+        // Username is taken
         if (userService.existsByUsername(request.getUsername())) {
             return ResponseEntity.badRequest().body(new RegisterResponse("Username already exists", null, null));
         }
 
+        // Email is taken
         if (customerRepository.existsByEmail(request.getEmail())) {
             return ResponseEntity.badRequest().body(new RegisterResponse("Email already in use", null, null));
         }
@@ -56,6 +59,7 @@ public class RegisterController {
         // Generate token for login
         String token = jwtService.generateToken(user);
 
+        // Return the token created
         return ResponseEntity.ok(
                 new RegisterResponse("User registered successfully", customer.getId(), token)
         );

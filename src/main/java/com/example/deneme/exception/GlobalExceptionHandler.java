@@ -50,6 +50,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
     }
 
+    @ExceptionHandler(RentalCannotBeActivatedException.class)
+    public ResponseEntity<String> handleRentalCannotBeActivated(RentalCannotBeActivatedException ex){
+        String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+    }
+
+
     @ExceptionHandler(RentalCannotBeCompletedException.class)
     public ResponseEntity<String> handleRentalCannotBeCompleted(RentalCannotBeCompletedException ex){
         String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
@@ -71,5 +78,10 @@ public class GlobalExceptionHandler {
                 .findFirst()
                 .orElse("Validation failed");
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Validation error: " + errorMsg);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + ex.getMessage());
     }
 }

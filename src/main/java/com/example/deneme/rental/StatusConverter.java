@@ -1,6 +1,5 @@
 package com.example.deneme.rental;
 
-import com.example.deneme.rental.Rental;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
