@@ -65,9 +65,10 @@ public class CarController {
     // add the car into the ArrayList. Also provide a http response message
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/cars")
-    public ResponseEntity<String> addCar(@Valid @RequestBody CarRequestDTO carRequestDTO){
-        Car car = carService.addCar(carRequestDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Car with ID: " + car.getId() + " has been created successfully");
+    public ResponseEntity<String> addCar(@Valid @RequestBody List<CarRequestDTO> carRequestDTOList){
+        List<Car> savedCars = carService.addCars(carRequestDTOList);
+        List<UUID> ids = savedCars.stream().map(Car::getId).toList();
+        return ResponseEntity.status(HttpStatus.CREATED).body("Car with ID: " + ids + " have been created successfully");
     }
 
     @PreAuthorize("hasRole('ADMIN')")

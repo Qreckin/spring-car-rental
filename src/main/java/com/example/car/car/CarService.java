@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -59,10 +60,15 @@ public class CarService {
         return carDTOs;
     }
 
-    public Car addCar(CarRequestDTO carRequestDTO) {
-        Car car = new Car(carRequestDTO);
+    public List<Car> addCars(List<CarRequestDTO> carRequestDTOList) {
+        List<Car> carList= new ArrayList<>();
+        for (CarRequestDTO request : carRequestDTOList){
+            Car car = new Car(request);
+            carList.add(car);
+            carRepository.save(car);
+        }
 
-        return carRepository.save(car);
+        return carList;
     }
 
 

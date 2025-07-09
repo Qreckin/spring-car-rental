@@ -2,8 +2,10 @@ package com.example.car.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -96,5 +98,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleLicenseDateTooEarly(LicenseDateTooEarlyException ex){
         String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<String> handleJsonParseError(HttpMessageNotReadableException ex) {
+        return ResponseEntity.badRequest().body("Malformed JSON request: " + ex.getMostSpecificCause().getMessage());
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<String> handleHandlerMethodValidationException(HandlerMethodValidationException ex) {
+        String errorMsg = ex.getAllErrors().stream()
+                .map(error -> error.getDefaultMessage())
+                .findFirst()
+                .orElse("Validation failed");
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Validation error: " + errorMsg);
     }
 }

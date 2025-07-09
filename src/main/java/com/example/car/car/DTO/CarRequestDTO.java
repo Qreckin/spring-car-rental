@@ -18,7 +18,7 @@ public class CarRequestDTO {
     private Integer year;
 
     @NotNull(message = "Required license must not be null")
-    @Min(value = 0, message = "Required license must be at least 1")
+    @Min(value = 0, message = "Required license must be at least 0")
     private Integer requiredLicenseYear;
 
     @NotNull(message = "Daily price must not be null")
