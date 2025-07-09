@@ -1,0 +1,12 @@
+{
+    "make": "BMW",
+    "model": "Benz",
+    "color": "Black",
+    "requiredLicenseYear": 3,
+    "licensePlate": "34 BRS 34",
+    "category": "Sedan",
+    "gearType": "Manuel",
+    "dailyPrice": 500,
+    "kilometer": 10079,
+    "year": 2024
+}

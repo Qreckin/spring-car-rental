@@ -5,10 +5,13 @@ import com.example.car.car.CarService;
 import com.example.car.customer.Customer;
 import com.example.car.customer.CustomerService;
 import com.example.car.exception.*;
+import com.example.car.rental.DTO.RentalDTO;
+import com.example.car.rental.DTO.RentalRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -39,6 +42,13 @@ public class RentalService {
         // Ensure both car and customer exists, if not, throw exception
         Car car = carService.getCarById(carId);
         Customer customer = customerService.getCustomerById(customerId);
+
+        LocalDateTime licenseStart = customer.getLicenseDate().atStartOfDay();
+        long daysPast = Duration.between(licenseStart, LocalDateTime.now()).toDays();
+        long requiredDays = 365L * car.getRequiredLicenseYear();
+        if (daysPast < requiredDays) {
+            throw new LicenseDateTooEarlyException(customerId);
+        }
 
         // Check if car is occupied in this time interval
         List<Rental> overlaps = rentalRepository.findOverlappingRentals(carId, start, end, Rental.Status.ACTIVE);
@@ -126,6 +136,7 @@ public class RentalService {
         }
         return days;
     }
+
 
     public void cancelRental(UUID id){
         Rental rental = findRentalById(id);

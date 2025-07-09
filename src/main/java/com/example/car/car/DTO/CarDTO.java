@@ -1,22 +1,31 @@
-package com.example.car.car;
+package com.example.car.car.DTO;
 
-import com.example.car.rental.RentalDTO;
+import com.example.car.car.Car;
+import com.example.car.rental.DTO.RentalDTO;
+import jakarta.validation.constraints.NotBlank;
+
 import java.util.List;
 import java.util.UUID;
 
 public class CarDTO {
-    private UUID id;
-    private String make;
-    private String model;
-    private String color;
-    private Integer year;
-    private Integer requiredLicenseYear;
-    private Double dailyPrice;
+    private final UUID id;
+    private final String make;
+    private final String model;
+    private final String color;
+    private final Integer year;
+    private final Integer requiredLicenseYear;
+    private final Double dailyPrice;
 
-    private Integer kilometer;
+    private final Integer kilometer;
+
+    private String category;
+
+    private String gearType;
+
+    private String licensePlate;
     private Double totalPrice;
 
-    private List<RentalDTO> rentalsDTOs;
+    private final List<RentalDTO> rentalsDTOs;
 
     // Constructors
     public CarDTO(Car car) {
@@ -33,6 +42,9 @@ public class CarDTO {
                 .stream()
                 .map(RentalDTO::new)
                 .toList();
+        this.category = car.getCategory();
+        this.gearType = car.getGearType();
+        this.licensePlate = car.getLicensePlate();
     }
 
     public UUID getId() {
@@ -67,10 +79,35 @@ public class CarDTO {
         return kilometer;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getGearType() {
+        return gearType;
+    }
+
+    public void setGearType(String gearType) {
+        this.gearType = gearType;
+    }
+
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
+    }
+
     public Double getTotalPrice() {
         return totalPrice;
     }
-    public void setTotalPrice(Double totalPrice){
+
+    public void setTotalPrice(Double totalPrice) {
         this.totalPrice = totalPrice;
     }
 

@@ -24,7 +24,7 @@ public class Customer extends BaseEntity {
 
     private LocalDate birthDate;
 
-    private Integer licenseYear;
+    private LocalDate licenseDate;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Rental> rentals; // Rents that this user made
@@ -78,12 +78,12 @@ public class Customer extends BaseEntity {
         this.birthDate = birthDate;
     }
 
-    public Integer getLicenseYear() {
-        return licenseYear;
+    public LocalDate getLicenseDate() {
+        return licenseDate;
     }
 
-    public void setLicenseYear(Integer licenseYear) {
-        this.licenseYear = licenseYear;
+    public void setLicenseDate(LocalDate licenseDate) {
+        this.licenseDate = licenseDate;
     }
 
     public List<Rental> getRentals() {

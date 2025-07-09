@@ -33,7 +33,7 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
       AND (:fullName IS NULL OR c.fullName = :fullName)
       AND (:phoneNumber IS NULL OR c.phoneNumber = :phoneNumber)
       AND (:birthDate IS NULL OR c.birthDate = :birthDate)
-      AND (:licenseYear IS NULL OR c.licenseYear = :licenseYear)
+      AND (:licenseDate IS NULL OR c.licenseDate = :licenseDate)
       AND (:username IS NULL OR u.username = :username)
 """)
     List<Customer> filterCustomers(
@@ -42,7 +42,7 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
             @Param("fullName") String fullName,
             @Param("phoneNumber") String phoneNumber,
             @Param("birthDate") LocalDate birthDate,
-            @Param("licenseYear") Integer licenseYear,
+            @Param("licenseDate") LocalDate licenseDate,
             @Param("username") String username
     );
 

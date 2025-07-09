@@ -1,5 +1,7 @@
 package com.example.car.rental;
 
+import com.example.car.rental.DTO.RentalDTO;
+import com.example.car.rental.DTO.RentalRequestDTO;
 import com.example.car.user.User;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

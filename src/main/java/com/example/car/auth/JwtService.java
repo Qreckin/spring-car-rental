@@ -19,8 +19,8 @@ public class JwtService {
 
     private final SecretKey secretKey; // Secret key that is generated from the secret
 
-    public JwtService(@Value("${jwt.secret}") String secret){
-        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes()); // Creates the secret key from the given secret
+    public JwtService(){
+        this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     }
 
 

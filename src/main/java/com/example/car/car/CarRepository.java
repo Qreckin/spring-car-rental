@@ -27,6 +27,10 @@ public interface CarRepository extends JpaRepository<Car, UUID> {
       AND (:minPrice IS NULL OR c.dailyPrice >= :minPrice)
       AND (:maxPrice IS NULL OR c.dailyPrice <= :maxPrice)
       AND (:id IS NULL OR c.id = :id)
+      AND (:category IS NULL OR c.category = :category)
+      AND (:gearType IS NULL OR c.gearType = :gearType)
+      AND (:licensePlate IS NULL OR c.licensePlate = :licensePlate)
+      AND (:kilometer IS NULL OR c.kilometer <= :kilometer)
       AND NOT EXISTS (
           SELECT r FROM Rental r 
           WHERE r.car = c 
@@ -46,6 +50,10 @@ public interface CarRepository extends JpaRepository<Car, UUID> {
             @Param("minPrice") Integer minPrice,
             @Param("maxPrice") Integer maxPrice,
             @Param("id") UUID id,
+            @Param("category") String category,
+            @Param("gearType") String gearType,
+            @Param("licensePlate") String licensePlate,
+            @Param("kilometer") Integer kilometer,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
             @Param("statuses") List<Rental.Status> statuses

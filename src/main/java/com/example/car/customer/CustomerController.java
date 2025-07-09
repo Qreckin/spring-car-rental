@@ -1,5 +1,7 @@
 package com.example.car.customer;
 
+import com.example.car.customer.DTO.CustomerDTO;
+import com.example.car.customer.DTO.CustomerRequestDTO;
 import com.example.car.user.User;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +31,10 @@ public class CustomerController {
             @RequestParam(required = false) String fullName,
             @RequestParam(required = false) String phoneNumber,
             @RequestParam(required = false) LocalDate birthDate,
-            @RequestParam(required = false) Integer licenseYear,
+            @RequestParam(required = false) LocalDate licenseDate,
             @RequestParam(required = false) String username) {
 
-        return customerService.filterCustomers(id, email, fullName, phoneNumber, birthDate, licenseYear, username);
+        return customerService.filterCustomers(id, email, fullName, phoneNumber, birthDate, licenseDate, username);
     }
 
     @PreAuthorize("hasRole('USER')")
@@ -46,7 +48,7 @@ public class CustomerController {
 
     @PreAuthorize("@authService.isOwnerOrAdmin(#id, authentication)")
     @PutMapping("/customers/{id}")
-    public ResponseEntity<String> updateCustomer(@PathVariable UUID id, @Valid @RequestBody CustomerRequestDTO updatedCustomer){
+    public ResponseEntity<String> updateCustomer(@PathVariable UUID id, @RequestBody CustomerRequestDTO updatedCustomer){
 
         customerService.updateCustomer(id, updatedCustomer);
         return ResponseEntity.ok("Customer with ID: " + id + " has been updated successfully.");

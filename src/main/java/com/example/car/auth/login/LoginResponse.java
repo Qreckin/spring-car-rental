@@ -1,4 +1,4 @@
-package com.example.car.auth;
+package com.example.car.auth.login;
 
 public class LoginResponse {
     private final String token;

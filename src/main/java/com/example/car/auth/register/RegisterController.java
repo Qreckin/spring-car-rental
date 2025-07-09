@@ -1,5 +1,6 @@
-package com.example.car.auth;
+package com.example.car.auth.register;
 
+import com.example.car.auth.JwtService;
 import com.example.car.customer.Customer;
 import com.example.car.customer.CustomerRepository;
 import com.example.car.user.User;
@@ -31,12 +32,12 @@ public class RegisterController {
 
         // Username is taken
         if (userService.existsByUsername(request.getUsername())) {
-            return ResponseEntity.badRequest().body(new RegisterResponse("Username already exists", null, null));
+            return ResponseEntity.badRequest().body(new RegisterResponse("Username already exists", null));
         }
 
         // Email is taken
         if (customerRepository.existsByEmail(request.getEmail())) {
-            return ResponseEntity.badRequest().body(new RegisterResponse("Email already in use", null, null));
+            return ResponseEntity.badRequest().body(new RegisterResponse("Email already in use", null));
         }
 
         // Create customer
@@ -45,7 +46,7 @@ public class RegisterController {
         customer.setPhoneNumber(request.getPhoneNumber());
         customer.setEmail(request.getEmail());
         customer.setBirthDate(request.getBirthDate());
-        customer.setLicenseYear(request.getLicenseYear());
+        customer.setLicenseDate(request.getLicenseDate());
 
         // Save user and link customer
         User user = userService.saveUser(
@@ -57,11 +58,10 @@ public class RegisterController {
 
 
         // Generate token for login
-        String token = jwtService.generateToken(user);
 
         // Return the token created
         return ResponseEntity.ok(
-                new RegisterResponse("User registered successfully", customer.getId(), token)
+                new RegisterResponse("User registered successfully", customer.getId())
         );
     }
 }

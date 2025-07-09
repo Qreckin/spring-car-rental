@@ -26,11 +26,14 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
+
+                // These are not used in JWT applications, so we disable it
                 .csrf(csrf -> csrf.disable())
                 .logout(logout -> logout.disable());
 
         return http.build();
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

@@ -1,21 +1,22 @@
-package com.example.car.customer;
+package com.example.car.customer.DTO;
 
-import com.example.car.rental.RentalDTO;
+import com.example.car.customer.Customer;
+import com.example.car.rental.DTO.RentalDTO;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 public class CustomerDTO {
-    private UUID id;
-    private String fullName;
-    private String phoneNumber;
-    private String email;
-    private LocalDate birthDate;
-    private Integer licenseYear;
-    private String username;
+    private final UUID id;
+    private final String fullName;
+    private final String phoneNumber;
+    private final String email;
+    private final LocalDate birthDate;
+    private final LocalDate licenseDate;
+    private final String username;
 
-    private List<RentalDTO> rentalsDTO;
+    private final List<RentalDTO> rentalsDTO;
 
     public CustomerDTO(Customer customer) {
         this.id = customer.getId();
@@ -23,7 +24,7 @@ public class CustomerDTO {
         this.phoneNumber = customer.getPhoneNumber();
         this.email = customer.getEmail();
         this.birthDate = customer.getBirthDate();
-        this.licenseYear = customer.getLicenseYear();
+        this.licenseDate = customer.getLicenseDate();
         this.username = customer.getUser() != null ? customer.getUser().getUsername() : null;
         this.rentalsDTO = customer.getRentals()
                 .stream()
@@ -54,8 +55,8 @@ public class CustomerDTO {
         return birthDate;
     }
 
-    public Integer getLicenseYear() {
-        return licenseYear;
+    public LocalDate getLicenseDate() {
+        return licenseDate;
     }
 
     public String getUsername() {

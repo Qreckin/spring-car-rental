@@ -1,5 +1,7 @@
 package com.example.car.car;
 
+import com.example.car.car.DTO.CarDTO;
+import com.example.car.car.DTO.CarRequestDTO;
 import com.example.car.customer.Customer;
 import com.example.car.customer.CustomerRepository;
 import com.example.car.exception.CarNotFoundException;
@@ -22,27 +24,25 @@ import java.util.UUID;
 @Service
 public class CarService {
     private final CarRepository carRepository;
-    private final RentalRepository rentalRepository;
-
-    private final CustomerRepository customerRepository;
 
 
     @Autowired
-    public CarService(CarRepository carRepository, RentalRepository rentalRepository, CustomerRepository customerRepository){
+    public CarService(CarRepository carRepository){
         this.carRepository = carRepository;
-        this.rentalRepository = rentalRepository;
-        this.customerRepository = customerRepository;
     }
     // Self-describing
 
-    public List<CarDTO> filterCars(String make, String model, String color, Integer year, Integer requiredLicenseYear,
-                                Integer minPrice, Integer maxPrice, UUID id, LocalDateTime start, LocalDateTime end) {
-
-        // We will exclude ACTIVE and RESERVED cars when filtering
+    public List<CarDTO> filterCars(String make, String model, String color, Integer year, Integer requiredLicenseYear, Integer minPrice, Integer maxPrice, UUID id, String category, String gearType, String licensePlate, Integer kilometer, LocalDateTime start, LocalDateTime end) {
+        // Exclude ACTIVE and RESERVED cars when filtering
         List<Rental.Status> statuses = List.of(Rental.Status.ACTIVE, Rental.Status.RESERVED);
-        List<Car> cars = carRepository.filterAvailableCars(make, model, color, year, requiredLicenseYear, minPrice, maxPrice, id, start, end, statuses);
+
+        // Updated repository call with new parameters
+        List<Car> cars = carRepository.filterAvailableCars(make, model, color, year, requiredLicenseYear, minPrice, maxPrice, id, category, gearType, licensePlate, kilometer, start, end, statuses);
+
+        // Convert to DTOs
         List<CarDTO> carDTOs = cars.stream().map(CarDTO::new).toList();
 
+        // Optionally compute total price for selected date range
         if (start != null && end != null) {
             Duration duration = Duration.between(start, end);
             long totalHours = duration.toHours();
@@ -55,18 +55,12 @@ public class CarService {
                 car.setTotalPrice(car.getDailyPrice() * days);
             }
         }
+
         return carDTOs;
     }
 
     public Car addCar(CarRequestDTO carRequestDTO) {
-        Car car = new Car();
-        car.setMake(carRequestDTO.getMake());
-        car.setModel(carRequestDTO.getModel());
-        car.setColor(carRequestDTO.getColor());
-        car.setYear(carRequestDTO.getYear());
-        car.setRequiredLicenseYear(carRequestDTO.getRequiredLicenseYear());
-        car.setDailyPrice(carRequestDTO.getDailyPrice());
-        car.setKilometer(carRequestDTO.getKilometer());
+        Car car = new Car(carRequestDTO);
 
         return carRepository.save(car);
     }
@@ -92,6 +86,18 @@ public class CarService {
 
         if (carRequestDTO.getDailyPrice() != null)
             car.setDailyPrice(carRequestDTO.getDailyPrice());
+
+        if (carRequestDTO.getKilometer() != null)
+            car.setKilometer(carRequestDTO.getKilometer());
+
+        if (carRequestDTO.getCategory() != null)
+            car.setCategory(carRequestDTO.getCategory());
+
+        if (carRequestDTO.getGearType() != null)
+            car.setGearType(carRequestDTO.getGearType());
+
+        if (carRequestDTO.getLicensePlate() != null)
+            car.setLicensePlate(carRequestDTO.getLicensePlate());
 
         carRepository.save(car);
     }

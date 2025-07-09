@@ -1,16 +1,14 @@
-package com.example.car.auth;
+package com.example.car.auth.register;
 
 import java.util.UUID;
 
 public class RegisterResponse {
     private final String message;
     private final UUID customerId;
-    private final String token; // New field
 
-    public RegisterResponse(String message, UUID customerId, String token) {
+    public RegisterResponse(String message, UUID customerId) {
         this.message = message;
         this.customerId = customerId;
-        this.token = token;
     }
 
     public String getMessage() {
@@ -21,7 +19,4 @@ public class RegisterResponse {
         return customerId;
     }
 
-    public String getToken() {
-        return token;
-    }
 }

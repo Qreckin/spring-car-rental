@@ -1,5 +1,6 @@
 package com.example.car.car;
 
+import com.example.car.car.DTO.CarRequestDTO;
 import com.example.car.common.BaseEntity;
 import com.example.car.rental.Rental;
 import jakarta.persistence.*;
@@ -26,6 +27,11 @@ public class Car extends BaseEntity {
 
     private Integer kilometer;
 
+    private String category;
+
+    private String gearType;
+    private String licensePlate;
+
 
     // mappedBy indicates that the "car" field in the Rental entity owns the relationship.
     // cascade = CascadeType.ALL ensures that any operation (persist, merge, remove, etc.) on Car
@@ -34,7 +40,21 @@ public class Car extends BaseEntity {
     private List<Rental> rentals;
 
     // This is needed if we are going to use @Entity
-    public Car() {
+
+    public Car(){
+
+    }
+    public Car(CarRequestDTO carRequestDTO) {
+        setMake(carRequestDTO.getMake());
+        setModel(carRequestDTO.getModel());
+        setColor(carRequestDTO.getColor());
+        setYear(carRequestDTO.getYear());
+        setRequiredLicenseYear(carRequestDTO.getRequiredLicenseYear());
+        setDailyPrice(carRequestDTO.getDailyPrice());
+        setKilometer(carRequestDTO.getKilometer());
+        setCategory(carRequestDTO.getCategory());
+        setLicensePlate(carRequestDTO.getLicensePlate());
+        setGearType(carRequestDTO.getGearType());
     }
 
     public UUID getId() {
@@ -107,5 +127,29 @@ public class Car extends BaseEntity {
 
     public void setKilometer(Integer kilometer) {
         this.kilometer = kilometer;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getGearType() {
+        return gearType;
+    }
+
+    public void setGearType(String gearType) {
+        this.gearType = gearType;
+    }
+
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
     }
 }

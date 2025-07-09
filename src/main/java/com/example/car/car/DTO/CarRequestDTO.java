@@ -1,4 +1,4 @@
-package com.example.car.car;
+package com.example.car.car.DTO;
 
 import jakarta.validation.constraints.*;
 public class CarRequestDTO {
@@ -29,17 +29,16 @@ public class CarRequestDTO {
     @NotNull(message = "Kilometer must not be null")
     private Integer kilometer;
 
-    public CarRequestDTO() {
-    }
+    @NotBlank(message = "Category must not be blank")
+    private String category;
 
-    public CarRequestDTO(String make, String model, String color, Integer year, Integer requiredLicenseYear, Double dailyPrice, Integer kilometer) {
-        this.make = make;
-        this.model = model;
-        this.color = color;
-        this.year = year;
-        this.requiredLicenseYear = requiredLicenseYear;
-        this.dailyPrice = dailyPrice;
-        this.kilometer = kilometer;
+    @NotBlank(message = "Gear type must not be blank")
+    private String gearType;
+
+    @NotBlank(message = "License plate must not be blank")
+    private String licensePlate;
+
+    public CarRequestDTO() {
     }
 
     public String getMake() {
@@ -96,5 +95,29 @@ public class CarRequestDTO {
 
     public void setKilometer(Integer kilometer) {
         this.kilometer = kilometer;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getGearType() {
+        return gearType;
+    }
+
+    public void setGearType(String gearType) {
+        this.gearType = gearType;
+    }
+
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+
+    public void setLicensePlate(String licensePlate) {
+        this.licensePlate = licensePlate;
     }
 }

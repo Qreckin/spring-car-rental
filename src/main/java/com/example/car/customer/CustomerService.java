@@ -1,6 +1,8 @@
 package com.example.car.customer;
 
 import com.example.car.car.Car;
+import com.example.car.customer.DTO.CustomerDTO;
+import com.example.car.customer.DTO.CustomerRequestDTO;
 import com.example.car.exception.EmailAlreadyInUseException;
 import com.example.car.exception.CustomerNotFoundException;
 import com.example.car.exception.UsernameInUseException;
@@ -61,8 +63,8 @@ public class CustomerService {
             customer.setBirthDate(customerRequestDTO.getBirthDate());
         }
 
-        if (customerRequestDTO.getLicenseYear() != null) {
-            customer.setLicenseYear(customerRequestDTO.getLicenseYear());
+        if (customerRequestDTO.getLicenseDate() != null) {
+            customer.setLicenseDate(customerRequestDTO.getLicenseDate());
         }
 
         if (customer.getUser() != null) {
@@ -132,8 +134,8 @@ public class CustomerService {
                 .orElseThrow(() -> new CustomerNotFoundException(username));
     }
 
-    public List<CustomerDTO> filterCustomers(UUID id, String email, String fullName, String phoneNumber, LocalDate birthDate, Integer licenseYear, String username) {
-        List<Customer> customers = customerRepository.filterCustomers(id, email, fullName, phoneNumber, birthDate, licenseYear, username);
+    public List<CustomerDTO> filterCustomers(UUID id, String email, String fullName, String phoneNumber, LocalDate birthDate, LocalDate licenseDate, String username) {
+        List<Customer> customers = customerRepository.filterCustomers(id, email, fullName, phoneNumber, birthDate, licenseDate, username);
         return customers.stream()
                 .map(CustomerDTO::new)
                 .toList(); // or .collect(Collectors.toList()) if using Java < 16

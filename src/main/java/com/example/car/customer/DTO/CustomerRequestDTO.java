@@ -1,16 +1,14 @@
-package com.example.car.auth;
+package com.example.car.customer.DTO;
 
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
-public class RegisterRequest {
+public class CustomerRequestDTO {
 
     @NotBlank(message = "Username must not be blank")
-    @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
     private String username;
 
     @NotBlank(message = "Password must not be blank")
-    @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
 
     @NotBlank(message = "Full name must not be blank")
@@ -23,28 +21,27 @@ public class RegisterRequest {
     @Email(message = "Email must be valid")
     private String email;
 
-    @NotNull(message = "Birth date must not be null")
     @Past(message = "Birth date must be in the past")
+    @NotNull(message = "Birth date must not be null")
     private LocalDate birthDate;
 
     @NotNull(message = "License year must not be null")
     @Min(value = 0, message = "License year must be a positive number")
-    private Integer licenseYear;
+    private LocalDate licenseDate;
 
-    public RegisterRequest() {
+    public CustomerRequestDTO() {
     }
 
-    public RegisterRequest(String username, String password, String fullName, String phoneNumber, String email, LocalDate birthDate, Integer licenseYear) {
+
+    public CustomerRequestDTO(String username, String password, String fullName, String phoneNumber, String email, LocalDate birthDate, LocalDate licenseDate) {
         this.username = username;
         this.password = password;
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.birthDate = birthDate;
-        this.licenseYear = licenseYear;
+        this.licenseDate = licenseDate;
     }
-
-    // Getters and Setters
 
     public String getUsername() {
         return username;
@@ -94,11 +91,11 @@ public class RegisterRequest {
         this.birthDate = birthDate;
     }
 
-    public Integer getLicenseYear() {
-        return licenseYear;
+    public LocalDate getLicenseDate() {
+        return licenseDate;
     }
 
-    public void setLicenseYear(Integer licenseYear) {
-        this.licenseYear = licenseYear;
+    public void setLicenseDate(LocalDate licenseDate) {
+        this.licenseDate = licenseDate;
     }
 }

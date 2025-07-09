@@ -1,20 +1,22 @@
-package com.example.car.rental;
+package com.example.car.rental.DTO;
 
+
+import com.example.car.rental.Rental;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class RentalDTO {
-    private UUID id;
+    private final UUID id;
 
-    private LocalDateTime rentalStartDate;
-    private LocalDateTime rentalEndDate;
+    private final LocalDateTime rentalStartDate;
+    private final LocalDateTime rentalEndDate;
 
-    private Rental.Status status;
+    private final Rental.Status status;
 
-    private UUID carID;
+    private final UUID carID;
 
-    private UUID customerID;
+    private final UUID customerID;
 
     public RentalDTO(Rental rental){
         this.id = rental.getId();

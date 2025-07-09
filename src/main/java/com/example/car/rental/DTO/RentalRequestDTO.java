@@ -1,4 +1,4 @@
-package com.example.car.rental;
+package com.example.car.rental.DTO;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.UUID;

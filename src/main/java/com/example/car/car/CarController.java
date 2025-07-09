@@ -1,5 +1,7 @@
 package com.example.car.car;
 
+import com.example.car.car.DTO.CarDTO;
+import com.example.car.car.DTO.CarRequestDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -35,9 +37,13 @@ public class CarController {
             @RequestParam(required = false) Integer minPrice,
             @RequestParam(required = false) Integer maxPrice,
             @RequestParam(required = false) UUID id,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String gearType,
+            @RequestParam(required = false) String licensePlate,
+            @RequestParam(required = false) Integer kilometer,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end){
-
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end
+    ) {
         if (start != null && start.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Start date must not be in the past");
         }
@@ -46,7 +52,12 @@ public class CarController {
             throw new IllegalArgumentException("End date must be after start date");
         }
 
-        return carService.filterCars(make, model, color, year, licenseYear, minPrice, maxPrice, id, start, end);
+        return carService.filterCars(
+                make, model, color, year, licenseYear,
+                minPrice, maxPrice, id,
+                category, gearType, licensePlate, kilometer,
+                start, end
+        );
     }
 
 
@@ -61,7 +72,7 @@ public class CarController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/cars/{id}")
-    public ResponseEntity<String> updateCar(@PathVariable UUID id, @Valid @RequestBody CarRequestDTO updatedCar){
+    public ResponseEntity<String> updateCar(@PathVariable UUID id, @RequestBody CarRequestDTO updatedCar){
         carService.updateCar(id, updatedCar);  // UPDATES the car in table, does not create a new CAR in table
         return ResponseEntity.ok("Car with ID: " + id + " has been updated successfully");
     }
