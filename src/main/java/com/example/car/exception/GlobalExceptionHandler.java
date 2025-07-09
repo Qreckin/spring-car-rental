@@ -82,6 +82,13 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + ex.getMessage());
+        String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+    }
+
+    @ExceptionHandler(TokenAlreadyBlacklistedException.class)
+    public ResponseEntity<String> handleTokenAlreadyBlacklisted(TokenAlreadyBlacklistedException ex){
+        String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
     }
 }
