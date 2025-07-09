@@ -1,5 +1,6 @@
 package com.example.car.auth;
 
+import com.example.car.token.BlacklistedTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,9 +21,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
-    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) {
+    private final BlacklistedTokenService blacklistedTokenService;
+
+    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService, BlacklistedTokenService blacklistedTokenService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.blacklistedTokenService = blacklistedTokenService;
     }
 
     @Override
@@ -31,6 +35,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
 
+
         // If JWT token authorization is not picked
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response); // Skip if no token
@@ -38,6 +43,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String jwt = authHeader.substring(7); // Skip "Bearer "
+
+        if (blacklistedTokenService.isTokenBlacklisted(jwt)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Token has been blacklisted.");
+            return;
+        }
+
         final String username = jwtService.extractUsername(jwt);
 
         // Proceed if user is not already authenticated

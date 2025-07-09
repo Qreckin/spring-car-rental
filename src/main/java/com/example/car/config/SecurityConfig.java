@@ -26,7 +26,8 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable());
+                .csrf(csrf -> csrf.disable())
+                .logout(logout -> logout.disable());
 
         return http.build();
     }
