@@ -1,0 +1,13 @@
+package com.example.car.exception;
+
+import java.util.UUID;
+
+public class CustomerNotFoundException extends RuntimeException{
+    public CustomerNotFoundException(UUID id){
+        super("Customer with ID " + id + " not found");
+    }
+
+    public CustomerNotFoundException(String username){
+        super("Customer with username " + username + " not found");
+    }
+}
