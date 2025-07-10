@@ -8,4 +8,7 @@ encryption decryption nasıl yapılıyor (JWT SHA256) buna bak
 
 10.07.2025
 customer silinince user da siliniyor olması lazımdı tekrar register olunmuyordu onu düzelttim
-car için saat aralığı seçince 2 gün 1 saniye olunca 3 gün almıyor onu yap
+car için saat aralığı seçince 2 gün 1 saniye olunca 3 gün almıyor onu yap -> yapıldı saat 11.45
+authService'i silmişim haberim yok onu düzelttim queryler doğru çalışıyor -> yapıldı saat 13.09
+rentalları retrieve ederken activatedAt ve completedAt tarihlerini de göstermek gerek
+

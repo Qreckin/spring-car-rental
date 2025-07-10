@@ -1,6 +1,10 @@
 package com.example.car;
 
 import com.example.car.customer.CustomerService;
+import com.example.car.rental.RentalRepository;
+import com.example.car.user.User;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
@@ -12,26 +16,49 @@ public class AuthService {
 
     private final CustomerService customerService;
 
-    public AuthService(CustomerService customerService) {
+    private final RentalRepository rentalRepository;
+
+    public AuthService(CustomerService customerService, RentalRepository rentalRepository) {
         this.customerService = customerService;
+        this.rentalRepository = rentalRepository;
     }
 
     public boolean isOwnerOrAdmin(UUID customerId, Authentication authentication) {
-        // 1. Check if user has ADMIN role
-        boolean isAdmin = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .anyMatch(role -> role.equals("ROLE_ADMIN"));
+        boolean isAdmin = false;
+        for (GrantedAuthority authority : authentication.getAuthorities()) {
+            if ("ROLE_ADMIN".equals(authority.getAuthority())) {
+                isAdmin = true;
+                break;
+            }
+        }
 
         if (isAdmin) {
             return true;
         }
 
         // 2. If not admin, check if user is the owner
-        String authenticatedEmail = authentication.getName(); // typically the email or username
+        User user = (User)authentication.getPrincipal(); // typically the email or username
+        String username = user.getUsername();
 
-        // You must have a way to get the customer's email from the ID
-        String customerEmail = customerService.getCustomerById(customerId).getEmail();
-
-        return authenticatedEmail.equalsIgnoreCase(customerEmail);
+        return customerService.getCustomerById(customerId).getUser().getUsername().equals(username);
     }
+
+    public boolean canCancelRental(UUID rentalID, Authentication authentication){
+        boolean isAdmin = false;
+        for (GrantedAuthority authority : authentication.getAuthorities()) {
+            if ("ROLE_ADMIN".equals(authority.getAuthority())) {
+                isAdmin = true;
+                break;
+            }
+        }
+
+        if (isAdmin) {
+            return true;
+        }
+
+        User user = (User) authentication.getPrincipal();
+        return rentalRepository.isRentalOwnedByUser(rentalID, user.getUsername());
+    }
+
+
 }

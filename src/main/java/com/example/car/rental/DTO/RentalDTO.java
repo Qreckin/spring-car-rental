@@ -18,6 +18,10 @@ public class RentalDTO {
 
     private final UUID customerID;
 
+    private final LocalDateTime activatedAt;
+
+    private final LocalDateTime completedAt;
+
     public RentalDTO(Rental rental){
         this.id = rental.getId();
         this.rentalStartDate = rental.getRentalStartDate();
@@ -25,6 +29,8 @@ public class RentalDTO {
         this.status = rental.getStatus();
         this.carID = rental.getCar().getId();
         this.customerID = rental.getCustomer().getId();
+        this.activatedAt = rental.getActivatedAt();
+        this.completedAt = rental.getCompletedAt();
     }
 
     public UUID getId() {
@@ -49,5 +55,13 @@ public class RentalDTO {
 
     public UUID getCustomerID() {
         return customerID;
+    }
+
+    public LocalDateTime getActivatedAt() {
+        return activatedAt;
+    }
+
+    public LocalDateTime getCompletedAt() {
+        return completedAt;
     }
 }

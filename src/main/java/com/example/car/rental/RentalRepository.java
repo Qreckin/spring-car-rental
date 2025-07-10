@@ -42,12 +42,8 @@ public interface RentalRepository extends JpaRepository<Rental, UUID>{
             @Param("endDate") LocalDateTime endDate,
             @Param("statuses") List<Rental.Status> statuses);
 
-    @Query("SELECT r FROM Rental r WHERE " +
-            "r.deletedAt IS NULL AND " +
-            "r.status = :status AND " +
-            "r.rentalStartDate <= :now")
-    List<Rental> findRentalsToActivate(
-            @Param("now") LocalDateTime now,
-            @Param("status") Rental.Status status);
+
+    @Query("SELECT COUNT(r) > 0 FROM Rental r WHERE r.id = :rentalId AND r.customer.user.username = :username AND r.deletedAt IS NULL")
+    boolean isRentalOwnedByUser(@Param("rentalId") UUID rentalId, @Param("username") String username);
 
 }
