@@ -1,12 +1,131 @@
-{
-    "make": "BMW",
-    "model": "Benz",
-    "color": "Black",
-    "requiredLicenseYear": 3,
-    "licensePlate": "34 BRS 34",
-    "category": "Sedan",
-    "gearType": "Manuel",
-    "dailyPrice": 500,
-    "kilometer": 10079,
-    "year": 2024
-}
+[
+    {
+        "make": "Renault",
+        "model": "Clio",
+        "color": "Green",
+        "requiredLicenseYear": 0,
+        "licensePlate": "34 GRK 34",
+        "category": "Hatchback",
+        "gearType": "Manuel",
+        "dailyPrice": 350,
+        "kilometer": 120430,
+        "year": 2018
+    },
+
+    {
+        "make": "Mercedes",
+        "model": "Benz",
+        "color": "Black",
+        "requiredLicenseYear": 2,
+        "licensePlate": "34 BRS 34",
+        "category": "Sedan",
+        "gearType": "Automatic",
+        "dailyPrice": 600,
+        "kilometer": 10079,
+        "year": 2024
+    },
+
+    {
+        "make": "Toyota",
+        "model": "Corolla",
+        "color": "White",
+        "requiredLicenseYear": 1,
+        "licensePlate": "34 ABC 12",
+        "category": "Sedan",
+        "gearType": "Automatic",
+        "dailyPrice": 400,
+        "kilometer": 75000,
+        "year": 2020
+    },
+
+    {
+        "make": "Ford",
+        "model": "Focus",
+        "color": "Blue",
+        "requiredLicenseYear": 3,
+        "licensePlate": "35 FOC 20",
+        "category": "Hatchback",
+        "gearType": "Manual",
+        "dailyPrice": 300,
+        "kilometer": 98000,
+        "year": 2017
+    },
+
+    {
+        "make": "BMW",
+        "model": "320i",
+        "color": "Gray",
+        "requiredLicenseYear": 2,
+        "licensePlate": "06 BMW 06",
+        "category": "Sedan",
+        "gearType": "Automatic",
+        "dailyPrice": 700,
+        "kilometer": 50000,
+        "year": 2021
+    },
+
+    {
+        "make": "Peugeot",
+        "model": "208",
+        "color": "Red",
+        "requiredLicenseYear": 1,
+        "licensePlate": "34 PGT 33",
+        "category": "Hatchback",
+        "gearType": "Manual",
+        "dailyPrice": 320,
+        "kilometer": 64000,
+        "year": 2019
+    },
+
+    {
+        "make": "Volkswagen",
+        "model": "Tiguan",
+        "color": "Black",
+        "requiredLicenseYear": 2,
+        "licensePlate": "34 VWG 09",
+        "category": "SUV",
+        "gearType": "Automatic",
+        "dailyPrice": 600,
+        "kilometer": 55000,
+        "year": 2022
+    },
+
+    {
+        "make": "Hyundai",
+        "model": "Tucson",
+        "color": "Silver",
+        "requiredLicenseYear": 1,
+        "licensePlate": "34 HYN 20",
+        "category": "SUV",
+        "gearType": "Automatic",
+        "dailyPrice": 520,
+        "kilometer": 61000,
+        "year": 2020
+    },
+
+    {
+        "make": "Renault",
+        "model": "Megane",
+        "color": "Dark Blue",
+        "requiredLicenseYear": 2,
+        "licensePlate": "34 RNG 90",
+        "category": "Sedan",
+        "gearType": "Manual",
+        "dailyPrice": 370,
+        "kilometer": 89000,
+        "year": 2018
+    },
+
+    {
+        "make": "Honda",
+        "model": "Civic",
+        "color": "Gray",
+        "requiredLicenseYear": 0,
+        "licensePlate": "34 HND 01",
+        "category": "Sedan",
+        "gearType": "Automatic",
+        "dailyPrice": 450,
+        "kilometer": 70000,
+        "year": 2019
+    }
+]

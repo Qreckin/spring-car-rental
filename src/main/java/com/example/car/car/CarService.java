@@ -46,9 +46,9 @@ public class CarService {
         // Optionally compute total price for selected date range
         if (start != null && end != null) {
             Duration duration = Duration.between(start, end);
-            long totalHours = duration.toHours();
-            long days = totalHours / 24;
-            if (totalHours % 24 != 0) {
+            long totalHours = duration.toSeconds();
+            long days = totalHours / (24 * 60 * 60);
+            if (totalHours % (24*60*60) != 0) {
                 days++;
             }
 

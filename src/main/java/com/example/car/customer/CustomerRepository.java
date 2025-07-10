@@ -28,7 +28,8 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
     @Query("""
     SELECT c FROM Customer c
     LEFT JOIN c.user u
-    WHERE (:id IS NULL OR c.id = :id)
+    WHERE c.deletedAt IS NULL
+    AND (:id IS NULL OR c.id = :id)
       AND (:email IS NULL OR c.email = :email)
       AND (:fullName IS NULL OR c.fullName = :fullName)
       AND (:phoneNumber IS NULL OR c.phoneNumber = :phoneNumber)
@@ -47,4 +48,7 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
     );
 
     boolean existsByEmail(String email);
+
+    @Query("SELECT COUNT(c) > 0 FROM Customer c WHERE c.email = :email AND c.deletedAt IS NULL")
+    boolean existsByEmailAndNotDeleted(@Param("email") String email);
 }

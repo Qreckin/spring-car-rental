@@ -48,7 +48,7 @@ public class CustomerController {
 
     @PreAuthorize("@authService.isOwnerOrAdmin(#id, authentication)")
     @PutMapping("/customers/{id}")
-    public ResponseEntity<String> updateCustomer(@PathVariable UUID id, @RequestBody CustomerRequestDTO updatedCustomer){
+    public ResponseEntity<String> updateCustomer(@PathVariable UUID id, @RequestBody CustomerRequestDTO updatedCustomer, Authentication authentication){
 
         customerService.updateCustomer(id, updatedCustomer);
         return ResponseEntity.ok("Customer with ID: " + id + " has been updated successfully.");
@@ -56,7 +56,7 @@ public class CustomerController {
 
     @PreAuthorize("@authService.isOwnerOrAdmin(#id, authentication)")
     @DeleteMapping("/customers/{id}")
-    public ResponseEntity<String> deleteCustomer(@PathVariable UUID id){
+    public ResponseEntity<String> deleteCustomer(@PathVariable UUID id, Authentication authentication){
         customerService.deleteCustomer(id);
         return ResponseEntity.ok("Customer with ID: " + id + " has been deleted successfully.");
     }

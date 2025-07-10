@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,7 +52,10 @@ public class RentalService {
         }
 
         // Check if car is occupied in this time interval
-        List<Rental> overlaps = rentalRepository.findOverlappingRentals(carId, start, end, Rental.Status.ACTIVE);
+        List<Rental.Status> invalidStatuses = new ArrayList<>();
+        invalidStatuses.add(Rental.Status.ACTIVE);
+        invalidStatuses.add(Rental.Status.RESERVED);
+        List<Rental> overlaps = rentalRepository.findOverlappingRentals(carId, start, end, invalidStatuses);
         if (!overlaps.isEmpty()) {
             throw new CarIsOccupiedException(carId);
         }
@@ -129,9 +133,9 @@ public class RentalService {
 
     public long calculateDays(LocalDateTime start, LocalDateTime end){
         Duration duration = Duration.between(start, end);
-        long totalHours = duration.toHours();
-        long days = totalHours / 24;
-        if (totalHours % 24 != 0) {
+        long totalHours = duration.toSeconds();
+        long days = totalHours / (24*60*60);
+        if (totalHours % (24*60*60) != 0) {
             days++;
         }
         return days;

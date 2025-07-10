@@ -13,7 +13,7 @@ public class UserService {
     }
 
     public boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
+        return userRepository.existsByUsernameAndNotDeleted(username);
     }
 
     public User saveUser(String username, String password, String role, Customer customer) {
@@ -23,7 +23,7 @@ public class UserService {
     }
 
     public User getByUsername(String username) {
-        return userRepository.findByUsername(username)
+        return userRepository.findByUsernameAndNotDeleted(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

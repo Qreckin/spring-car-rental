@@ -33,14 +33,14 @@ public interface RentalRepository extends JpaRepository<Rental, UUID>{
     @Query("SELECT r FROM Rental r WHERE " +
             "r.deletedAt IS NULL AND " +
             "r.car.id = :carId AND " +
-            "r.status = :status AND " +
+            "r.status IN :statuses AND " +
             "r.rentalStartDate < :endDate AND " +
             "r.rentalEndDate > :startDate")
     List<Rental> findOverlappingRentals(
             @Param("carId") UUID carId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
-            @Param("status") Rental.Status status);
+            @Param("statuses") List<Rental.Status> statuses);
 
     @Query("SELECT r FROM Rental r WHERE " +
             "r.deletedAt IS NULL AND " +

@@ -21,7 +21,7 @@ public class DenemeApplication {
 		return args -> {
 			String adminUsername = "admin";
 
-			if (userRepository.findByUsername(adminUsername).isEmpty()) {
+			if (userRepository.findByUsernameAndNotDeleted(adminUsername).isEmpty()) {
 				User admin = new User();
 				admin.setUsername(adminUsername);
 				admin.setPassword(passwordEncoder.encode(rawPassword));

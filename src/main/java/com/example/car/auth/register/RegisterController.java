@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
 public class RegisterController {
 
@@ -30,17 +32,17 @@ public class RegisterController {
     @PostMapping("/register")
     public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
 
-        // Username is taken
+        // Username check (only active users)
         if (userService.existsByUsername(request.getUsername())) {
             return ResponseEntity.badRequest().body(new RegisterResponse("Username already exists", null));
         }
 
-        // Email is taken
-        if (customerRepository.existsByEmail(request.getEmail())) {
+        // Email check (only active customers)
+        if (customerRepository.existsByEmailAndNotDeleted(request.getEmail())) {
             return ResponseEntity.badRequest().body(new RegisterResponse("Email already in use", null));
         }
 
-        // Create customer
+        // Create new customer
         Customer customer = new Customer();
         customer.setFullName(request.getFullName());
         customer.setPhoneNumber(request.getPhoneNumber());
@@ -48,7 +50,7 @@ public class RegisterController {
         customer.setBirthDate(request.getBirthDate());
         customer.setLicenseDate(request.getLicenseDate());
 
-        // Save user and link customer
+        // Save user with encoded password and customer
         User user = userService.saveUser(
                 request.getUsername(),
                 passwordEncoder.encode(request.getPassword()),
@@ -56,12 +58,6 @@ public class RegisterController {
                 customer
         );
 
-
-        // Generate token for login
-
-        // Return the token created
-        return ResponseEntity.ok(
-                new RegisterResponse("User registered successfully", customer.getId())
-        );
+        return ResponseEntity.ok(new RegisterResponse("User registered successfully", customer.getId()));
     }
 }

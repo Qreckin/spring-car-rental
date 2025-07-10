@@ -1,2 +1,11 @@
 .setCar(null) yapılmazsa bir şekilde her şey bozuluyor buna bak
 encryption decryption nasıl yapılıyor (JWT SHA256) buna bak
+
+
+
+
+
+
+10.07.2025
+customer silinince user da siliniyor olması lazımdı tekrar register olunmuyordu onu düzelttim
+car için saat aralığı seçince 2 gün 1 saniye olunca 3 gün almıyor onu yap

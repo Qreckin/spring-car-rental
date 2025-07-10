@@ -94,6 +94,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
     }
 
+
     @ExceptionHandler(LicenseDateTooEarlyException.class)
     public ResponseEntity<String> handleLicenseDateTooEarly(LicenseDateTooEarlyException ex){
         String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
