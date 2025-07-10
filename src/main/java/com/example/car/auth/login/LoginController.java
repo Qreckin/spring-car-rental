@@ -1,6 +1,7 @@
 package com.example.car.auth.login;
 
 import com.example.car.auth.JwtService;
+import com.example.car.exception.CustomResponseEntity;
 import com.example.car.token.BlacklistedTokenService;
 import com.example.car.user.User;
 import com.example.car.user.UserService;
@@ -32,7 +33,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<CustomResponseEntity> login(@RequestBody LoginRequest request) {
         try {
             // Validation of username password pair
             // This works because UserDetailsServiceImpl implements UserDetailsService
@@ -47,16 +48,15 @@ public class LoginController {
 
             // Generate and return the token as JSON
             String token = jwtService.generateToken(userService.getByUsername(request.getUsername()));
-            return ResponseEntity.ok(new LoginResponse(token));
+            return ResponseEntity.ok(CustomResponseEntity.OK(token));
 
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Invalid username or password");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CustomResponseEntity.UNAUTHORIZED);
         }
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(Authentication authentication, @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<CustomResponseEntity> logout(Authentication authentication, @RequestHeader("Authorization") String authHeader) {
         User user = (User) authentication.getPrincipal();
 
         // Remove "Bearer " prefix
@@ -65,6 +65,6 @@ public class LoginController {
         // Now you can blacklist it or log it
         blacklistedTokenService.blacklistToken(token);
 
-        return ResponseEntity.ok("Logged out and token blacklisted.");
+        return ResponseEntity.ok(CustomResponseEntity.OK("Token added to blacklisted"));
     }
 }

@@ -13,3 +13,9 @@ authService'i silmişim haberim yok onu düzelttim queryler doğru çalışıyor
 rentalları retrieve ederken activatedAt ve completedAt tarihlerini de göstermek gerek -> yapıldı 13.21 (required paramlar için yeni exception eklendi)
 her gün belirli bir saatte zamanı geçmiş blacklisted tokenların silinmesi lazım yoksa çok birikir ama bu işi şu an yapmaya gerek yok
 401 ve 403 errorlarını SecurityConfigde halleden 2 class yazıldı -> yapıldı saat 13.44
+
+
+1-) 401, 403 farkı. Generic response yapısı
+2-) geçmiş rezervasyonları gören api
+3-) car silinince rental silinmiycek
+4-) login logout conventionları öğrenelim

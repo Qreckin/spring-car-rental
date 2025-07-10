@@ -3,9 +3,12 @@ package com.example.car.auth.register;
 import com.example.car.auth.JwtService;
 import com.example.car.customer.Customer;
 import com.example.car.customer.CustomerRepository;
+import com.example.car.enums.Enums;
+import com.example.car.exception.CustomResponseEntity;
 import com.example.car.user.User;
 import com.example.car.user.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,16 +33,16 @@ public class RegisterController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
+    public ResponseEntity<CustomResponseEntity> register(@Valid @RequestBody RegisterRequest request) {
 
         // Username check (only active users)
         if (userService.existsByUsername(request.getUsername())) {
-            return ResponseEntity.badRequest().body(new RegisterResponse("Username already exists", null));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Username is taken"));
         }
 
         // Email check (only active customers)
         if (customerRepository.existsByEmailAndNotDeleted(request.getEmail())) {
-            return ResponseEntity.badRequest().body(new RegisterResponse("Email already in use", null));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Email is taken"));
         }
 
         // Create new customer
