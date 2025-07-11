@@ -34,17 +34,15 @@ public class CustomerController {
             @RequestParam(required = false) LocalDate birthDate,
             @RequestParam(required = false) LocalDate licenseDate,
             @RequestParam(required = false) String username) {
-        List<CustomerDTO> result = customerService.filterCustomers(id, email, fullName, phoneNumber, birthDate, licenseDate, username);
 
-        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, result));
+        return customerService.filterCustomers(id, email, fullName, phoneNumber, birthDate, licenseDate, username);
     }
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/me")
     public ResponseEntity<CustomResponseEntity> getCustomerInfo(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        CustomerDTO result = customerService.getCustomerInfo(user.getCustomer().getId());
-        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, result));
+        return customerService.getCustomerInfo(user.getCustomer().getId());
     }
 
 
@@ -52,14 +50,12 @@ public class CustomerController {
     @PreAuthorize("@authService.isOwnerOrAdmin(#id, authentication)")
     @PutMapping("/customers/{id}")
     public ResponseEntity<CustomResponseEntity> updateCustomer(@PathVariable UUID id, @RequestBody CustomerRequestDTO updatedCustomer, Authentication authentication){
-        customerService.updateCustomer(id, updatedCustomer);
-        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Customer with ID: " + id + " has been updated successfully."));
+        return customerService.updateCustomer(id, updatedCustomer);
     }
 
     @PreAuthorize("@authService.isOwnerOrAdmin(#id, authentication)")
     @DeleteMapping("/customers/{id}")
     public ResponseEntity<CustomResponseEntity> deleteCustomer(@PathVariable UUID id, Authentication authentication){
-        customerService.deleteCustomer(id);
-        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Customer with ID: " + id + " has been deleted successfully."));
+        return customerService.deleteCustomer(id);
     }
 }

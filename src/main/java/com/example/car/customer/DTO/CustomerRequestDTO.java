@@ -5,28 +5,22 @@ import java.time.LocalDate;
 
 public class CustomerRequestDTO {
 
-    @NotBlank(message = "Username must not be blank")
     private String username;
 
-    @NotBlank(message = "Password must not be blank")
     private String password;
 
-    @NotBlank(message = "Full name must not be blank")
     private String fullName;
 
-    @NotBlank(message = "Phone number must not be blank")
+    @Pattern(regexp = "^(\\+90|0)?5\\d{9}$", message = "Invalid Turkish phone number format")
     private String phoneNumber;
 
-    @NotBlank(message = "Email must not be blank")
-    @Email(message = "Email must be valid")
+    @Email
     private String email;
 
-    @Past(message = "Birth date must be in the past")
-    @NotNull(message = "Birth date must not be null")
+    @Past
     private LocalDate birthDate;
 
-    @NotNull(message = "License year must not be null")
-    @Min(value = 0, message = "License year must be a positive number")
+    @Past
     private LocalDate licenseDate;
 
     public CustomerRequestDTO() {

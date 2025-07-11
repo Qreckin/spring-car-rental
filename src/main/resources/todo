@@ -26,3 +26,8 @@ CustomResponseEntity düzeltmeye devam ediyorum -> saat 10.32
 Soru -> Car not found olunca exception throwluyorum bunun yerine CustomResponseEntity mi döndürmem lazım
 Postmande otomatik token yerleştirme düzeltilecek şuan bozuldu response değiştiğim için
 Service'lerden komple ResponseEntity dönülecek
+
+yemek sonrası:
+CustomerService düzeltilmeye devam
+CustomerRequestDTO'daki @Valid kısımları silindi çünkü partial update olabilir customerlar
+

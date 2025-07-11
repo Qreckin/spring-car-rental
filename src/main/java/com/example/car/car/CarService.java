@@ -69,6 +69,8 @@ public class CarService {
         return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, carDTOs));
     }
 
+
+    // Buraya sorunlu olan carı continue'lama eklenebilir
     public ResponseEntity<CustomResponseEntity> addCars(List<CarRequestDTO> carRequestDTOList) {
         List<Car> carList= new ArrayList<>();
         for (CarRequestDTO request : carRequestDTOList){
@@ -83,9 +85,8 @@ public class CarService {
 
     public ResponseEntity<CustomResponseEntity> updateCar(UUID id, CarRequestDTO carRequestDTO) {
         Car car = getCarById(id); // Get the car or throw if not found
-        if (car == null){
+        if (car == null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CustomResponseEntity(CustomResponseEntity.NOT_FOUND, "Car with ID: " + id + " is not found"));
-        }
 
         if (carRequestDTO.getMake() != null)
             car.setMake(carRequestDTO.getMake());
