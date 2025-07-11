@@ -3,6 +3,8 @@ package com.example.car.rental;
 import com.example.car.car.Car;
 import com.example.car.common.BaseEntity;
 import com.example.car.customer.Customer;
+import com.example.car.enums.Enums;
+import com.example.car.enums.StatusConverter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -22,36 +24,14 @@ public class Rental extends BaseEntity {
     private Double totalPricePaidByCustomer;
 
     @Convert(converter = StatusConverter.class)
-    private Status status;
+    private Enums.Status status;
 
     private LocalDateTime activatedAt;
 
     private LocalDateTime completedAt;
 
     // Be careful! If this order is changed, ORDINAL mapping will be distorted
-    public enum Status {
-        RESERVED(0),
-        ACTIVE(1),
-        COMPLETED(2),
-        CANCELLED(3);
 
-        private final int code;
-
-        Status(int code) {
-            this.code = code;
-        }
-
-        public int getCode() {
-            return code;
-        }
-
-        public static Status fromCode(int code) {
-            for (Status s : values()) {
-                if (s.getCode() == code) return s;
-            }
-            throw new IllegalArgumentException("Invalid Status code: " + code);
-        }
-    }
 
     // With:
     @ManyToOne
@@ -91,11 +71,11 @@ public class Rental extends BaseEntity {
         this.rentalEndDate = rentalEndDate;
     }
 
-    public Status getStatus() {
+    public Enums.Status getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(Enums.Status status) {
         this.status = status;
     }
 

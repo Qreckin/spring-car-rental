@@ -2,8 +2,11 @@ package com.example.car.car;
 
 import com.example.car.car.DTO.CarRequestDTO;
 import com.example.car.common.BaseEntity;
+import com.example.car.enums.Enums;
 import com.example.car.rental.Rental;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +32,7 @@ public class Car extends BaseEntity {
 
     private String category;
 
-    private String gearType;
+    private Enums.GearType gearType;
     private String licensePlate;
 
 
@@ -37,7 +40,7 @@ public class Car extends BaseEntity {
     // cascade = CascadeType.ALL ensures that any operation (persist, merge, remove, etc.) on Car
     // will automatically be applied to its associated Rentals.
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL)
-    private List<Rental> rentals;
+    private List<Rental> rentals = new ArrayList<>();
 
     // This is needed if we are going to use @Entity
 
@@ -137,11 +140,11 @@ public class Car extends BaseEntity {
         this.category = category;
     }
 
-    public String getGearType() {
+    public Enums.GearType getGearType() {
         return gearType;
     }
 
-    public void setGearType(String gearType) {
+    public void setGearType(Enums.GearType gearType) {
         this.gearType = gearType;
     }
 

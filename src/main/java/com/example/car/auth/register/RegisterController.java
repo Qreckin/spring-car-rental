@@ -58,6 +58,6 @@ public class RegisterController {
                 customer
         );
 
-        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "User registered successfully"));
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Customer with ID: " + customer.getId() + " has been created successfully"));
     }
 }

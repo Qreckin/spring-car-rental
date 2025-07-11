@@ -1,5 +1,6 @@
 package com.example.car.car;
 
+import com.example.car.enums.Enums;
 import com.example.car.rental.Rental;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -51,12 +52,12 @@ public interface CarRepository extends JpaRepository<Car, UUID> {
             @Param("maxPrice") Integer maxPrice,
             @Param("id") UUID id,
             @Param("category") String category,
-            @Param("gearType") String gearType,
+            @Param("gearType") Enums.GearType gearType,
             @Param("licensePlate") String licensePlate,
             @Param("kilometer") Integer kilometer,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
-            @Param("statuses") List<Rental.Status> statuses
+            @Param("statuses") List<Enums.Status> statuses
     );
 
     @Query("SELECT c FROM Car c WHERE c.deletedAt IS NULL AND c.id = :id")

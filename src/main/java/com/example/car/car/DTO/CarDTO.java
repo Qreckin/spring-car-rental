@@ -1,6 +1,7 @@
 package com.example.car.car.DTO;
 
 import com.example.car.car.Car;
+import com.example.car.enums.Enums;
 import com.example.car.rental.DTO.RentalDTO;
 import jakarta.validation.constraints.NotBlank;
 
@@ -20,7 +21,7 @@ public class CarDTO {
 
     private String category;
 
-    private String gearType;
+    private Enums.GearType gearType;
 
     private String licensePlate;
     private Double totalPrice;
@@ -87,11 +88,11 @@ public class CarDTO {
         this.category = category;
     }
 
-    public String getGearType() {
+    public Enums.GearType getGearType() {
         return gearType;
     }
 
-    public void setGearType(String gearType) {
+    public void setGearType(Enums.GearType gearType) {
         this.gearType = gearType;
     }
 

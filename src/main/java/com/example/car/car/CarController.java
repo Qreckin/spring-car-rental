@@ -3,6 +3,7 @@ package com.example.car.car;
 import com.example.car.CustomResponseEntity;
 import com.example.car.car.DTO.CarDTO;
 import com.example.car.car.DTO.CarRequestDTO;
+import com.example.car.enums.Enums;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -39,7 +40,7 @@ public class CarController {
             @RequestParam(required = false) Integer maxPrice,
             @RequestParam(required = false) UUID id,
             @RequestParam(required = false) String category,
-            @RequestParam(required = false) String gearType,
+            @RequestParam(required = false) Enums.GearType gearType,
             @RequestParam(required = false) String licensePlate,
             @RequestParam(required = false) Integer kilometer,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,

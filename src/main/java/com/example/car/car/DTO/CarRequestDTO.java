@@ -1,5 +1,6 @@
 package com.example.car.car.DTO;
 
+import com.example.car.enums.Enums;
 import jakarta.validation.constraints.*;
 public class CarRequestDTO {
 
@@ -32,8 +33,7 @@ public class CarRequestDTO {
     @NotBlank(message = "Category must not be blank")
     private String category;
 
-    @NotBlank(message = "Gear type must not be blank")
-    private String gearType;
+    private Enums.GearType gearType;
 
     @NotBlank(message = "License plate must not be blank")
     private String licensePlate;
@@ -105,11 +105,11 @@ public class CarRequestDTO {
         this.category = category;
     }
 
-    public String getGearType() {
+    public Enums.GearType getGearType() {
         return gearType;
     }
 
-    public void setGearType(String gearType) {
+    public void setGearType(Enums.GearType gearType) {
         this.gearType = gearType;
     }
 

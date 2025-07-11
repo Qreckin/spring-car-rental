@@ -1,5 +1,6 @@
 package com.example.car.exception;
 
+import com.example.car.CustomResponseEntity;
 import io.jsonwebtoken.JwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -78,14 +79,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleValidationErrors(MethodArgumentNotValidException ex) {
+    public ResponseEntity<CustomResponseEntity> handleValidationErrors(MethodArgumentNotValidException ex) {
         String errorMsg = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(err -> err.getField() + ": " + err.getDefaultMessage())
                 .findFirst()
                 .orElse("Validation failed");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Validation error: " + errorMsg);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Validation error: " + errorMsg));
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -113,13 +114,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HandlerMethodValidationException.class)
-    public ResponseEntity<String> handleHandlerMethodValidationException(HandlerMethodValidationException ex) {
+    public ResponseEntity<CustomResponseEntity> handleHandlerMethodValidationException(HandlerMethodValidationException ex) {
         String errorMsg = ex.getAllErrors().stream()
                 .map(error -> error.getDefaultMessage())
                 .findFirst()
                 .orElse("Validation failed");
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Validation error: " + errorMsg);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Validation error: " + errorMsg));
     }
     @ExceptionHandler(JwtException.class)
     public ResponseEntity<Map<String, String>> handleJwtException(JwtException ex) {

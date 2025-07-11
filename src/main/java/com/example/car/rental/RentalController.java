@@ -1,6 +1,7 @@
 package com.example.car.rental;
 
 import com.example.car.CustomResponseEntity;
+import com.example.car.enums.Enums;
 import com.example.car.rental.DTO.RentalDTO;
 import com.example.car.rental.DTO.RentalRequestDTO;
 import com.example.car.user.User;
@@ -34,7 +35,7 @@ public class RentalController {
     public ResponseEntity<CustomResponseEntity> filterRentals(
             @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) UUID carId,
-            @RequestParam(required = false) Rental.Status status,
+            @RequestParam(required = false) Enums.Status status,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         List<RentalDTO> result = rentalService.filterRentals(customerId, carId, status, startDate, endDate);

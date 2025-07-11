@@ -21,7 +21,6 @@ her gün belirli bir saatte zamanı geçmiş blacklisted tokenların silinmesi l
 4-) login logout conventionları öğrenelim
 
 11.07.2025
-
 CustomResponseEntity düzeltmeye devam ediyorum -> saat 10.32
 Soru -> Car not found olunca exception throwluyorum bunun yerine CustomResponseEntity mi döndürmem lazım
 Postmande otomatik token yerleştirme düzeltilecek şuan bozuldu response değiştiğim için
@@ -31,3 +30,12 @@ yemek sonrası:
 CustomerService düzeltilmeye devam
 CustomerRequestDTO'daki @Valid kısımları silindi çünkü partial update olabilir customerlar
 
+
+bugün tamamlananlar: (şu ana kadar / saat 20.19)
+1-)Artık customer ve car silinince rental silinmiyor cancelled oluyor
+2-)CustomResponseEntity'ler classlara uygulandı exceptionlara ve validationlara uygulanması kaldı
+3-)Service'ler artık ResponseEntity<CustomResponseEntity> döndürüyor controllerın direkt kullanabilmesi için
+4-)TokenResponse classı eklendi login response'ta JSON olarak string yerine class dönebilmek için
+5-)Update API'leri partial olarak şekilde düzenlenmeye başlandı customer için bu yapıldı car için de yapılacak (rental'da da yapılabilir düşünülmesi lazım)
+
+-> add car'da nullpointer exception yemeye başladım garip bir şekilde, rentals'ı new ArrayList<>() yapınca düzeldi

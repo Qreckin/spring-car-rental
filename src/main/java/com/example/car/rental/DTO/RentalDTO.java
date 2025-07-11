@@ -1,6 +1,7 @@
 package com.example.car.rental.DTO;
 
 
+import com.example.car.enums.Enums;
 import com.example.car.rental.Rental;
 
 import java.time.LocalDateTime;
@@ -12,7 +13,7 @@ public class RentalDTO {
     private final LocalDateTime rentalStartDate;
     private final LocalDateTime rentalEndDate;
 
-    private final Rental.Status status;
+    private final Enums.Status status;
 
     private final UUID carID;
 
@@ -45,7 +46,7 @@ public class RentalDTO {
         return rentalEndDate;
     }
 
-    public Rental.Status getStatus() {
+    public Enums.Status getStatus() {
         return status;
     }
 

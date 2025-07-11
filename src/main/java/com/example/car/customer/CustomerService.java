@@ -4,6 +4,7 @@ import com.example.car.CustomResponseEntity;
 import com.example.car.car.Car;
 import com.example.car.customer.DTO.CustomerDTO;
 import com.example.car.customer.DTO.CustomerRequestDTO;
+import com.example.car.enums.Enums;
 import com.example.car.exception.EmailAlreadyInUseException;
 import com.example.car.exception.CustomerNotFoundException;
 import com.example.car.exception.UsernameInUseException;
@@ -102,7 +103,7 @@ public class CustomerService {
             Rental rental = iterator.next();
 
             // Cancel and soft delete rental
-            rental.setStatus(Rental.Status.CANCELLED);
+            rental.setStatus(Enums.Status.CANCELLED);
             iterator.remove(); // Safe remove from customer list
         }
 

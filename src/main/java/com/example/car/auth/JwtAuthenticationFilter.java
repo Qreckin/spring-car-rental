@@ -1,6 +1,5 @@
 package com.example.car.auth;
 
-import com.example.car.token.BlacklistedTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,12 +20,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
-    private final BlacklistedTokenService blacklistedTokenService;
 
-    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService, BlacklistedTokenService blacklistedTokenService) {
+    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
-        this.blacklistedTokenService = blacklistedTokenService;
     }
 
     @Override
@@ -44,13 +41,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // jwt is the token
         final String jwt = authHeader.substring(7); // Skip "Bearer "
-
-        // If token is blacklisted, it is not valid
-        if (blacklistedTokenService.isTokenBlacklisted(jwt)) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Token has been blacklisted.");
-            return;
-        }
 
         final String username;
         try {

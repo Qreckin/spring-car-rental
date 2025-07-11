@@ -1,5 +1,6 @@
 package com.example.car.rental;
 
+import com.example.car.enums.Enums;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,7 +26,7 @@ public interface RentalRepository extends JpaRepository<Rental, UUID>{
     List<Rental> filterRentals(
             @Param("customerId") UUID customerId,
             @Param("carId") UUID carId,
-            @Param("status") Rental.Status status,
+            @Param("status") Enums.Status status,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
@@ -40,7 +41,7 @@ public interface RentalRepository extends JpaRepository<Rental, UUID>{
             @Param("carId") UUID carId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
-            @Param("statuses") List<Rental.Status> statuses);
+            @Param("statuses") List<Enums.Status> statuses);
 
 
     @Query("SELECT COUNT(r) > 0 FROM Rental r WHERE r.id = :rentalId AND r.customer.user.username = :username AND r.deletedAt IS NULL")

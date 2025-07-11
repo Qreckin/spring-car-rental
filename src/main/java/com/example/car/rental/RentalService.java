@@ -4,6 +4,7 @@ import com.example.car.car.Car;
 import com.example.car.car.CarService;
 import com.example.car.customer.Customer;
 import com.example.car.customer.CustomerService;
+import com.example.car.enums.Enums;
 import com.example.car.exception.*;
 import com.example.car.rental.DTO.RentalDTO;
 import com.example.car.rental.DTO.RentalRequestDTO;
@@ -52,9 +53,9 @@ public class RentalService {
         }
 
         // Check if car is occupied in this time interval
-        List<Rental.Status> invalidStatuses = new ArrayList<>();
-        invalidStatuses.add(Rental.Status.ACTIVE);
-        invalidStatuses.add(Rental.Status.RESERVED);
+        List<Enums.Status> invalidStatuses = new ArrayList<>();
+        invalidStatuses.add(Enums.Status.ACTIVE);
+        invalidStatuses.add(Enums.Status.RESERVED);
         List<Rental> overlaps = rentalRepository.findOverlappingRentals(carId, start, end, invalidStatuses);
         if (!overlaps.isEmpty()) {
             throw new CarIsOccupiedException(carId);
@@ -70,7 +71,7 @@ public class RentalService {
 
         rental.setRentalStartDate(start);
         rental.setRentalEndDate(end);
-        rental.setStatus(Rental.Status.RESERVED);
+        rental.setStatus(Enums.Status.RESERVED);
 
         rentalRepository.save(rental);
     }
@@ -79,12 +80,12 @@ public class RentalService {
         Rental rental = findRentalById(id);
 
         // Rental must be in RESERVED status and current time must be after rental's start date
-        if (rental.getStatus() != Rental.Status.RESERVED || rental.getRentalStartDate().isAfter(activationTime)){
+        if (rental.getStatus() != Enums.Status.RESERVED || rental.getRentalStartDate().isAfter(activationTime)){
             throw new RentalCannotBeActivatedException(id);
         }
 
         rental.setActivatedAt(activationTime);
-        rental.setStatus(Rental.Status.ACTIVE);
+        rental.setStatus(Enums.Status.ACTIVE);
         rentalRepository.save(rental);
     }
 
@@ -92,7 +93,7 @@ public class RentalService {
         Rental rental = findRentalById(id);
 
         // Rental status must be ACTIVE
-        if (rental.getStatus() != Rental.Status.ACTIVE){
+        if (rental.getStatus() != Enums.Status.ACTIVE){
             throw new RentalCannotBeCompletedException(id);
         }
 
@@ -125,7 +126,7 @@ public class RentalService {
         carService.saveCar(car);
 
         rental.setCompletedAt(completionTime);
-        rental.setStatus(Rental.Status.COMPLETED);
+        rental.setStatus(Enums.Status.COMPLETED);
         rentalRepository.save(rental);
 
         return rental.getTotalPricePaidByCustomer();
@@ -146,16 +147,16 @@ public class RentalService {
         Rental rental = findRentalById(id);
 
         // If status is completed or cancelled, we do not cancel them
-        if (rental.getStatus() == Rental.Status.COMPLETED || rental.getStatus() == Rental.Status.CANCELLED){
+        if (rental.getStatus() == Enums.Status.COMPLETED || rental.getStatus() == Enums.Status.CANCELLED){
             throw new RentalCannotBeCanceledException(id);
         }
 
-        rental.setStatus(Rental.Status.CANCELLED);
+        rental.setStatus(Enums.Status.CANCELLED);
         rentalRepository.save(rental);
     }
 
 
-    public List<RentalDTO> filterRentals(UUID customerId, UUID carId, Rental.Status status, LocalDateTime startDate, LocalDateTime endDate) {
+    public List<RentalDTO> filterRentals(UUID customerId, UUID carId, Enums.Status status, LocalDateTime startDate, LocalDateTime endDate) {
         List<Rental> rentals = rentalRepository.filterRentals(customerId, carId, status, startDate, endDate);
         return rentals.stream()
                 .map(RentalDTO::new)
@@ -165,7 +166,7 @@ public class RentalService {
     public void deleteRental(UUID id) {
         Rental rental = findRentalById(id);
 
-        rental.setStatus(Rental.Status.CANCELLED);
+        rental.setStatus(Enums.Status.CANCELLED);
         rental.softDelete();
 
         // Remove rental from car

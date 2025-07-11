@@ -5,6 +5,7 @@ import com.example.car.car.DTO.CarDTO;
 import com.example.car.car.DTO.CarRequestDTO;
 import com.example.car.customer.Customer;
 import com.example.car.customer.CustomerRepository;
+import com.example.car.enums.Enums;
 import com.example.car.exception.CarNotFoundException;
 import com.example.car.rental.Rental;
 import com.example.car.rental.RentalRepository;
@@ -33,7 +34,7 @@ public class CarService {
     }
     // Self-describing
 
-    public ResponseEntity<CustomResponseEntity> filterCars(String make, String model, String color, Integer year, Integer requiredLicenseYear, Integer minPrice, Integer maxPrice, UUID id, String category, String gearType, String licensePlate, Integer kilometer, LocalDateTime start, LocalDateTime end) {
+    public ResponseEntity<CustomResponseEntity> filterCars(String make, String model, String color, Integer year, Integer requiredLicenseYear, Integer minPrice, Integer maxPrice, UUID id, String category, Enums.GearType gearType, String licensePlate, Integer kilometer, LocalDateTime start, LocalDateTime end) {
 
         if (start != null && start.isBefore(LocalDateTime.now())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Start date must not be in the past"));
@@ -44,7 +45,7 @@ public class CarService {
         }
 
         // Exclude ACTIVE and RESERVED cars when filtering
-        List<Rental.Status> statuses = List.of(Rental.Status.ACTIVE, Rental.Status.RESERVED);
+        List<Enums.Status> statuses = List.of(Enums.Status.ACTIVE, Enums.Status.RESERVED);
 
         // Updated repository call with new parameters
         List<Car> cars = carRepository.filterAvailableCars(make, model, color, year, requiredLicenseYear, minPrice, maxPrice, id, category, gearType, licensePlate, kilometer, start, end, statuses);
@@ -79,7 +80,10 @@ public class CarService {
             carRepository.save(car);
         }
 
-        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, carList));
+        List<CarDTO> carDTOList = carList.stream()
+                .map(CarDTO::new)
+                .toList();
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, carDTOList));
     }
 
 
@@ -140,18 +144,8 @@ public class CarService {
             Rental rental = iterator.next();
 
             // Soft delete rental
-            rental.setStatus(Rental.Status.CANCELLED);
-            rental.softDelete();
+            rental.setStatus(Enums.Status.CANCELLED);
 
-            // Break relationship with Customer
-            Customer customer = rental.getCustomer();
-            if (customer != null) {
-                customer.getRentals().remove(rental); // Remove rental from customer side
-                rental.setCustomer(null); // Break back-reference
-            }
-
-            // Break relationship with Car
-            rental.setCar(null);
             iterator.remove(); // Remove from car.getRentals()
         }
 

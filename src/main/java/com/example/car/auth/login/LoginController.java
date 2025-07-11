@@ -2,7 +2,7 @@ package com.example.car.auth.login;
 
 import com.example.car.auth.JwtService;
 import com.example.car.CustomResponseEntity;
-import com.example.car.token.BlacklistedTokenService;
+import com.example.car.auth.TokenResponse;
 import com.example.car.user.User;
 import com.example.car.user.UserService;
 import org.springframework.http.HttpStatus;
@@ -20,16 +20,14 @@ import org.springframework.security.core.AuthenticationException;
 public class LoginController {
     private final AuthenticationManager authenticationManager;
 
-    private final BlacklistedTokenService blacklistedTokenService;
 
     private final UserService userService;
     private final JwtService jwtService;
 
-    public LoginController(AuthenticationManager authenticationManager, JwtService jwtService, UserService userService, BlacklistedTokenService blacklistedTokenService) {
+    public LoginController(AuthenticationManager authenticationManager, JwtService jwtService, UserService userService) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.jwtService = jwtService;
-        this.blacklistedTokenService = blacklistedTokenService;
     }
 
     @PostMapping("/login")
@@ -48,23 +46,10 @@ public class LoginController {
 
             // Generate and return the token as JSON
             String token = jwtService.generateToken(userService.getByUsername(request.getUsername()));
-            return ResponseEntity.ok(CustomResponseEntity.OK(token));
+            return ResponseEntity.ok(CustomResponseEntity.OK(new TokenResponse(token)));
 
         } catch (AuthenticationException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CustomResponseEntity.UNAUTHORIZED);
         }
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<CustomResponseEntity> logout(Authentication authentication, @RequestHeader("Authorization") String authHeader) {
-        User user = (User) authentication.getPrincipal();
-
-        // Remove "Bearer " prefix
-        String token = authHeader.replace("Bearer ", "");
-
-        // Now you can blacklist it or log it
-        blacklistedTokenService.blacklistToken(token);
-
-        return ResponseEntity.ok(CustomResponseEntity.OK("Token added to blacklisted"));
     }
 }
