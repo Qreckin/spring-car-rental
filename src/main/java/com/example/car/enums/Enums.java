@@ -1,12 +1,10 @@
 package com.example.car.enums;
 
-import lombok.Getter;
 
 public class Enums {
 
-    @Getter
     public enum Errors {
-        NO_ERROR(0, "No error"),
+        NO_ERROR(0, "Successful"),
         NOT_FOUND(1, "Resource not found"),
         UNAUTHORIZED(2, "Unauthorized access"),
         FORBIDDEN(3, "Forbidden action"),
@@ -27,6 +25,13 @@ public class Enums {
             this.message = message;
         }
 
+        public int getValue() {
+            return value;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 
 }

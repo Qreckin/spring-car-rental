@@ -1,5 +1,6 @@
 package com.example.car.car;
 
+import com.example.car.CustomResponseEntity;
 import com.example.car.car.DTO.CarDTO;
 import com.example.car.car.DTO.CarRequestDTO;
 import com.example.car.customer.Customer;
@@ -9,14 +10,13 @@ import com.example.car.rental.Rental;
 import com.example.car.rental.RentalRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 // Used @Service annotation to tell Spring that this class is a "bean".
 // That is, Spring will create an object from this class and store it in a container
@@ -33,7 +33,16 @@ public class CarService {
     }
     // Self-describing
 
-    public List<CarDTO> filterCars(String make, String model, String color, Integer year, Integer requiredLicenseYear, Integer minPrice, Integer maxPrice, UUID id, String category, String gearType, String licensePlate, Integer kilometer, LocalDateTime start, LocalDateTime end) {
+    public ResponseEntity<CustomResponseEntity> filterCars(String make, String model, String color, Integer year, Integer requiredLicenseYear, Integer minPrice, Integer maxPrice, UUID id, String category, String gearType, String licensePlate, Integer kilometer, LocalDateTime start, LocalDateTime end) {
+
+        if (start != null && start.isBefore(LocalDateTime.now())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Start date must not be in the past"));
+        }
+
+        if (start != null && end != null && end.isBefore(start)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "End date must be after start date"));
+        }
+
         // Exclude ACTIVE and RESERVED cars when filtering
         List<Rental.Status> statuses = List.of(Rental.Status.ACTIVE, Rental.Status.RESERVED);
 
@@ -57,10 +66,10 @@ public class CarService {
             }
         }
 
-        return carDTOs;
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, carDTOs));
     }
 
-    public List<Car> addCars(List<CarRequestDTO> carRequestDTOList) {
+    public ResponseEntity<CustomResponseEntity> addCars(List<CarRequestDTO> carRequestDTOList) {
         List<Car> carList= new ArrayList<>();
         for (CarRequestDTO request : carRequestDTOList){
             Car car = new Car(request);
@@ -68,12 +77,15 @@ public class CarService {
             carRepository.save(car);
         }
 
-        return carList;
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, carList));
     }
 
 
-    public void updateCar(UUID id, CarRequestDTO carRequestDTO) {
+    public ResponseEntity<CustomResponseEntity> updateCar(UUID id, CarRequestDTO carRequestDTO) {
         Car car = getCarById(id); // Get the car or throw if not found
+        if (car == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CustomResponseEntity(CustomResponseEntity.NOT_FOUND, "Car with ID: " + id + " is not found"));
+        }
 
         if (carRequestDTO.getMake() != null)
             car.setMake(carRequestDTO.getMake());
@@ -106,11 +118,17 @@ public class CarService {
             car.setLicensePlate(carRequestDTO.getLicensePlate());
 
         carRepository.save(car);
+
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Car updated successfully"));
     }
 
     @Transactional // Ensures all DB operations are simultaneous
-    public void deleteCar(UUID id) {
+    public ResponseEntity<CustomResponseEntity> deleteCar(UUID id) {
         Car car = getCarById(id); // Fetch the non-deleted car
+
+        if (car == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CustomResponseEntity(CustomResponseEntity.NOT_FOUND, "Car with ID: " + id + " is not found"));
+        }
 
         List<Rental> rentals = car.getRentals(); // Get rentals linked to this car
 
@@ -138,13 +156,18 @@ public class CarService {
 
         car.softDelete(); // Soft delete the car
         carRepository.save(car); // Save the car (cascading no longer handles removals)
+
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Car deleted successfully"));
     }
 
 
     // Search the car in the ArrayList and return the object if found, null otherwise
     public Car getCarById(UUID id) {
         // Return the car if its found, throw exception otherwise
-        return carRepository.findByIdAndNotDeleted(id).orElseThrow(() -> new CarNotFoundException(id));
+        Optional<Car> car = carRepository.findByIdAndNotDeleted(id);
+        if (car.isPresent())
+            return car.get();
+        return null;
     }
 
     public void saveCar(Car car){

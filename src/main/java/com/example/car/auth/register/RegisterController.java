@@ -3,8 +3,7 @@ package com.example.car.auth.register;
 import com.example.car.auth.JwtService;
 import com.example.car.customer.Customer;
 import com.example.car.customer.CustomerRepository;
-import com.example.car.enums.Enums;
-import com.example.car.exception.CustomResponseEntity;
+import com.example.car.CustomResponseEntity;
 import com.example.car.user.User;
 import com.example.car.user.UserService;
 import jakarta.validation.Valid;
@@ -14,8 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Optional;
 
 @RestController
 public class RegisterController {
@@ -61,6 +58,6 @@ public class RegisterController {
                 customer
         );
 
-        return ResponseEntity.ok(new RegisterResponse("User registered successfully", customer.getId()));
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "User registered successfully"));
     }
 }

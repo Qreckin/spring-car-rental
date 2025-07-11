@@ -1,21 +1,75 @@
-package com.example.car.exception;
+package com.example.car;
 
 import com.example.car.enums.Enums;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class CustomResponseEntity {
 
     private Integer status;
     private String message;
     private Object detail;
 
-    private enum Errors{
+    // No-args constructor
+    public CustomResponseEntity() {
+    }
 
+    // All-args constructor
+    public CustomResponseEntity(Integer status, String message, Object detail) {
+        this.status = status;
+        this.message = message;
+        this.detail = detail;
+    }
+
+    // Constructor with status and message only
+    public CustomResponseEntity(int status, String message) {
+        this.status = status;
+        this.message = message;
+    }
+
+    // Constructor with base response and additional detail
+    public CustomResponseEntity(CustomResponseEntity response, Object result) {
+        this.status = response.getStatus();
+        this.message = response.getMessage();
+        this.detail = result;
+    }
+
+    // Static factory method for success response with result
+    public static CustomResponseEntity OK(Object result) {
+        return new CustomResponseEntity(0, "SUCCESS", result);
+    }
+
+    // Getters and setters
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Object getDetail() {
+        return detail;
+    }
+
+    public void setDetail(Object detail) {
+        this.detail = detail;
+    }
+
+    // Optional: toString method (since Lombok's @Data includes it)
+    @Override
+    public String toString() {
+        return "CustomResponseEntity{" +
+                "status=" + status +
+                ", message='" + message + '\'' +
+                ", detail=" + detail +
+                '}';
     }
 
     // Static predefined responses
@@ -55,23 +109,9 @@ public class CustomResponseEntity {
     public static final CustomResponseEntity SERVICE_UNAVAILABLE =
             new CustomResponseEntity(Enums.Errors.SERVICE_UNAVAILABLE.getValue(), Enums.Errors.SERVICE_UNAVAILABLE.getMessage());
 
-
-
-    // Constructor with status and message
-    public CustomResponseEntity(int status, String message) {
-        this.status = status;
-        this.message = message;
-    }
-
-    // Constructor with base response and additional detail
-    public CustomResponseEntity(CustomResponseEntity response, Object result) {
-        this.status = response.getStatus();
-        this.message = response.getMessage();
-        this.detail = result;
-    }
-
-    // Static factory method for success response with result
-    public static CustomResponseEntity OK(Object result) {
-        return new CustomResponseEntity(0, "SUCCESS", result);
+    // Inner placeholder enum if you need it
+    private enum Errors {
+        // Example entries (define real ones as needed)
+        ;
     }
 }

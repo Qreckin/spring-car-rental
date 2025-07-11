@@ -19,3 +19,10 @@ her gün belirli bir saatte zamanı geçmiş blacklisted tokenların silinmesi l
 2-) geçmiş rezervasyonları gören api
 3-) car silinince rental silinmiycek
 4-) login logout conventionları öğrenelim
+
+11.07.2025
+
+CustomResponseEntity düzeltmeye devam ediyorum -> saat 10.32
+Soru -> Car not found olunca exception throwluyorum bunun yerine CustomResponseEntity mi döndürmem lazım
+Postmande otomatik token yerleştirme düzeltilecek şuan bozuldu response değiştiğim için
+Service'lerden komple ResponseEntity dönülecek

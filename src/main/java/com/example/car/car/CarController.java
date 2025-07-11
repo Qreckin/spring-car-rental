@@ -1,5 +1,6 @@
 package com.example.car.car;
 
+import com.example.car.CustomResponseEntity;
 import com.example.car.car.DTO.CarDTO;
 import com.example.car.car.DTO.CarRequestDTO;
 import jakarta.validation.Valid;
@@ -28,7 +29,7 @@ public class CarController {
     // If GET request to /cars is made, return an ArrayList containing every car
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/cars")
-    public List<CarDTO> filterCars(
+    public ResponseEntity<CustomResponseEntity> filterCars(
             @RequestParam(required = false) String make,
             @RequestParam(required = false) String model,
             @RequestParam(required = false) String color,
@@ -44,20 +45,7 @@ public class CarController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end
     ) {
-        if (start != null && start.isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Start date must not be in the past");
-        }
-
-        if (start != null && end != null && end.isBefore(start)) {
-            throw new IllegalArgumentException("End date must be after start date");
-        }
-
-        return carService.filterCars(
-                make, model, color, year, licenseYear,
-                minPrice, maxPrice, id,
-                category, gearType, licensePlate, kilometer,
-                start, end
-        );
+        return carService.filterCars(make, model, color, year, licenseYear, minPrice, maxPrice, id, category, gearType, licensePlate, kilometer, start, end);
     }
 
 
@@ -65,24 +53,20 @@ public class CarController {
     // add the car into the ArrayList. Also provide a http response message
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/cars")
-    public ResponseEntity<String> addCars(@Valid @RequestBody List<CarRequestDTO> carRequestDTOList){
-        List<Car> savedCars = carService.addCars(carRequestDTOList);
-        List<UUID> ids = savedCars.stream().map(Car::getId).toList();
-        return ResponseEntity.status(HttpStatus.CREATED).body("Car with ID: " + ids + " have been created successfully");
+    public ResponseEntity<CustomResponseEntity> addCars(@Valid @RequestBody List<CarRequestDTO> carRequestDTOList){
+        return carService.addCars(carRequestDTOList);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/cars/{id}")
-    public ResponseEntity<String> updateCar(@PathVariable UUID id, @RequestBody CarRequestDTO updatedCar){
-        carService.updateCar(id, updatedCar);  // UPDATES the car in table, does not create a new CAR in table
-        return ResponseEntity.ok("Car with ID: " + id + " has been updated successfully");
+    public ResponseEntity<CustomResponseEntity> updateCar(@PathVariable UUID id, @RequestBody CarRequestDTO updatedCar){
+        return carService.updateCar(id, updatedCar);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/cars/{id}")
-    public ResponseEntity<String> deleteCar(@PathVariable UUID id){
-        carService.deleteCar(id);
-        return ResponseEntity.ok("Car with ID: " + id + " has been deleted successfully");
+    public ResponseEntity<CustomResponseEntity> deleteCar(@PathVariable UUID id){
+        return carService.deleteCar(id);
     }
 
 }

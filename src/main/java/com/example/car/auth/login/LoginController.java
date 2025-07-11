@@ -1,7 +1,7 @@
 package com.example.car.auth.login;
 
 import com.example.car.auth.JwtService;
-import com.example.car.exception.CustomResponseEntity;
+import com.example.car.CustomResponseEntity;
 import com.example.car.token.BlacklistedTokenService;
 import com.example.car.user.User;
 import com.example.car.user.UserService;

@@ -1,5 +1,6 @@
 package com.example.car.customer;
 
+import com.example.car.CustomResponseEntity;
 import com.example.car.customer.DTO.CustomerDTO;
 import com.example.car.customer.DTO.CustomerRequestDTO;
 import com.example.car.user.User;
@@ -25,7 +26,7 @@ public class CustomerController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/customers")
-    public List<CustomerDTO> listCustomers(
+    public ResponseEntity<CustomResponseEntity> listCustomers(
             @RequestParam(required = false) UUID id,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String fullName,
@@ -33,31 +34,32 @@ public class CustomerController {
             @RequestParam(required = false) LocalDate birthDate,
             @RequestParam(required = false) LocalDate licenseDate,
             @RequestParam(required = false) String username) {
+        List<CustomerDTO> result = customerService.filterCustomers(id, email, fullName, phoneNumber, birthDate, licenseDate, username);
 
-        return customerService.filterCustomers(id, email, fullName, phoneNumber, birthDate, licenseDate, username);
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, result));
     }
 
     @PreAuthorize("hasRole('USER')")
     @GetMapping("/me")
-    public CustomerDTO getCustomerInfo(Authentication authentication) {
+    public ResponseEntity<CustomResponseEntity> getCustomerInfo(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        return customerService.getCustomerInfo(user.getCustomer().getId());
+        CustomerDTO result = customerService.getCustomerInfo(user.getCustomer().getId());
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, result));
     }
 
 
 
     @PreAuthorize("@authService.isOwnerOrAdmin(#id, authentication)")
     @PutMapping("/customers/{id}")
-    public ResponseEntity<String> updateCustomer(@PathVariable UUID id, @RequestBody CustomerRequestDTO updatedCustomer, Authentication authentication){
-
+    public ResponseEntity<CustomResponseEntity> updateCustomer(@PathVariable UUID id, @RequestBody CustomerRequestDTO updatedCustomer, Authentication authentication){
         customerService.updateCustomer(id, updatedCustomer);
-        return ResponseEntity.ok("Customer with ID: " + id + " has been updated successfully.");
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Customer with ID: " + id + " has been updated successfully."));
     }
 
     @PreAuthorize("@authService.isOwnerOrAdmin(#id, authentication)")
     @DeleteMapping("/customers/{id}")
-    public ResponseEntity<String> deleteCustomer(@PathVariable UUID id, Authentication authentication){
+    public ResponseEntity<CustomResponseEntity> deleteCustomer(@PathVariable UUID id, Authentication authentication){
         customerService.deleteCustomer(id);
-        return ResponseEntity.ok("Customer with ID: " + id + " has been deleted successfully.");
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Customer with ID: " + id + " has been deleted successfully."));
     }
 }

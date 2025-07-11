@@ -1,5 +1,6 @@
 package com.example.car.rental;
 
+import com.example.car.CustomResponseEntity;
 import com.example.car.rental.DTO.RentalDTO;
 import com.example.car.rental.DTO.RentalRequestDTO;
 import com.example.car.user.User;
@@ -30,69 +31,69 @@ public class RentalController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/rentals")
-    public List<RentalDTO> filterRentals(
+    public ResponseEntity<CustomResponseEntity> filterRentals(
             @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) UUID carId,
             @RequestParam(required = false) Rental.Status status,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
-
-        return rentalService.filterRentals(customerId, carId, status, startDate, endDate);
+        List<RentalDTO> result = rentalService.filterRentals(customerId, carId, status, startDate, endDate);
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, result));
     }
 
     // Create a rental
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/rentals")
-    public ResponseEntity<String> addRental(@Valid @RequestBody RentalRequestDTO rentalRequestDTO,
+    public ResponseEntity<CustomResponseEntity> addRental(@Valid @RequestBody RentalRequestDTO rentalRequestDTO,
                                             Authentication authentication){
         User user = (User)authentication.getPrincipal();
         UUID customerId = user.getCustomer().getId();
 
         rentalService.addRental(rentalRequestDTO, customerId);
-        return ResponseEntity.ok("Rental has been created successfully.");
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Rental has been created successfully."));
     }
 
     // ACTIVATE a rental
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/rentals/activate/{id}")
-    public ResponseEntity<String> activateRental(@PathVariable UUID id,
+    public ResponseEntity<CustomResponseEntity> activateRental(@PathVariable UUID id,
                                                  @RequestParam LocalDateTime currentTime){
         rentalService.activateRental(id, currentTime);
-        return ResponseEntity.ok("Rental marked as ACTIVE");
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Rental has been activated successfully"));
     }
 
 
     // COMPLETE a rental
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/rentals/complete/{id}")
-    public ResponseEntity<Map<String, Object>> completeRental(@PathVariable UUID id,
+    public ResponseEntity<CustomResponseEntity> completeRental(@PathVariable UUID id,
                                                  @RequestParam Integer newKilometer,
                                                  @RequestParam LocalDateTime currentTime){
         double totalPricePaid = rentalService.completeRental(id, newKilometer, currentTime);
 
         Map<String, Object> response = new HashMap<>();
-        response.put("message", "Rental marked as COMPLETED");
+        response.put("message", "Rental has been completed successfully");
         response.put("totalPricePaid", totalPricePaid);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, response));
     }
 
 
     // CANCELLING a rental
     @PreAuthorize("@authService.canCancelRental(#id, authentication)")
     @PostMapping("/rentals/cancel/{id}")
-    public ResponseEntity<String> cancelRental(@PathVariable UUID id){
+    public ResponseEntity<CustomResponseEntity> cancelRental(@PathVariable UUID id){
         rentalService.cancelRental(id);
-        return ResponseEntity.ok("Rental marked as CANCELLED");
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Rental has been cancelled successfully"));
     }
 
 
     // Delete a rental
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/rentals/delete/{id}")
-    public ResponseEntity<String> deleteRental(@PathVariable UUID id){
+    public ResponseEntity<CustomResponseEntity> deleteRental(@PathVariable UUID id){
         rentalService.deleteRental(id);
-        return ResponseEntity.ok("Rental has been deleted successfully.");
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Rental has been deleted successfully"));
     }
 
 
