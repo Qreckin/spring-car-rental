@@ -1,4 +1,4 @@
-package com.example.car.auth.register;
+package com.example.car.auth.dto;
 
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;

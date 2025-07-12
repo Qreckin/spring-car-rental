@@ -1,4 +1,4 @@
-package com.example.car;
+package com.example.car.auth.service;
 
 import com.example.car.customer.CustomerService;
 import com.example.car.rental.RentalRepository;

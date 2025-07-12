@@ -1,6 +1,7 @@
-package com.example.car.auth.register;
+package com.example.car.auth.controller;
 
-import com.example.car.auth.JwtService;
+import com.example.car.auth.service.JwtService;
+import com.example.car.auth.dto.RegisterRequest;
 import com.example.car.customer.Customer;
 import com.example.car.customer.CustomerRepository;
 import com.example.car.CustomResponseEntity;
@@ -20,13 +21,11 @@ public class RegisterController {
     private final UserService userService;
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
 
-    public RegisterController(UserService userService, CustomerRepository customerRepository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+    public RegisterController(UserService userService, CustomerRepository customerRepository, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
     }
 
     @PostMapping("/register")

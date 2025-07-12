@@ -1,9 +1,11 @@
-package com.example.car.auth;
+package com.example.car.auth.security;
 
+import com.example.car.auth.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -41,29 +43,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // jwt is the token
         final String jwt = authHeader.substring(7); // Skip "Bearer "
-
         final String username;
+
         try {
             username = jwtService.extractUsername(jwt);
         } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Invalid or expired token.");
-            return;
+            throw new BadCredentialsException("Invalid or expired token");
         }
 
         // Proceed if user is not already authenticated
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            // Get user details such as username, password(hashed), roles
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            // Marks user as authenticated
-            if (userDetails != null) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            if (userDetails == null) {
+                throw new BadCredentialsException("User not found");
             }
+
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+            SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 
         filterChain.doFilter(request, response);

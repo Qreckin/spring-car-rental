@@ -1,18 +1,16 @@
-package com.example.car.auth.login;
+package com.example.car.auth.controller;
 
-import com.example.car.auth.JwtService;
+import com.example.car.auth.service.JwtService;
 import com.example.car.CustomResponseEntity;
-import com.example.car.auth.TokenResponse;
-import com.example.car.user.User;
+import com.example.car.auth.dto.TokenResponse;
+import com.example.car.auth.dto.LoginRequest;
 import com.example.car.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.AuthenticationException;
 

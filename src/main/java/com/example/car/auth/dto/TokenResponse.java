@@ -1,4 +1,4 @@
-package com.example.car.auth;
+package com.example.car.auth.dto;
 
 public class TokenResponse {
     private String token;

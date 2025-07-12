@@ -1,4 +1,4 @@
-package com.example.car.auth.login;
+package com.example.car.auth.dto;
 
 
 public class LoginRequest {

@@ -41,3 +41,13 @@ bugün tamamlananlar: (şu ana kadar / saat 20.19)
 -> add car'da nullpointer exception yemeye başladım garip bir şekilde, rentals'ı new ArrayList<>() yapınca düzeldi
 
 12.07.2025
+1-) Rental service ve rental controller da CustomResponse yolunda düzeltildi
+2-) Exception classlarının hepsi kaldırıldı ve global exception handlerdaki kullanımları da kaldırıldı
+3-) 2 tane class kaldırıldı. (401, 403 handlelıyorlardı ama bunu direkt globalexceptionahndlerlarda yapmayı düşünüyorum)
+4-) Postmanda birkaç deneme yapıldı her şey normal çalışıyor gibi ufak tefek farklılıklar dışında
+
+Bugün yapılacaklar:
+1-) Global exception handler düzenlenecek (mesela parametre girmeyince verdiği response custom response değil şu an o düzeltilecek ve 401 403 için handler eklenecek)
+2-) Sık kullanılan (CAR_NOT_FOUND, RENTAL_NOT_FOUND, CUSTOMER_NOT_FOUND gibi) response'lar field haline getirilip fazla kod yazılmaktan kaçınılacak
+3-) Customer, car oluşturulduğunda response olarak objenin kendisi döndürülmeli sanırım convention muhtemelen böyledir (yazı yazmak yerine json döndürücem)
+4-) Server kapanıp tekrar açılınca token geçersiz oluyor bunu düzeltmek lazım

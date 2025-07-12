@@ -1,4 +1,4 @@
-package com.example.car.auth;
+package com.example.car.auth.service;
 
 import com.example.car.user.User;
 import io.jsonwebtoken.Jwts;
