@@ -76,6 +76,9 @@ public class CustomResponseEntity {
     public static final CustomResponseEntity OK =
             new CustomResponseEntity(Enums.Errors.NO_ERROR.getValue(), Enums.Errors.NO_ERROR.getMessage());
 
+    public static final CustomResponseEntity RENTAL_NOT_FOUND =
+            new CustomResponseEntity(Enums.Errors.NOT_FOUND.getValue(), Enums.Errors.NOT_FOUND.getMessage(), "Rental not found");
+
     public static final CustomResponseEntity NOT_FOUND =
             new CustomResponseEntity(Enums.Errors.NOT_FOUND.getValue(), Enums.Errors.NOT_FOUND.getMessage());
 

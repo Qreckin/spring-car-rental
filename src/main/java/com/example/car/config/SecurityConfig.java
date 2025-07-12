@@ -1,7 +1,5 @@
 package com.example.car.config;
 
-import com.example.car.auth.CustomAccessDeniedHandler;
-import com.example.car.auth.CustomAuthEntryPoint;
 import com.example.car.auth.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,14 +17,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final CustomAuthEntryPoint customAuthEntryPoint;
-    private final CustomAccessDeniedHandler customAccessDeniedHandler;
-
-    public SecurityConfig(CustomAuthEntryPoint entryPoint, CustomAccessDeniedHandler deniedHandler) {
-        this.customAuthEntryPoint = entryPoint;
-        this.customAccessDeniedHandler = deniedHandler;
-    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
         http
@@ -36,10 +26,6 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(customAuthEntryPoint)   // 401
-                        .accessDeniedHandler(customAccessDeniedHandler)   // 403
-                )
                 // These are not used in JWT applications, so we disable it
                 .csrf(csrf -> csrf.disable())
                 .logout(logout -> logout.disable());

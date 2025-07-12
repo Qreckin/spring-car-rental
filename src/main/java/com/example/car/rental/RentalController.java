@@ -38,8 +38,7 @@ public class RentalController {
             @RequestParam(required = false) Enums.Status status,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
-        List<RentalDTO> result = rentalService.filterRentals(customerId, carId, status, startDate, endDate);
-        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, result));
+        return rentalService.filterRentals(customerId, carId, status, startDate, endDate);
     }
 
     // Create a rental
@@ -50,8 +49,7 @@ public class RentalController {
         User user = (User)authentication.getPrincipal();
         UUID customerId = user.getCustomer().getId();
 
-        rentalService.addRental(rentalRequestDTO, customerId);
-        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Rental has been created successfully."));
+        return rentalService.addRental(rentalRequestDTO, customerId);
     }
 
     // ACTIVATE a rental
@@ -59,8 +57,7 @@ public class RentalController {
     @PostMapping("/rentals/activate/{id}")
     public ResponseEntity<CustomResponseEntity> activateRental(@PathVariable UUID id,
                                                  @RequestParam LocalDateTime currentTime){
-        rentalService.activateRental(id, currentTime);
-        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Rental has been activated successfully"));
+        return rentalService.activateRental(id, currentTime);
     }
 
 
@@ -70,13 +67,7 @@ public class RentalController {
     public ResponseEntity<CustomResponseEntity> completeRental(@PathVariable UUID id,
                                                  @RequestParam Integer newKilometer,
                                                  @RequestParam LocalDateTime currentTime){
-        double totalPricePaid = rentalService.completeRental(id, newKilometer, currentTime);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("message", "Rental has been completed successfully");
-        response.put("totalPricePaid", totalPricePaid);
-
-        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, response));
+        return rentalService.completeRental(id, newKilometer, currentTime);
     }
 
 
@@ -84,8 +75,7 @@ public class RentalController {
     @PreAuthorize("@authService.canCancelRental(#id, authentication)")
     @PostMapping("/rentals/cancel/{id}")
     public ResponseEntity<CustomResponseEntity> cancelRental(@PathVariable UUID id){
-        rentalService.cancelRental(id);
-        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Rental has been cancelled successfully"));
+        return rentalService.cancelRental(id);
     }
 
 
@@ -93,8 +83,7 @@ public class RentalController {
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/rentals/delete/{id}")
     public ResponseEntity<CustomResponseEntity> deleteRental(@PathVariable UUID id){
-        rentalService.deleteRental(id);
-        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Rental has been deleted successfully"));
+        return rentalService.deleteRental(id);
     }
 
 

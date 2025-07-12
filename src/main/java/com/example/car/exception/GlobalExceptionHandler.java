@@ -17,67 +17,6 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(CarAlreadyDeletedException.class)
-    public ResponseEntity<String> handleCarAlreadyDeleted(CarAlreadyDeletedException ex){
-        String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-    }
-
-    @ExceptionHandler(CarIsOccupiedException.class)
-    public ResponseEntity<String> handleCarIsOccupied(CarIsOccupiedException ex){
-        String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-    }
-
-    @ExceptionHandler(CarNotFoundException.class)
-    public ResponseEntity<String> handleCarNotFound(CarNotFoundException ex) {
-        String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
-    }
-
-    @ExceptionHandler(CustomerNotFoundException.class)
-    public ResponseEntity<String> handleCustomerNotFound(CustomerNotFoundException ex) {
-        String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
-    }
-
-    @ExceptionHandler(EmailAlreadyInUseException.class)
-    public ResponseEntity<String> handleEmailAlreadyInUse(EmailAlreadyInUseException ex) {
-        String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-    }
-
-    @ExceptionHandler(IllegalDateTimeException.class)
-    public ResponseEntity<String> handleIllegalDateTime(IllegalDateTimeException ex) {
-        String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-    }
-
-    @ExceptionHandler(RentalCannotBeCanceledException.class)
-    public ResponseEntity<String> handleRentalCannotBeCanceled(RentalCannotBeCanceledException ex){
-        String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-    }
-
-    @ExceptionHandler(RentalCannotBeActivatedException.class)
-    public ResponseEntity<String> handleRentalCannotBeActivated(RentalCannotBeActivatedException ex){
-        String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-    }
-
-
-    @ExceptionHandler(RentalCannotBeCompletedException.class)
-    public ResponseEntity<String> handleRentalCannotBeCompleted(RentalCannotBeCompletedException ex){
-        String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-    }
-
-    @ExceptionHandler(RentalNotFoundException.class)
-    public ResponseEntity<String> handleRentalNotFound(RentalNotFoundException ex){
-        String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<CustomResponseEntity> handleValidationErrors(MethodArgumentNotValidException ex) {
         String errorMsg = ex.getBindingResult()
@@ -91,19 +30,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
-        String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-    }
-
-    @ExceptionHandler(TokenAlreadyBlacklistedException.class)
-    public ResponseEntity<String> handleTokenAlreadyBlacklisted(TokenAlreadyBlacklistedException ex){
-        String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-    }
-
-
-    @ExceptionHandler(LicenseDateTooEarlyException.class)
-    public ResponseEntity<String> handleLicenseDateTooEarly(LicenseDateTooEarlyException ex){
         String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
     }

@@ -1,13 +1,9 @@
 package com.example.car.customer;
 
 import com.example.car.CustomResponseEntity;
-import com.example.car.car.Car;
 import com.example.car.customer.DTO.CustomerDTO;
 import com.example.car.customer.DTO.CustomerRequestDTO;
 import com.example.car.enums.Enums;
-import com.example.car.exception.EmailAlreadyInUseException;
-import com.example.car.exception.CustomerNotFoundException;
-import com.example.car.exception.UsernameInUseException;
 import com.example.car.rental.Rental;
 import com.example.car.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -155,9 +151,7 @@ public class CustomerService {
 
     public ResponseEntity<CustomResponseEntity> filterCustomers(UUID id, String email, String fullName, String phoneNumber, LocalDate birthDate, LocalDate licenseDate, String username) {
         List<Customer> customers = customerRepository.filterCustomers(id, email, fullName, phoneNumber, birthDate, licenseDate, username);
-        List<CustomerDTO> customerDTOs = customers.stream()
-                .map(CustomerDTO::new)
-                .toList(); // Use .collect(Collectors.toList()) if Java < 16
+        List<CustomerDTO> customerDTOs = customers.stream().map(CustomerDTO::new).toList(); // Use .collect(Collectors.toList()) if Java < 16
 
         CustomResponseEntity response = new CustomResponseEntity(CustomResponseEntity.OK, customerDTOs);
         return ResponseEntity.ok(response);

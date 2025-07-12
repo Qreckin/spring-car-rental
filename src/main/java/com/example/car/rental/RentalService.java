@@ -1,14 +1,18 @@
 package com.example.car.rental;
 
+import com.example.car.CustomResponseEntity;
 import com.example.car.car.Car;
 import com.example.car.car.CarService;
 import com.example.car.customer.Customer;
 import com.example.car.customer.CustomerService;
+import com.example.car.customer.DTO.CustomerDTO;
 import com.example.car.enums.Enums;
 import com.example.car.exception.*;
 import com.example.car.rental.DTO.RentalDTO;
 import com.example.car.rental.DTO.RentalRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -16,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -31,25 +36,31 @@ public class RentalService {
         this.rentalRepository = rentalRepository;
     }
 
-    public void addRental(RentalRequestDTO rentalRequestDTO, UUID customerId){
+    public ResponseEntity<CustomResponseEntity> addRental(RentalRequestDTO rentalRequestDTO, UUID customerId){
         UUID carId = rentalRequestDTO.getCarId();
         LocalDateTime start = rentalRequestDTO.getRentalStartDate();
         LocalDateTime end = rentalRequestDTO.getRentalEndDate();
 
-        // If end date is before start date OR start date is before current date, raise exception
+
         if (end.isBefore(start) || start.isBefore(LocalDateTime.now())){
-            throw new IllegalDateTimeException(start, end);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Dates are not valid"));
         }
 
         // Ensure both car and customer exists, if not, throw exception
         Car car = carService.getCarById(carId);
+        if (car == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Car with ID: " + carId + " not found"));
+
         Customer customer = customerService.getCustomerById(customerId);
+        if (customer == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Customer with ID: " + customerId + " not found"));
+
 
         LocalDateTime licenseStart = customer.getLicenseDate().atStartOfDay();
         long daysPast = Duration.between(licenseStart, LocalDateTime.now()).toDays();
         long requiredDays = 365L * car.getRequiredLicenseYear();
         if (daysPast < requiredDays) {
-            throw new LicenseDateTooEarlyException(customerId);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Customer license is not sufficient to rent this car"));
         }
 
         // Check if car is occupied in this time interval
@@ -58,7 +69,7 @@ public class RentalService {
         invalidStatuses.add(Enums.Status.RESERVED);
         List<Rental> overlaps = rentalRepository.findOverlappingRentals(carId, start, end, invalidStatuses);
         if (!overlaps.isEmpty()) {
-            throw new CarIsOccupiedException(carId);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Car is occupied in this time interval"));
         }
 
         Rental rental = new Rental();
@@ -74,36 +85,47 @@ public class RentalService {
         rental.setStatus(Enums.Status.RESERVED);
 
         rentalRepository.save(rental);
+
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Rental has been created successfully"));
     }
 
-    public void activateRental(UUID id, LocalDateTime activationTime){
+    public ResponseEntity<CustomResponseEntity> activateRental(UUID id, LocalDateTime activationTime){
         Rental rental = findRentalById(id);
 
+        if (rental == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CustomResponseEntity.RENTAL_NOT_FOUND);
+
         // Rental must be in RESERVED status and current time must be after rental's start date
-        if (rental.getStatus() != Enums.Status.RESERVED || rental.getRentalStartDate().isAfter(activationTime)){
-            throw new RentalCannotBeActivatedException(id);
-        }
+        if (rental.getStatus() != Enums.Status.RESERVED)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Rental status must be RESERVED to be activated"));
+        if (rental.getRentalStartDate().isAfter(activationTime))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Activation time must be after rental start date"));
+
 
         rental.setActivatedAt(activationTime);
         rental.setStatus(Enums.Status.ACTIVE);
         rentalRepository.save(rental);
+
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Rental has been activated successfully"));
     }
 
-    public double completeRental(UUID id, Integer newKilometer, LocalDateTime completionTime){
+    public ResponseEntity<CustomResponseEntity> completeRental(UUID id, Integer newKilometer, LocalDateTime completionTime){
         Rental rental = findRentalById(id);
 
+        if (rental == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CustomResponseEntity.RENTAL_NOT_FOUND);
+
         // Rental status must be ACTIVE
-        if (rental.getStatus() != Enums.Status.ACTIVE){
-            throw new RentalCannotBeCompletedException(id);
-        }
+        if (rental.getStatus() != Enums.Status.ACTIVE)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Rental status must be ACTIVE to be completed"));
 
         if (rental.getActivatedAt().isAfter(completionTime)){
-            throw new IllegalArgumentException("Completion time must be after activation time");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Completion time must be after activation time"));
         }
 
         Car car = rental.getCar();
-        if (newKilometer == null || newKilometer<car.getKilometer()) {
-            throw new IllegalArgumentException("new kilometer must be greater than previous kilometer");
+        if (newKilometer == null || newKilometer < car.getKilometer()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "New kilometer value must be greater than previous kilometer value"));
         }
 
         LocalDateTime start = rental.getRentalStartDate();
@@ -129,7 +151,8 @@ public class RentalService {
         rental.setStatus(Enums.Status.COMPLETED);
         rentalRepository.save(rental);
 
-        return rental.getTotalPricePaidByCustomer();
+        RentalCompletionResponse response = new RentalCompletionResponse(rental.getTotalPricePaidByCustomer());
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, response));
     }
 
     public long calculateDays(LocalDateTime start, LocalDateTime end){
@@ -143,28 +166,38 @@ public class RentalService {
     }
 
 
-    public void cancelRental(UUID id){
+    public ResponseEntity<CustomResponseEntity> cancelRental(UUID id){
         Rental rental = findRentalById(id);
 
+        if (rental == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CustomResponseEntity.RENTAL_NOT_FOUND);
+
         // If status is completed or cancelled, we do not cancel them
-        if (rental.getStatus() == Enums.Status.COMPLETED || rental.getStatus() == Enums.Status.CANCELLED){
-            throw new RentalCannotBeCanceledException(id);
-        }
+        if (rental.getStatus() == Enums.Status.COMPLETED)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Rental status must not be COMPLETED"));
+
+        if (rental.getStatus() == Enums.Status.CANCELLED)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Rental already cancelled"));
 
         rental.setStatus(Enums.Status.CANCELLED);
         rentalRepository.save(rental);
+
+        return ResponseEntity.ok(CustomResponseEntity.OK("Rental has been cancelled successfully"));
     }
 
 
-    public List<RentalDTO> filterRentals(UUID customerId, UUID carId, Enums.Status status, LocalDateTime startDate, LocalDateTime endDate) {
+    public ResponseEntity<CustomResponseEntity> filterRentals(UUID customerId, UUID carId, Enums.Status status, LocalDateTime startDate, LocalDateTime endDate) {
         List<Rental> rentals = rentalRepository.filterRentals(customerId, carId, status, startDate, endDate);
-        return rentals.stream()
-                .map(RentalDTO::new)
-                .toList();
+        List<RentalDTO> rentalsDTO = rentals.stream().map(RentalDTO::new).toList();
+
+        return ResponseEntity.ok(CustomResponseEntity.OK(rentalsDTO));
     }
 
-    public void deleteRental(UUID id) {
+    public ResponseEntity<CustomResponseEntity> deleteRental(UUID id) {
         Rental rental = findRentalById(id);
+
+        if (rental == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CustomResponseEntity.RENTAL_NOT_FOUND);
 
         rental.setStatus(Enums.Status.CANCELLED);
         rental.softDelete();
@@ -184,10 +217,17 @@ public class RentalService {
         }
 
         rentalRepository.save(rental);
+
+        return ResponseEntity.ok(CustomResponseEntity.OK("Rental has been deleted successfully"));
     }
 
     public Rental findRentalById(UUID id){
-        return rentalRepository.findByIdAndNotDeleted(id).orElseThrow(() -> new RentalNotFoundException(id));
+        Optional<Rental> rental = rentalRepository.findByIdAndNotDeleted(id);
+
+        if (rental.isPresent())
+            return rental.get();
+
+        return null;
     }
 
 }

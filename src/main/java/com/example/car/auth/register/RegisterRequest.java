@@ -17,6 +17,7 @@ public class RegisterRequest {
     private String fullName;
 
     @NotBlank(message = "Phone number must not be blank")
+    @Pattern(regexp = "^(\\+90|0)?5\\d{9}$", message = "Invalid Turkish phone number format")
     private String phoneNumber;
 
     @NotBlank(message = "Email must not be blank")
