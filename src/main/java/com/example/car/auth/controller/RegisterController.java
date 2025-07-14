@@ -5,6 +5,7 @@ import com.example.car.auth.dto.RegisterRequest;
 import com.example.car.customer.Customer;
 import com.example.car.customer.CustomerRepository;
 import com.example.car.CustomResponseEntity;
+import com.example.car.customer.DTO.CustomerDTO;
 import com.example.car.user.User;
 import com.example.car.user.UserService;
 import jakarta.validation.Valid;
@@ -57,6 +58,6 @@ public class RegisterController {
                 customer
         );
 
-        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Customer with ID: " + customer.getId() + " has been created successfully"));
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, new CustomerDTO(customer)));
     }
 }

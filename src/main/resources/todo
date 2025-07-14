@@ -51,3 +51,9 @@ Bugün yapılacaklar:
 2-) Sık kullanılan (CAR_NOT_FOUND, RENTAL_NOT_FOUND, CUSTOMER_NOT_FOUND gibi) response'lar field haline getirilip fazla kod yazılmaktan kaçınılacak
 3-) Customer, car oluşturulduğunda response olarak objenin kendisi döndürülmeli sanırım convention muhtemelen böyledir (yazı yazmak yerine json döndürücem)
 4-) Server kapanıp tekrar açılınca token geçersiz oluyor bunu düzeltmek lazım
+
+
+21.10 yapılanlar:
+1-) 401 403 errorları CustomResponseEntity döndürüyor artık ve diğer classlar buna göre düzenlendi
+yukarıdaki 2, 3, 4 yapılamadı bugün çok fazla bakamadım ama 401 403 olayı da çok zaman aldı
+

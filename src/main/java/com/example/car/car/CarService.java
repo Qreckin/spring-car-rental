@@ -86,7 +86,7 @@ public class CarService {
     public ResponseEntity<CustomResponseEntity> updateCar(UUID id, CarRequestDTO carRequestDTO) {
         Car car = getCarById(id); // Get the car or throw if not found
         if (car == null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CustomResponseEntity(CustomResponseEntity.NOT_FOUND, "Car with ID: " + id + " is not found"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CustomResponseEntity.CAR_NOT_FOUND);
 
         if (carRequestDTO.getMake() != null)
             car.setMake(carRequestDTO.getMake());
@@ -128,7 +128,7 @@ public class CarService {
         Car car = getCarById(id); // Fetch the non-deleted car
 
         if (car == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CustomResponseEntity(CustomResponseEntity.NOT_FOUND, "Car with ID: " + id + " is not found"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CustomResponseEntity.CAR_NOT_FOUND);
         }
 
         List<Rental> rentals = car.getRentals(); // Get rentals linked to this car

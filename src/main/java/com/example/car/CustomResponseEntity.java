@@ -79,6 +79,13 @@ public class CustomResponseEntity {
     public static final CustomResponseEntity RENTAL_NOT_FOUND =
             new CustomResponseEntity(Enums.Errors.NOT_FOUND.getValue(), Enums.Errors.NOT_FOUND.getMessage(), "Rental not found");
 
+    public static final CustomResponseEntity CUSTOMER_NOT_FOUND =
+            new CustomResponseEntity(Enums.Errors.NOT_FOUND.getValue(), Enums.Errors.NOT_FOUND.getMessage(), "Customer not found");
+
+    public static final CustomResponseEntity CAR_NOT_FOUND =
+            new CustomResponseEntity(Enums.Errors.NOT_FOUND.getValue(), Enums.Errors.NOT_FOUND.getMessage(), "Car not found");
+
+
     public static final CustomResponseEntity NOT_FOUND =
             new CustomResponseEntity(Enums.Errors.NOT_FOUND.getValue(), Enums.Errors.NOT_FOUND.getMessage());
 

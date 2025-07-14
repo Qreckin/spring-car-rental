@@ -28,7 +28,7 @@ public class Customer extends BaseEntity {
     private LocalDate licenseDate;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    private List<Rental> rentals; // Rents that this user made
+    private List<Rental> rentals = new ArrayList<>(); // Rents that this user made
 
     @OneToOne(mappedBy = "customer", cascade = CascadeType.ALL)
     @JsonIgnore

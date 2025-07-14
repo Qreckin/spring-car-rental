@@ -49,11 +49,11 @@ public class RentalService {
         // Ensure both car and customer exists, if not, throw exception
         Car car = carService.getCarById(carId);
         if (car == null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Car with ID: " + carId + " not found"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CustomResponseEntity.CAR_NOT_FOUND);
 
         Customer customer = customerService.getCustomerById(customerId);
         if (customer == null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Customer with ID: " + customerId + " not found"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CustomResponseEntity.CUSTOMER_NOT_FOUND);
 
 
         LocalDateTime licenseStart = customer.getLicenseDate().atStartOfDay();

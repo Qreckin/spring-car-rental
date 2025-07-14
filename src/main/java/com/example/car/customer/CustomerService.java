@@ -35,7 +35,7 @@ public class CustomerService {
         Customer customer = getCustomerById(id);
 
         if (customer == null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CustomResponseEntity(CustomResponseEntity.NOT_FOUND, "Customer with ID: " + id + " is not found"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CustomResponseEntity.CUSTOMER_NOT_FOUND);
 
         String email = customerRequestDTO.getEmail();
         String username = customerRequestDTO.getUsername();
@@ -91,7 +91,7 @@ public class CustomerService {
         Customer customer = getCustomerById(id);
 
         if (customer == null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CustomResponseEntity(CustomResponseEntity.NOT_FOUND, "Customer with ID: " + id + " is not found"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CustomResponseEntity.CUSTOMER_NOT_FOUND);
 
         Iterator<Rental> iterator = customer.getRentals().iterator();
 
@@ -121,7 +121,7 @@ public class CustomerService {
         Customer customer = getCustomerById(id);
 
         if (customer == null)
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CustomResponseEntity(CustomResponseEntity.NOT_FOUND, "Customer with ID: " + id + " not found"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CustomResponseEntity.CUSTOMER_NOT_FOUND);
 
         return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, new CustomerDTO(customer)));
     }
