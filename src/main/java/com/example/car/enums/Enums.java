@@ -1,6 +1,9 @@
 package com.example.car.enums;
 
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public class Enums {
 
     public enum Errors {
@@ -48,36 +51,47 @@ public class Enums {
             return value;
         }
 
+        @JsonCreator
         public static GearType fromValue(int value) {
             for (GearType type : GearType.values()) {
-                if (type.getValue() == value) {
+                if (type.value == value) {
                     return type;
                 }
             }
             throw new IllegalArgumentException("Invalid GearType value: " + value);
         }
+
+        @JsonValue
+        public int toValue() {
+            return value;
+        }
     }
+
     public enum Status {
         RESERVED(0),
         ACTIVE(1),
         COMPLETED(2),
         CANCELLED(3);
 
-        private final int code;
+        private final int value;
 
-        Status(int code) {
-            this.code = code;
+        Status(int value) {
+            this.value = value;
         }
 
-        public int getCode() {
-            return code;
+        @JsonValue
+        public int getValue() {
+            return value;
         }
 
-        public static Status fromCode(int code) {
-            for (Status s : values()) {
-                if (s.getCode() == code) return s;
+        @JsonCreator
+        public static Status fromValue(int value) {
+            for (Status status : Status.values()) {
+                if (status.getValue() == value) {
+                    return status;
+                }
             }
-            throw new IllegalArgumentException("Invalid Status code: " + code);
+            throw new IllegalArgumentException("Invalid status value: " + value);
         }
     }
 

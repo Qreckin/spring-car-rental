@@ -58,4 +58,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Missing required parameter: " + paramName));
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<CustomResponseEntity> handleIllegalArgumentException(IllegalArgumentException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Invalid input: " + ex.getMessage()));
+    }
+
 }

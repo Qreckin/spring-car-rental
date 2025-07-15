@@ -109,7 +109,7 @@ Yani mesela phoneNumber da sıkıntılı olsa bu sefer 3ünü de bildirecek. Kul
 oluşturuluyor ve 200 dönülüyor
 10-) rentallar RESERVED veya ACTIVE haldeyken güncellenebiliyor dateleri bakımından (çok fazla düşünülmesi gereken edege case var çoğunu hallettim ama kalmış olabilir)
 11-) rezerve edilmiş rentalın zamanı gelmeden active edilebiliyor ve start date'i aktive edildiği tarih olarak değiştiriliyor (araba müsaitse tabi)
-
+12-) gearType ve status response'ta veya requestte int olarak veriliyor string olarak değil
 
 
 cancellanan rental bir daha cancellanıyor sanırım onu düzelt -> düzeldi
