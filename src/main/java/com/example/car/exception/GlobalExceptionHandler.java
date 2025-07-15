@@ -18,6 +18,7 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    // When validation fails on RequestBody
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<CustomResponseEntity> handleValidationErrors(MethodArgumentNotValidException ex) {
         String errorMsg = ex.getBindingResult()
@@ -29,17 +30,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Validation error: " + errorMsg));
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
-        String message = ex.getClass().getSimpleName() + ": " + ex.getMessage();
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-    }
-
+    // When you give malformed json format for ex: Date is 2025-13-35 this exception is thrown
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleJsonParseError(HttpMessageNotReadableException ex) {
-        return ResponseEntity.badRequest().body("Malformed JSON request: " + ex.getMostSpecificCause().getMessage());
+    public ResponseEntity<CustomResponseEntity> handleJsonParseError(HttpMessageNotReadableException ex) {
+        return ResponseEntity.badRequest().body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Malformed JSON request: " + ex.getMostSpecificCause().getMessage()));
     }
 
+    // When validation fails on RequestParam
     @ExceptionHandler(HandlerMethodValidationException.class)
     public ResponseEntity<CustomResponseEntity> handleHandlerMethodValidationException(HandlerMethodValidationException ex) {
         String errorMsg = ex.getAllErrors().stream()
@@ -49,14 +46,8 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Validation error: " + errorMsg));
     }
-    @ExceptionHandler(JwtException.class)
-    public ResponseEntity<Map<String, String>> handleJwtException(JwtException ex) {
-        Map<String, String> error = new HashMap<>();
-        error.put("error", "Invalid JWT token");
-        error.put("message", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-    }
 
+    // This exception is thrown when a required parameter is not given
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<CustomResponseEntity> handleMissingParam(MissingServletRequestParameterException ex) {
         String paramName = ex.getParameterName();

@@ -54,7 +54,7 @@ public class CarController {
     // add the car into the ArrayList. Also provide a http response message
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/cars")
-    public ResponseEntity<CustomResponseEntity> addCars(@Valid @RequestBody List<CarRequestDTO> carRequestDTOList){
+    public ResponseEntity<CustomResponseEntity> addCars(@RequestBody List<CarRequestDTO> carRequestDTOList){
         return carService.addCars(carRequestDTOList);
     }
 

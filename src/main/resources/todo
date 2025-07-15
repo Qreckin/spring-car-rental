@@ -15,6 +15,10 @@ her gün belirli bir saatte zamanı geçmiş blacklisted tokenların silinmesi l
 401 ve 403 errorlarını SecurityConfigde halleden 2 class yazıldı -> yapıldı saat 13.44
 
 
+
+
+Son demo sonrası yapılacaklar
+
 1-) 401, 403 farkı. Generic response yapısı
 2-) geçmiş rezervasyonları gören api
 3-) car silinince rental silinmiycek
@@ -28,11 +32,11 @@ Service'lerden komple ResponseEntity dönülecek
 
 yemek sonrası:
 CustomerService düzeltilmeye devam
-CustomerRequestDTO'daki @Valid kısımları silindi çünkü partial update olabilir customerlar
+CustomerRequestDTO'daki @Valid kısımları silindi çünkü partial update olabilir customerlar. Bunun yerine manuel güncelleme var
 
 
 bugün tamamlananlar: (şu ana kadar / saat 20.19)
-1-)Artık customer ve car silinince rental silinmiyor cancelled oluyor
+1-)Artık customer ve car silinince rental silinmiyor, cancelled oluyor
 2-)CustomResponseEntity'ler classlara uygulandı exceptionlara ve validationlara uygulanması kaldı
 3-)Service'ler artık ResponseEntity<CustomResponseEntity> döndürüyor controllerın direkt kullanabilmesi için
 4-)TokenResponse classı eklendi login response'ta JSON olarak string yerine class dönebilmek için
@@ -56,4 +60,41 @@ Bugün yapılacaklar:
 21.10 yapılanlar:
 1-) 401 403 errorları CustomResponseEntity döndürüyor artık ve diğer classlar buna göre düzenlendi
 yukarıdaki 2, 3, 4 yapılamadı bugün çok fazla bakamadım ama 401 403 olayı da çok zaman aldı
+
+
+14.07.2025
+-> 12 temmuzda yapılacak olan 2-) 3-) yapıldı. 4-) sanırım token-based app'lerde yapılamıyor
+
+ÖNEMLİ:
+401 error: Unauthorized, yani bu tokene sahip bir 'author' yok. Muhtemelen bu yüzden unauthorized deniyor
+403 error: Forbidden, yani bu token authorized ama bu request yetkisine sahip değil
+
+mesela user1 user2 olsun, user2 user1'in bir rentalını silmeye çalışırsa 403 error alır çünkü bu başkasının rentalı.
+Ama eğer token yerine rastgele bir string girersem 401 alırım çünkü bu token kimseye atfedilmiş bir token değil, 'author'ı yok yani unauthorized
+Anladığım kadarıyla bir 403 alabilmek için önce 401 kısmından geçmek lazım. Yani 403 errorunu alan bir request 401 errorunu almamıştır
+
+yapılacaklar:
+1-) aynı telefon numarası olursa register olunmasın
+2-) tüm json responselardaki isim tutarsızlıkları düzeltilsin (mesela rentalsDTO var bu rentals olsun veya kilometer yerine maxKilometer olsun çünkü
+o kilometreden küçük olan arabalar döndürülüyor)
+
+
+15.07.2025
+-> aynı telefon numarası olunca register olunmuyor
+-> rentalsDTOs ismi rentals olarak değiştirildi
+-> Json parse errorlar CustomResponseEntity formatına getirildi
+-> global exception handlerdan eski versiyona ait bazı metotlar çıkarıldı ve gerekli olan malformed json handlelayan exception eklendi
+
+yapılacaklar:
+1-) add veya add customer'da response json dönmeyecek mesaj dönecek
+2-) 10 car eklenirken 5.si eklenemezse diğerleri eklenecek 5. eklenmeyecek ve bunla ilgili mesaj dönecek
+3-) partial updateler doğru çalışıyor mu kontrol et
+4-) son kontrolleri yap ve test et
+
+
+tamamlananlar.
+1-) tamamlandı 13.35
+2-) tamamnlandı 13.35
+
+
 

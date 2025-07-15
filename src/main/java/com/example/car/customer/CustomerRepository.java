@@ -22,6 +22,9 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
     @Query("SELECT c FROM Customer c WHERE c.user.username = :username AND c.deletedAt IS NULL")
     Optional<Customer> findByUsernameAndNotDeleted(@Param("username") String username);
 
+    @Query("SELECT c FROM Customer c WHERE c.phoneNumber = :phoneNumber AND c.deletedAt IS NULL")
+    Optional<Customer> findByPhoneNumberAndNotDeleted(@Param("phoneNumber") String phoneNumber);
+
     @Query("""
     SELECT c FROM Customer c
     LEFT JOIN c.user u

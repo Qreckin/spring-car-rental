@@ -5,6 +5,7 @@ import com.example.car.auth.dto.RegisterRequest;
 import com.example.car.customer.Customer;
 import com.example.car.customer.CustomerRepository;
 import com.example.car.CustomResponseEntity;
+import com.example.car.customer.CustomerService;
 import com.example.car.customer.DTO.CustomerDTO;
 import com.example.car.user.User;
 import com.example.car.user.UserService;
@@ -20,27 +21,34 @@ import org.springframework.web.bind.annotation.RestController;
 public class RegisterController {
 
     private final UserService userService;
-    private final CustomerRepository customerRepository;
+    private final CustomerService customerService;
     private final PasswordEncoder passwordEncoder;
 
-    public RegisterController(UserService userService, CustomerRepository customerRepository, PasswordEncoder passwordEncoder) {
+    public RegisterController(UserService userService, CustomerService customerService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
-        this.customerRepository = customerRepository;
+        this.customerService = customerService;
         this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping("/register")
     public ResponseEntity<CustomResponseEntity> register(@Valid @RequestBody RegisterRequest request) {
 
-        // Username check (only active users)
-        if (userService.existsByUsername(request.getUsername())) {
+        // Username check
+        if (customerService.getCustomerByUsername(request.getUsername()) != null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Username is taken"));
         }
 
-        // Email check (only active customers)
-        if (customerRepository.existsByEmailAndNotDeleted(request.getEmail())) {
+        // Email check
+        if (customerService.getCustomerByEmail(request.getEmail()) != null) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Email is taken"));
         }
+
+
+        // Phone number check
+        if (customerService.getCustomerByPhoneNumber(request.getPhoneNumber()) != null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Phone number is taken"));
+        }
+
 
         // Create new customer
         Customer customer = new Customer();
@@ -58,6 +66,6 @@ public class RegisterController {
                 customer
         );
 
-        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, new CustomerDTO(customer)));
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Customer has been created successfully"));
     }
 }

@@ -6,6 +6,8 @@ import com.example.car.car.DTO.CarRequestDTO;
 import com.example.car.enums.Enums;
 import com.example.car.rental.Rental;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,9 @@ import java.util.*;
 @Service
 public class CarService {
     private final CarRepository carRepository;
+
+    @Autowired
+    Validator validator;
 
 
     @Autowired
@@ -66,20 +71,36 @@ public class CarService {
         return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, carDTOs));
     }
 
-
-    // Buraya sorunlu olan carı continue'lama eklenebilir
     public ResponseEntity<CustomResponseEntity> addCars(List<CarRequestDTO> carRequestDTOList) {
-        List<Car> carList= new ArrayList<>();
-        for (CarRequestDTO request : carRequestDTOList){
-            Car car = new Car(request);
-            carList.add(car);
+        List<String> errorMessages = new ArrayList<>();
+
+        for (int i = 0; i < carRequestDTOList.size(); i++) {
+            CarRequestDTO dto = carRequestDTOList.get(i);
+
+            Set<ConstraintViolation<CarRequestDTO>> violations = validator.validate(dto);
+            if (!violations.isEmpty()) {
+                StringBuilder sb = new StringBuilder("Car " + (i + 1) + " invalid: ");
+                for (ConstraintViolation<CarRequestDTO> violation : violations) {
+                    sb.append(violation.getPropertyPath())
+                            .append(" ")
+                            .append(violation.getMessage())
+                            .append("; ");
+                }
+                errorMessages.add(sb.toString());
+                continue;
+            }
+
+            Car car = new Car(dto);
             carRepository.save(car);
         }
 
-        List<CarDTO> carDTOList = carList.stream()
-                .map(CarDTO::new)
-                .toList();
-        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, carDTOList));
+        if (errorMessages.isEmpty()) {
+            return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "All cars created successfully"));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, errorMessages));
+        }
     }
 
 

@@ -11,7 +11,7 @@ public class CustomerRequestDTO {
 
     private String fullName;
 
-    @Pattern(regexp = "^(\\+90|0)?5\\d{9}$", message = "Invalid Turkish phone number format")
+    @Pattern(regexp = "^5\\d{9}$", message = "Phone number must be 10 digits starting with 5")
     private String phoneNumber;
 
     @Email

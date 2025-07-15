@@ -26,7 +26,7 @@ public class CarDTO {
     private String licensePlate;
     private Double totalPrice;
 
-    private final List<RentalDTO> rentalsDTOs;
+    private final List<RentalDTO> rentals;
 
     // Constructors
     public CarDTO(Car car) {
@@ -39,7 +39,7 @@ public class CarDTO {
         this.dailyPrice = car.getDailyPrice();
         this.kilometer = car.getKilometer();
         this.totalPrice = null;
-        this.rentalsDTOs = car.getRentals()
+        this.rentals = car.getRentals()
                 .stream()
                 .map(RentalDTO::new)
                 .toList();
@@ -112,7 +112,7 @@ public class CarDTO {
         this.totalPrice = totalPrice;
     }
 
-    public List<RentalDTO> getRentalsDTOs() {
-        return rentalsDTOs;
+    public List<RentalDTO> getRentals() {
+        return rentals;
     }
 }

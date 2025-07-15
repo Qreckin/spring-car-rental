@@ -141,8 +141,15 @@ public class CustomerService {
         return null;
     }
 
-    public Customer getCustomerByUsername(String email){
-        Optional<Customer> customer = customerRepository.findByUsernameAndNotDeleted(email);
+    public Customer getCustomerByUsername(String username){
+        Optional<Customer> customer = customerRepository.findByUsernameAndNotDeleted(username);
+        if (customer.isPresent())
+            return customer.get();
+        return null;
+    }
+
+    public Customer getCustomerByPhoneNumber(String phoneNumber){
+        Optional<Customer> customer = customerRepository.findByPhoneNumberAndNotDeleted(phoneNumber);
         if (customer.isPresent())
             return customer.get();
         return null;

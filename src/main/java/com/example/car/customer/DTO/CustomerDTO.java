@@ -16,7 +16,7 @@ public class CustomerDTO {
     private final LocalDate licenseDate;
     private final String username;
 
-    private final List<RentalDTO> rentalsDTO;
+    private final List<RentalDTO> rentals;
 
     public CustomerDTO(Customer customer) {
         this.id = customer.getId();
@@ -26,7 +26,7 @@ public class CustomerDTO {
         this.birthDate = customer.getBirthDate();
         this.licenseDate = customer.getLicenseDate();
         this.username = customer.getUser() != null ? customer.getUser().getUsername() : null;
-        this.rentalsDTO = customer.getRentals()
+        this.rentals = customer.getRentals()
                 .stream()
                 .map(RentalDTO::new)
                 .toList();
@@ -63,7 +63,7 @@ public class CustomerDTO {
         return username;
     }
 
-    public List<RentalDTO> getRentalsDTO() {
-        return rentalsDTO;
+    public List<RentalDTO> getRentals() {
+        return rentals;
     }
 }
