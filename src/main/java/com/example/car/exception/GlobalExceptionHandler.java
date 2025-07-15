@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -21,13 +23,14 @@ public class GlobalExceptionHandler {
     // When validation fails on RequestBody
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<CustomResponseEntity> handleValidationErrors(MethodArgumentNotValidException ex) {
-        String errorMsg = ex.getBindingResult()
+        List<String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(err -> err.getField() + ": " + err.getDefaultMessage())
-                .findFirst()
-                .orElse("Validation failed");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Validation error: " + errorMsg));
+                .collect(Collectors.toList());
+
+        CustomResponseEntity response = new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, errors);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
     // When you give malformed json format for ex: Date is 2025-13-35 this exception is thrown

@@ -1,13 +1,20 @@
 package com.example.car.customer.DTO;
 
+import com.example.car.validation.NotEmptyIfPresent;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
+@JsonIgnoreProperties(ignoreUnknown = false)
 public class CustomerRequestDTO {
+
+    @NotEmptyIfPresent
     private String username;
 
+    @NotEmptyIfPresent
     private String password;
 
+    @NotEmptyIfPresent
     private String fullName;
 
     @Pattern(regexp = "^5\\d{9}$", message = "Phone number must be 10 digits starting with 5")

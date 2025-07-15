@@ -98,5 +98,9 @@ tamamlananlar.
 3-) CustomerService'te duplicate username kabul edilmesine neden olan bir bug vardı o düzeltildi ve duplicate phone number engellenmesi de eklendi
 ek olarak CustomerControllerda update ederken @Valid eklendi çünkü aksi takdirde email formatında olmayan bir email ile updatlenebilir
 4-) Email kontrol edilirken artık daha detaylı bir kontrol oluyor regexp sayesinde (regex ne araştır çok sık duymaya başladım)
+5-) program restart olunca artık tokenlar invalid olmuyor expiration time'a kadar kalıyor
+6-) "" olmasını istediğimiz fieldlar için kullanmam gereken bir custom annotation class oluşturdum, validation modülü içinde
+7-) Username veya password update'te yanlış verildiyse ikisinden biri rastgelere veriliyordu error olarak bunun yerine ikisini de veriyorum artık.
+Yani mesela phoneNumber da sıkıntılı olsa bu sefer 3ünü de bildirecek. Kullanıcı için hatasını anlaması yönünde iyi bir adım oldu
 
 

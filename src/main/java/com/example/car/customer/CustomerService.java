@@ -47,6 +47,8 @@ public class CustomerService {
             // If a different customer with the same email already exists
             if (existingCustomer != null && !existingCustomer.getId().equals(id))
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Customer with Email: " + email + " already exists"));
+
+            customer.setEmail(email);
         }
 
         if (username != null){
@@ -54,6 +56,8 @@ public class CustomerService {
 
             if (existingCustomer != null && !existingCustomer.getId().equals(id))
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Customer with Username: " + username + " already exists"));
+
+            customer.getUser().setUsername(username);
         }
 
         if(phoneNumber != null){
@@ -61,17 +65,12 @@ public class CustomerService {
 
             if (existingCustomer != null && !existingCustomer.getId().equals(id))
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Customer with Phone Number: " + phoneNumber + " already exists"));
+
+            customer.setPhoneNumber(phoneNumber);
         }
 
         if (customerRequestDTO.getFullName() != null) {
             customer.setFullName(customerRequestDTO.getFullName());
-        }
-
-        if (isValidPhoneNumber(customerRequestDTO.getPhoneNumber()))
-            customer.setPhoneNumber(customerRequestDTO.getPhoneNumber());
-
-        if (customerRequestDTO.getEmail() != null) {
-            customer.setEmail(customerRequestDTO.getEmail());
         }
 
         if (customerRequestDTO.getBirthDate() != null) {
@@ -80,10 +79,6 @@ public class CustomerService {
 
         if (customerRequestDTO.getLicenseDate() != null) {
             customer.setLicenseDate(customerRequestDTO.getLicenseDate());
-        }
-
-        if (customerRequestDTO.getUsername() != null) {
-            customer.getUser().setUsername(customerRequestDTO.getUsername());
         }
 
         if (customerRequestDTO.getPassword() != null) {

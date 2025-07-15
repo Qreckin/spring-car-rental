@@ -47,7 +47,7 @@ public class LoginController {
             return ResponseEntity.ok(CustomResponseEntity.OK(new TokenResponse(token)));
 
         } catch (AuthenticationException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CustomResponseEntity.UNAUTHORIZED);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CustomResponseEntity.UNAUTHORIZED);
         }
     }
 }
