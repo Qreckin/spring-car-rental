@@ -47,7 +47,4 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
             @Param("username") String username
     );
 
-
-    @Query("SELECT COUNT(c) > 0 FROM Customer c WHERE c.email = :email AND c.deletedAt IS NULL")
-    boolean existsByEmailAndNotDeleted(@Param("email") String email);
 }

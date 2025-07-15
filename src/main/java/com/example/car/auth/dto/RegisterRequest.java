@@ -5,26 +5,25 @@ import java.time.LocalDate;
 
 public class RegisterRequest {
 
-    @NotBlank(message = "Username must not be blank")
+    @NotNull
     @Size(min = 3, max = 20, message = "Username must be between 3 and 20 characters")
     private String username;
 
-    @NotBlank(message = "Password must not be blank")
+    @NotNull
     @Size(min = 6, message = "Password must be at least 6 characters long")
     private String password;
 
     @NotBlank(message = "Full name must not be blank")
     private String fullName;
 
-    @NotBlank(message = "Phone number must not be blank")
+    @NotNull
     @Pattern(regexp = "^5\\d{9}$", message = "Phone number must be 10 digits starting with 5")
     private String phoneNumber;
 
-    @NotBlank(message = "Email must not be blank")
-    @Email(message = "Email must be valid")
+    @NotNull
     @Pattern(
             regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$",
-            message = "Email must have a valid domain (e.g., .com, .net)"
+            message = "Email must be valid and contain a proper domain"
     )
     private String email;
 

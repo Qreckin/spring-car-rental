@@ -34,6 +34,7 @@ public class GlobalExceptionHandler {
     }
 
     // When you give malformed json format for ex: Date is 2025-13-35 this exception is thrown
+    // Or when gear type is not matching
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<CustomResponseEntity> handleJsonParseError(HttpMessageNotReadableException ex) {
         return ResponseEntity.badRequest().body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Malformed JSON request: " + ex.getMostSpecificCause().getMessage()));

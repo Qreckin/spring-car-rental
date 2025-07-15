@@ -90,6 +90,8 @@ yapılacaklar:
 2-) 10 car eklenirken 5.si eklenemezse diğerleri eklenecek 5. eklenmeyecek ve bunla ilgili mesaj dönecek
 3-) partial updateler doğru çalışıyor mu kontrol et
 4-) son kontrolleri yap ve test et
+5-) Partial car updateleri için CarRequestDTO değiştirilecek
+6-) Rental updatelerine bakılacak (mesela user reserve ettiği kiralamanın tarihlerini değiştirebilir gibi)
 
 
 tamamlananlar.
@@ -102,5 +104,8 @@ ek olarak CustomerControllerda update ederken @Valid eklendi çünkü aksi takdi
 6-) "" olmasını istediğimiz fieldlar için kullanmam gereken bir custom annotation class oluşturdum, validation modülü içinde
 7-) Username veya password update'te yanlış verildiyse ikisinden biri rastgelere veriliyordu error olarak bunun yerine ikisini de veriyorum artık.
 Yani mesela phoneNumber da sıkıntılı olsa bu sefer 3ünü de bildirecek. Kullanıcı için hatasını anlaması yönünde iyi bir adım oldu
+8-) partial car update yapıldı
+9-) car eklerken hepsi başarısızsa 400 veriliyior onun dışında en az 1i bile başarılıysa başarılı olanlar
+oluşturuluyor ve 200 dönülüyor
 
 

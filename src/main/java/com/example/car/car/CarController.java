@@ -6,6 +6,7 @@ import com.example.car.car.DTO.CarRequestDTO;
 import com.example.car.enums.Enums;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +61,7 @@ public class CarController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/cars/{id}")
-    public ResponseEntity<CustomResponseEntity> updateCar(@PathVariable UUID id, @RequestBody CarRequestDTO updatedCar){
+    public ResponseEntity<CustomResponseEntity> updateCar(@PathVariable UUID id, @Valid @RequestBody CarRequestDTO updatedCar){
         return carService.updateCar(id, updatedCar);
     }
 

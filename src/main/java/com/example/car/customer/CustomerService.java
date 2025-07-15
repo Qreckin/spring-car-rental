@@ -37,52 +37,80 @@ public class CustomerService {
         if (customer == null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CustomResponseEntity.CUSTOMER_NOT_FOUND);
 
-        String email = customerRequestDTO.getEmail();
-        String username = customerRequestDTO.getUsername();
-        String phoneNumber = customerRequestDTO.getPhoneNumber();
+        String newEmail = customerRequestDTO.getEmail();
+        String newUsername = customerRequestDTO.getUsername();
+        String newPhoneNumber = customerRequestDTO.getPhoneNumber();
+        String newFullName = customerRequestDTO.getFullName();
+        LocalDate newBirthDate = customerRequestDTO.getBirthDate();
+        LocalDate newLicenseDate = customerRequestDTO.getLicenseDate();
+        String newPassword = customerRequestDTO.getPassword();
 
-        if (email != null){
-            Customer existingCustomer = getCustomerByEmail(email);
-
-            // If a different customer with the same email already exists
+        if (newEmail != null) {
+            Customer existingCustomer = getCustomerByEmail(newEmail);
             if (existingCustomer != null && !existingCustomer.getId().equals(id))
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Customer with Email: " + email + " already exists"));
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Customer with email: " + newEmail + " already exists"));
 
-            customer.setEmail(email);
+            if (customer.getEmail().equals(newEmail))
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New email cannot be same with the previous email"));
+
+            customer.setEmail(newEmail);
         }
 
-        if (username != null){
-            Customer existingCustomer = getCustomerByUsername(username);
-
+        if (newUsername != null) {
+            Customer existingCustomer = getCustomerByUsername(newUsername);
             if (existingCustomer != null && !existingCustomer.getId().equals(id))
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Customer with Username: " + username + " already exists"));
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Customer with username: " + newUsername + " already exists"));
 
-            customer.getUser().setUsername(username);
+            if (customer.getUser().getUsername().equals(newUsername))
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New username cannot be same with the previous username"));
+
+            customer.getUser().setUsername(newUsername);
         }
 
-        if(phoneNumber != null){
-            Customer existingCustomer = getCustomerByPhoneNumber(phoneNumber);
-
+        if (newPhoneNumber != null) {
+            Customer existingCustomer = getCustomerByPhoneNumber(newPhoneNumber);
             if (existingCustomer != null && !existingCustomer.getId().equals(id))
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Customer with Phone Number: " + phoneNumber + " already exists"));
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Customer with phone number: " + newPhoneNumber + " already exists"));
 
-            customer.setPhoneNumber(phoneNumber);
+            if (customer.getPhoneNumber().equals(newPhoneNumber))
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New phone number cannot be same with the previous phone number"));
+
+            customer.setPhoneNumber(newPhoneNumber);
         }
 
-        if (customerRequestDTO.getFullName() != null) {
-            customer.setFullName(customerRequestDTO.getFullName());
+        if (newFullName != null) {
+            if (customer.getFullName().equals(newFullName))
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New full name cannot be same with the previous full name"));
+            customer.setFullName(newFullName);
         }
 
-        if (customerRequestDTO.getBirthDate() != null) {
-            customer.setBirthDate(customerRequestDTO.getBirthDate());
+        if (newBirthDate != null) {
+            if (customer.getBirthDate().equals(newBirthDate))
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New birth date cannot be same with the previous birth date"));
+            customer.setBirthDate(newBirthDate);
         }
 
-        if (customerRequestDTO.getLicenseDate() != null) {
-            customer.setLicenseDate(customerRequestDTO.getLicenseDate());
+        if (newLicenseDate != null) {
+            if (customer.getLicenseDate().equals(newLicenseDate))
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New license date cannot be same with the previous license date"));
+            customer.setLicenseDate(newLicenseDate);
         }
 
-        if (customerRequestDTO.getPassword() != null) {
-            customer.getUser().setPassword(passwordEncoder.encode(customerRequestDTO.getPassword()));
+        if (newPassword != null) {
+            if (passwordEncoder.matches(newPassword, customer.getUser().getPassword())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New password cannot be same with the previous password"));
+            }
+            customer.getUser().setPassword(passwordEncoder.encode(newPassword));
         }
 
         customerRepository.save(customer);
@@ -165,15 +193,6 @@ public class CustomerService {
 
         CustomResponseEntity response = new CustomResponseEntity(CustomResponseEntity.OK, customerDTOs);
         return ResponseEntity.ok(response);
-    }
-
-    public void saveCustomer(Customer customer){
-        customerRepository.save(customer);
-    }
-
-
-    public boolean isValidPhoneNumber(String phoneNumber) {
-        return phoneNumber != null && phoneNumber.matches("^\\+?[0-9]{10,15}$");
     }
 
 }

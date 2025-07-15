@@ -71,80 +71,133 @@ public class CarService {
         return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, carDTOs));
     }
 
+    // If every car is erroneous, throw 400 but if at least 1 of them is correct, create correct ones and give 200 response
     public ResponseEntity<CustomResponseEntity> addCars(List<CarRequestDTO> carRequestDTOList) {
-        List<String> errorMessages = new ArrayList<>();
+        Map<String, String> resultMap = new LinkedHashMap<>();
 
         for (int i = 0; i < carRequestDTOList.size(); i++) {
             CarRequestDTO dto = carRequestDTOList.get(i);
+            String carKey = "Car " + (i + 1);
 
             Set<ConstraintViolation<CarRequestDTO>> violations = validator.validate(dto);
             if (!violations.isEmpty()) {
-                StringBuilder sb = new StringBuilder("Car " + (i + 1) + " invalid: ");
+                StringBuilder errorMessage = new StringBuilder();
                 for (ConstraintViolation<CarRequestDTO> violation : violations) {
-                    sb.append(violation.getPropertyPath())
+                    errorMessage.append(violation.getPropertyPath())
                             .append(" ")
                             .append(violation.getMessage())
                             .append("; ");
                 }
-                errorMessages.add(sb.toString());
+                resultMap.put(carKey, "Invalid: " + errorMessage.toString());
                 continue;
             }
 
             Car car = new Car(dto);
             carRepository.save(car);
+            resultMap.put(carKey, "Successfully created");
         }
 
-        if (errorMessages.isEmpty()) {
-            return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "All cars created successfully"));
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, errorMessages));
-        }
+        // Determine the status code based on whether any errors occurred
+        boolean allUnsuccessful = resultMap.values().stream().allMatch(msg -> msg.startsWith("Invalid"));
+        HttpStatus status = allUnsuccessful ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
+
+        return ResponseEntity.status(status)
+                .body(new CustomResponseEntity(allUnsuccessful ? CustomResponseEntity.BAD_REQUEST : CustomResponseEntity.OK, resultMap));
     }
 
 
     public ResponseEntity<CustomResponseEntity> updateCar(UUID id, CarRequestDTO carRequestDTO) {
-        Car car = getCarById(id); // Get the car or throw if not found
+        Car car = getCarById(id);
         if (car == null)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CustomResponseEntity.CAR_NOT_FOUND);
 
-        if (carRequestDTO.getMake() != null)
-            car.setMake(carRequestDTO.getMake());
+        String newMake = carRequestDTO.getMake();
+        String newModel = carRequestDTO.getModel();
+        String newColor = carRequestDTO.getColor();
+        Integer newYear = carRequestDTO.getYear();
+        Integer newRequiredLicenseYear = carRequestDTO.getRequiredLicenseYear();
+        Double newDailyPrice = carRequestDTO.getDailyPrice();
+        Integer newKilometer = carRequestDTO.getKilometer();
+        String newCategory = carRequestDTO.getCategory();
+        Enums.GearType newGearType = carRequestDTO.getGearType();
+        String newLicensePlate = carRequestDTO.getLicensePlate();
 
-        if (carRequestDTO.getModel() != null)
-            car.setModel(carRequestDTO.getModel());
+        if (newMake != null) {
+            if (newMake.equals(car.getMake()))
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New make cannot be the same as the previous make"));
+            car.setMake(newMake);
+        }
 
-        if (carRequestDTO.getColor() != null)
-            car.setColor(carRequestDTO.getColor());
+        if (newModel != null) {
+            if (newModel.equals(car.getModel()))
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New model cannot be the same as the previous model"));
+            car.setModel(newModel);
+        }
 
-        if (carRequestDTO.getYear() != null)
-            car.setYear(carRequestDTO.getYear());
+        if (newColor != null) {
+            if (newColor.equals(car.getColor()))
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New color cannot be the same as the previous color"));
+            car.setColor(newColor);
+        }
 
-        if (carRequestDTO.getRequiredLicenseYear() != null)
-            car.setRequiredLicenseYear(carRequestDTO.getRequiredLicenseYear());
+        if (newYear != null) {
+            if (newYear.equals(car.getYear()))
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New year cannot be the same as the previous year"));
+            car.setYear(newYear);
+        }
 
-        if (carRequestDTO.getDailyPrice() != null)
-            car.setDailyPrice(carRequestDTO.getDailyPrice());
+        if (newRequiredLicenseYear != null) {
+            if (newRequiredLicenseYear.equals(car.getRequiredLicenseYear()))
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New required license year cannot be the same as the previous one"));
+            car.setRequiredLicenseYear(newRequiredLicenseYear);
+        }
 
-        if (carRequestDTO.getKilometer() != null)
-            car.setKilometer(carRequestDTO.getKilometer());
+        if (newDailyPrice != null) {
+            if (newDailyPrice.equals(car.getDailyPrice()))
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New daily price cannot be the same as the previous one"));
+            car.setDailyPrice(newDailyPrice);
+        }
 
-        if (carRequestDTO.getCategory() != null)
-            car.setCategory(carRequestDTO.getCategory());
+        if (newKilometer != null) {
+            if (newKilometer.equals(car.getKilometer()))
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New kilometer cannot be the same as the previous one"));
+            car.setKilometer(newKilometer);
+        }
 
-        if (carRequestDTO.getGearType() != null)
-            car.setGearType(carRequestDTO.getGearType());
+        if (newCategory != null) {
+            if (newCategory.equals(car.getCategory()))
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New category cannot be the same as the previous one"));
+            car.setCategory(newCategory);
+        }
 
-        if (carRequestDTO.getLicensePlate() != null)
-            car.setLicensePlate(carRequestDTO.getLicensePlate());
+        if (newGearType != null) {
+            if (newGearType.equals(car.getGearType()))
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New gear type cannot be the same as the previous one"));
+            car.setGearType(newGearType);
+        }
+
+        if (newLicensePlate != null) {
+            if (newLicensePlate.equals(car.getLicensePlate()))
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New license plate cannot be the same as the previous one"));
+            car.setLicensePlate(newLicensePlate);
+        }
 
         carRepository.save(car);
 
         return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Car updated successfully"));
     }
 
-    @Transactional // Ensures all DB operations are simultaneous
+
     public ResponseEntity<CustomResponseEntity> deleteCar(UUID id) {
         Car car = getCarById(id); // Fetch the non-deleted car
 
