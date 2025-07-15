@@ -10,6 +10,7 @@ import com.example.car.enums.Enums;
 import com.example.car.exception.*;
 import com.example.car.rental.DTO.RentalDTO;
 import com.example.car.rental.DTO.RentalRequestDTO;
+import com.example.car.rental.DTO.RentalUpdateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,13 +65,9 @@ public class RentalService {
         }
 
         // Check if car is occupied in this time interval
-        List<Enums.Status> invalidStatuses = new ArrayList<>();
-        invalidStatuses.add(Enums.Status.ACTIVE);
-        invalidStatuses.add(Enums.Status.RESERVED);
-        List<Rental> overlaps = rentalRepository.findOverlappingRentals(carId, start, end, invalidStatuses);
-        if (!overlaps.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Car is occupied in this time interval"));
-        }
+        List<Rental> overlaps = findOverlappingRentals(carId, start, end);
+        if (!overlaps.isEmpty())
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(CustomResponseEntity.CAR_IS_OCCUPIED);
 
         Rental rental = new Rental();
 
@@ -97,10 +94,24 @@ public class RentalService {
 
         // Rental must be in RESERVED status and current time must be after rental's start date
         if (rental.getStatus() != Enums.Status.RESERVED)
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Rental status must be RESERVED to be activated"));
-        if (rental.getRentalStartDate().isAfter(activationTime))
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Activation time must be after rental start date"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Rental must be reserved first to be activated"));
 
+        if (activationTime.isBefore(LocalDateTime.now()))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Activation time cannot be before current time"));
+
+        if (activationTime.isAfter(rental.getRentalEndDate()))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Activation time cannot be after rental end date"));
+
+        UUID carID = rental.getCar().getId();
+        LocalDateTime end = rental.getRentalEndDate();
+        List<Rental> overlaps = findOverlappingRentals(carID, activationTime, end);
+        overlaps.remove(rental);
+
+        if (!overlaps.isEmpty())
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(CustomResponseEntity.CAR_IS_OCCUPIED);
+
+        if (activationTime.isBefore(rental.getRentalStartDate()))
+            rental.setRentalStartDate(activationTime); // Rental start date is changed to activation time
 
         rental.setActivatedAt(activationTime);
         rental.setStatus(Enums.Status.ACTIVE);
@@ -185,13 +196,46 @@ public class RentalService {
         return ResponseEntity.ok(CustomResponseEntity.OK("Rental has been cancelled successfully"));
     }
 
+    public ResponseEntity<CustomResponseEntity> updateRental(UUID id, RentalUpdateDTO rentalUpdateDTO){
+        Rental rental = findRentalById(id);
 
-    public ResponseEntity<CustomResponseEntity> filterRentals(UUID customerId, UUID carId, Enums.Status status, LocalDateTime startDate, LocalDateTime endDate) {
-        List<Rental> rentals = rentalRepository.filterRentals(customerId, carId, status, startDate, endDate);
-        List<RentalDTO> rentalsDTO = rentals.stream().map(RentalDTO::new).toList();
+        if (rental == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(CustomResponseEntity.RENTAL_NOT_FOUND);
 
-        return ResponseEntity.ok(CustomResponseEntity.OK(rentalsDTO));
+        if (rental.getStatus() == Enums.Status.COMPLETED)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Rental status must not be COMPLETED"));
+
+        if (rental.getStatus() == Enums.Status.CANCELLED)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Rental already cancelled"));
+
+        UUID carID = rental.getCar().getId();
+        LocalDateTime proposedStart = rentalUpdateDTO.getRentalStartDate();
+        LocalDateTime proposedEnd = rentalUpdateDTO.getRentalEndDate();
+
+        if (rental.getStatus() == Enums.Status.ACTIVE){
+            proposedStart = rental.getActivatedAt();
+        }
+
+        if (proposedEnd.isBefore(proposedStart))
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(CustomResponseEntity.END_BEFORE_START);
+
+
+        List<Rental> overlaps = findOverlappingRentals(carID, proposedStart, proposedEnd);
+        overlaps.remove(rental);
+
+        if (!overlaps.isEmpty())
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(CustomResponseEntity.CAR_IS_OCCUPIED);
+
+        if (rental.getStatus() != Enums.Status.ACTIVE)
+            rental.setRentalStartDate(proposedStart);
+        rental.setRentalEndDate(proposedEnd);
+
+        rentalRepository.save(rental);
+        return ResponseEntity.ok(CustomResponseEntity.OK("Rental has been updated successfully"));
+
     }
+
+
 
     public ResponseEntity<CustomResponseEntity> deleteRental(UUID id) {
         Rental rental = findRentalById(id);
@@ -228,6 +272,21 @@ public class RentalService {
             return rental.get();
 
         return null;
+    }
+
+    public ResponseEntity<CustomResponseEntity> filterRentals(UUID customerId, UUID carId, Enums.Status status, LocalDateTime startDate, LocalDateTime endDate) {
+        List<Rental> rentals = rentalRepository.filterRentals(customerId, carId, status, startDate, endDate);
+        List<RentalDTO> rentalsDTO = rentals.stream().map(RentalDTO::new).toList();
+
+        return ResponseEntity.ok(CustomResponseEntity.OK(rentalsDTO));
+    }
+
+
+    private List<Rental> findOverlappingRentals(UUID carID, LocalDateTime start, LocalDateTime end){
+        List<Enums.Status> invalidStatuses = new ArrayList<>();
+        invalidStatuses.add(Enums.Status.ACTIVE);
+        invalidStatuses.add(Enums.Status.RESERVED);
+        return rentalRepository.findOverlappingRentals(carID, start, end, invalidStatuses);
     }
 
 }

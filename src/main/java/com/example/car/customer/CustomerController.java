@@ -47,13 +47,13 @@ public class CustomerController {
 
 
 
-    @PreAuthorize("@authService.isOwnerOrAdmin(#id, authentication)")
+    @PreAuthorize("@authService.isUserOrAdmin(#id, authentication)")
     @PutMapping("/customers/{id}")
     public ResponseEntity<CustomResponseEntity> updateCustomer(Authentication authentication, @PathVariable UUID id, @Valid @RequestBody CustomerRequestDTO updatedCustomer){
         return customerService.updateCustomer(id, updatedCustomer);
     }
 
-    @PreAuthorize("@authService.isOwnerOrAdmin(#id, authentication)")
+    @PreAuthorize("@authService.isUserOrAdmin(#id, authentication)")
     @DeleteMapping("/customers/{id}")
     public ResponseEntity<CustomResponseEntity> deleteCustomer(@PathVariable UUID id, Authentication authentication){
         return customerService.deleteCustomer(id);

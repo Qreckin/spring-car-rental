@@ -4,6 +4,7 @@ import com.example.car.CustomResponseEntity;
 import com.example.car.enums.Enums;
 import com.example.car.rental.DTO.RentalDTO;
 import com.example.car.rental.DTO.RentalRequestDTO;
+import com.example.car.rental.DTO.RentalUpdateDTO;
 import com.example.car.user.User;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,10 +73,16 @@ public class RentalController {
 
 
     // CANCELLING a rental
-    @PreAuthorize("@authService.canCancelRental(#id, authentication)")
+    @PreAuthorize("@authService.isOwnerOrAdmin(#id, authentication)")
     @PostMapping("/rentals/cancel/{id}")
     public ResponseEntity<CustomResponseEntity> cancelRental(@PathVariable UUID id){
         return rentalService.cancelRental(id);
+    }
+
+    @PreAuthorize("@authService.isOwnerOrAdmin(#id, authentication)")
+    @PostMapping("/rentals/update/{id}")
+    public ResponseEntity<CustomResponseEntity> updateRental(@PathVariable UUID id, @Valid @RequestBody RentalUpdateDTO rentalUpdateDTO){
+        return rentalService.updateRental(id, rentalUpdateDTO);
     }
 
 

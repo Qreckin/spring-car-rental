@@ -23,16 +23,8 @@ public class AuthService {
         this.rentalRepository = rentalRepository;
     }
 
-    public boolean isOwnerOrAdmin(UUID customerId, Authentication authentication) {
-        boolean isAdmin = false;
-        for (GrantedAuthority authority : authentication.getAuthorities()) {
-            if ("ROLE_ADMIN".equals(authority.getAuthority())) {
-                isAdmin = true;
-                break;
-            }
-        }
-
-        if (isAdmin) {
+    public boolean isUserOrAdmin(UUID customerId, Authentication authentication) {
+        if (isAdmin(authentication)) {
             return true;
         }
 
@@ -43,7 +35,17 @@ public class AuthService {
         return customerService.getCustomerById(customerId).getUser().getUsername().equals(username);
     }
 
-    public boolean canCancelRental(UUID rentalID, Authentication authentication){
+    public boolean isOwnerOrAdmin(UUID rentalID, Authentication authentication){
+        if (isAdmin(authentication))
+            return true;
+
+        User user = (User) authentication.getPrincipal();
+        return rentalRepository.isRentalOwnedByUser(rentalID, user.getUsername());
+    }
+
+
+
+    private boolean isAdmin(Authentication authentication){
         boolean isAdmin = false;
         for (GrantedAuthority authority : authentication.getAuthorities()) {
             if ("ROLE_ADMIN".equals(authority.getAuthority())) {
@@ -51,13 +53,7 @@ public class AuthService {
                 break;
             }
         }
-
-        if (isAdmin) {
-            return true;
-        }
-
-        User user = (User) authentication.getPrincipal();
-        return rentalRepository.isRentalOwnedByUser(rentalID, user.getUsername());
+        return isAdmin;
     }
 
 

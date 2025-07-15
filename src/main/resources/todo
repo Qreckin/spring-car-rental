@@ -107,5 +107,11 @@ Yani mesela phoneNumber da sıkıntılı olsa bu sefer 3ünü de bildirecek. Kul
 8-) partial car update yapıldı
 9-) car eklerken hepsi başarısızsa 400 veriliyior onun dışında en az 1i bile başarılıysa başarılı olanlar
 oluşturuluyor ve 200 dönülüyor
+10-) rentallar RESERVED veya ACTIVE haldeyken güncellenebiliyor dateleri bakımından (çok fazla düşünülmesi gereken edege case var çoğunu hallettim ama kalmış olabilir)
+11-) rezerve edilmiş rentalın zamanı gelmeden active edilebiliyor ve start date'i aktive edildiği tarih olarak değiştiriliyor (araba müsaitse tabi)
+
+
+
+cancellanan rental bir daha cancellanıyor sanırım onu düzelt -> düzeldi
 
 

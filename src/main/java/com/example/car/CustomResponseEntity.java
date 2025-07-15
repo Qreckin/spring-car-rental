@@ -76,6 +76,7 @@ public class CustomResponseEntity {
     public static final CustomResponseEntity OK =
             new CustomResponseEntity(Enums.Errors.NO_ERROR.getValue(), Enums.Errors.NO_ERROR.getMessage());
 
+    // new
     public static final CustomResponseEntity RENTAL_NOT_FOUND =
             new CustomResponseEntity(Enums.Errors.NOT_FOUND.getValue(), Enums.Errors.NOT_FOUND.getMessage(), "Rental not found");
 
@@ -84,6 +85,7 @@ public class CustomResponseEntity {
 
     public static final CustomResponseEntity CAR_NOT_FOUND =
             new CustomResponseEntity(Enums.Errors.NOT_FOUND.getValue(), Enums.Errors.NOT_FOUND.getMessage(), "Car not found");
+
 
 
     public static final CustomResponseEntity NOT_FOUND =
@@ -104,11 +106,18 @@ public class CustomResponseEntity {
     public static final CustomResponseEntity BAD_REQUEST =
             new CustomResponseEntity(Enums.Errors.BAD_REQUEST.getValue(), Enums.Errors.BAD_REQUEST.getMessage());
 
+    public static final CustomResponseEntity END_BEFORE_START =
+            new CustomResponseEntity(Enums.Errors.BAD_REQUEST.getValue(), Enums.Errors.BAD_REQUEST.getMessage(), "End date must be after start date");
+
     public static final CustomResponseEntity DUPLICATE_RESOURCE =
             new CustomResponseEntity(Enums.Errors.DUPLICATE_RESOURCE.getValue(), Enums.Errors.DUPLICATE_RESOURCE.getMessage());
 
     public static final CustomResponseEntity CONFLICT =
             new CustomResponseEntity(Enums.Errors.CONFLICT.getValue(), Enums.Errors.CONFLICT.getMessage());
+
+    // new
+    public static final CustomResponseEntity CAR_IS_OCCUPIED =
+            new CustomResponseEntity(Enums.Errors.CONFLICT.getValue(), Enums.Errors.CONFLICT.getMessage(), "Car is occupied in this time interval");
 
     public static final CustomResponseEntity DATABASE_ERROR =
             new CustomResponseEntity(Enums.Errors.DATABASE_ERROR.getValue(), Enums.Errors.DATABASE_ERROR.getMessage());
