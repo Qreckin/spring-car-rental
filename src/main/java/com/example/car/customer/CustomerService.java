@@ -39,6 +39,7 @@ public class CustomerService {
 
         String email = customerRequestDTO.getEmail();
         String username = customerRequestDTO.getUsername();
+        String phoneNumber = customerRequestDTO.getPhoneNumber();
 
         if (email != null){
             Customer existingCustomer = getCustomerByEmail(email);
@@ -51,8 +52,15 @@ public class CustomerService {
         if (username != null){
             Customer existingCustomer = getCustomerByUsername(username);
 
-            if (existingCustomer != null && !existingCustomer.getUser().getUsername().equals(username))
+            if (existingCustomer != null && !existingCustomer.getId().equals(id))
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Customer with Username: " + username + " already exists"));
+        }
+
+        if(phoneNumber != null){
+            Customer existingCustomer = getCustomerByPhoneNumber(phoneNumber);
+
+            if (existingCustomer != null && !existingCustomer.getId().equals(id))
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "Customer with Phone Number: " + phoneNumber + " already exists"));
         }
 
         if (customerRequestDTO.getFullName() != null) {

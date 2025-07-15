@@ -4,7 +4,6 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
 public class CustomerRequestDTO {
-
     private String username;
 
     private String password;
@@ -14,7 +13,11 @@ public class CustomerRequestDTO {
     @Pattern(regexp = "^5\\d{9}$", message = "Phone number must be 10 digits starting with 5")
     private String phoneNumber;
 
-    @Email
+    @Email(message = "Email must be valid")
+    @Pattern(
+            regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$",
+            message = "Email must have a valid domain (e.g., .com, .net)"
+    )
     private String email;
 
     @Past

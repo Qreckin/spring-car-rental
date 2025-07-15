@@ -3,6 +3,7 @@ package com.example.car.auth.service;
 import com.example.car.user.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -19,8 +20,9 @@ public class JwtService {
 
     private final SecretKey secretKey; // Secret key that is generated from the secret
 
-    public JwtService(){
-        this.secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    public JwtService(@Value("${jwt.secret}") String secret) {
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
 

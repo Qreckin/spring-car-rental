@@ -95,6 +95,8 @@ yapılacaklar:
 tamamlananlar.
 1-) tamamlandı 13.35
 2-) tamamnlandı 13.35
-
+3-) CustomerService'te duplicate username kabul edilmesine neden olan bir bug vardı o düzeltildi ve duplicate phone number engellenmesi de eklendi
+ek olarak CustomerControllerda update ederken @Valid eklendi çünkü aksi takdirde email formatında olmayan bir email ile updatlenebilir
+4-) Email kontrol edilirken artık daha detaylı bir kontrol oluyor regexp sayesinde (regex ne araştır çok sık duymaya başladım)
 
 

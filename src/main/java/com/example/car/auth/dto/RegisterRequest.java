@@ -22,6 +22,10 @@ public class RegisterRequest {
 
     @NotBlank(message = "Email must not be blank")
     @Email(message = "Email must be valid")
+    @Pattern(
+            regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$",
+            message = "Email must have a valid domain (e.g., .com, .net)"
+    )
     private String email;
 
     @NotNull(message = "Birth date must not be null")

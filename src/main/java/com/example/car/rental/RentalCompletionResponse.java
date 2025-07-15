@@ -13,7 +13,6 @@ public class RentalCompletionResponse {
         return totalPricePaidByCustomer;
     }
 
-    // Setter (optional if you want immutability)
     public void setTotalPricePaidByCustomer(double totalPricePaidByCustomer) {
         this.totalPricePaidByCustomer = totalPricePaidByCustomer;
     }

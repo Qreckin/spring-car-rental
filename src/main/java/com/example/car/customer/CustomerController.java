@@ -49,7 +49,7 @@ public class CustomerController {
 
     @PreAuthorize("@authService.isOwnerOrAdmin(#id, authentication)")
     @PutMapping("/customers/{id}")
-    public ResponseEntity<CustomResponseEntity> updateCustomer(@PathVariable UUID id, @RequestBody CustomerRequestDTO updatedCustomer, Authentication authentication){
+    public ResponseEntity<CustomResponseEntity> updateCustomer(@PathVariable UUID id, @Valid @RequestBody CustomerRequestDTO updatedCustomer, Authentication authentication){
         return customerService.updateCustomer(id, updatedCustomer);
     }
 
