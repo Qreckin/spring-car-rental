@@ -14,6 +14,8 @@ public class CustomerDTO {
     private final String email;
     private final LocalDate birthDate;
     private final LocalDate licenseDate;
+
+    private final Integer licenseType;
     private final String username;
 
     private final List<RentalDTO> rentals;
@@ -25,6 +27,7 @@ public class CustomerDTO {
         this.email = customer.getEmail();
         this.birthDate = customer.getBirthDate();
         this.licenseDate = customer.getLicenseDate();
+        this.licenseType = customer.getLicenseType().getValue();
         this.username = customer.getUser() != null ? customer.getUser().getUsername() : null;
         this.rentals = customer.getRentals()
                 .stream()
@@ -57,6 +60,10 @@ public class CustomerDTO {
 
     public LocalDate getLicenseDate() {
         return licenseDate;
+    }
+
+    public Integer getLicenseType() {
+        return licenseType;
     }
 
     public String getUsername() {

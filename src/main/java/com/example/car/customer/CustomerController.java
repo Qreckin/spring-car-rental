@@ -33,9 +33,10 @@ public class CustomerController {
             @RequestParam(required = false) String phoneNumber,
             @RequestParam(required = false) LocalDate birthDate,
             @RequestParam(required = false) LocalDate licenseDate,
+            @RequestParam(required = false) Integer licenseType,
             @RequestParam(required = false) String username) {
 
-        return customerService.filterCustomers(id, email, fullName, phoneNumber, birthDate, licenseDate, username);
+        return customerService.filterCustomers(id, email, fullName, phoneNumber, birthDate, licenseDate, licenseType, username);
     }
 
     @PreAuthorize("hasRole('USER')")

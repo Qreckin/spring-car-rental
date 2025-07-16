@@ -1,5 +1,6 @@
 package com.example.car.customer;
 
+import com.example.car.enums.Enums;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -35,6 +36,7 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
       AND (:phoneNumber IS NULL OR c.phoneNumber = :phoneNumber)
       AND (:birthDate IS NULL OR c.birthDate = :birthDate)
       AND (:licenseDate IS NULL OR c.licenseDate = :licenseDate)
+      AND (:licenseType IS NULL OR c.licenseType = :licenseType)
       AND (:username IS NULL OR u.username = :username)
 """)
     List<Customer> filterCustomers(
@@ -44,6 +46,7 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
             @Param("phoneNumber") String phoneNumber,
             @Param("birthDate") LocalDate birthDate,
             @Param("licenseDate") LocalDate licenseDate,
+            @Param("licenseType") Enums.GearType licenseType,
             @Param("username") String username
     );
 

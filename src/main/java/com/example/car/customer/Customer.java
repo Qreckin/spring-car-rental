@@ -1,6 +1,7 @@
 package com.example.car.customer;
 
 import com.example.car.common.BaseEntity;
+import com.example.car.enums.Enums;
 import com.example.car.rental.Rental;
 import com.example.car.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,6 +27,8 @@ public class Customer extends BaseEntity {
     private LocalDate birthDate;
 
     private LocalDate licenseDate;
+
+    private Enums.GearType licenseType;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Rental> rentals = new ArrayList<>(); // Rents that this user made
@@ -101,5 +104,13 @@ public class Customer extends BaseEntity {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Enums.GearType getLicenseType() {
+        return licenseType;
+    }
+
+    public void setLicenseType(Enums.GearType licenseType) {
+        this.licenseType = licenseType;
     }
 }

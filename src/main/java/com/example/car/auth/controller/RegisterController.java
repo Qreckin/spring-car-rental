@@ -7,6 +7,7 @@ import com.example.car.customer.CustomerRepository;
 import com.example.car.CustomResponseEntity;
 import com.example.car.customer.CustomerService;
 import com.example.car.customer.DTO.CustomerDTO;
+import com.example.car.enums.Enums;
 import com.example.car.user.User;
 import com.example.car.user.UserService;
 import jakarta.validation.Valid;
@@ -57,6 +58,7 @@ public class RegisterController {
         customer.setEmail(request.getEmail());
         customer.setBirthDate(request.getBirthDate());
         customer.setLicenseDate(request.getLicenseDate());
+        customer.setLicenseType(Enums.GearType.fromValue(request.getLicenseType()));
 
         // Save user with encoded password and customer
         User user = userService.saveUser(

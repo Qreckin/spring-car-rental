@@ -31,11 +31,15 @@ public class CustomerRequestDTO {
     @Past
     private LocalDate licenseDate;
 
+    @Min(value = 0, message = "Gear type must be either 0 or 1")
+    @Max(value = 1, message = "Gear type must be either 0 or 1")
+    private Integer licenseType;
+
     public CustomerRequestDTO() {
     }
 
 
-    public CustomerRequestDTO(String username, String password, String fullName, String phoneNumber, String email, LocalDate birthDate, LocalDate licenseDate) {
+    public CustomerRequestDTO(String username, String password, String fullName, String phoneNumber, String email, LocalDate birthDate, LocalDate licenseDate, Integer licenseType) {
         this.username = username;
         this.password = password;
         this.fullName = fullName;
@@ -43,6 +47,7 @@ public class CustomerRequestDTO {
         this.email = email;
         this.birthDate = birthDate;
         this.licenseDate = licenseDate;
+        this.licenseType = licenseType;
     }
 
     public String getUsername() {
@@ -99,5 +104,13 @@ public class CustomerRequestDTO {
 
     public void setLicenseDate(LocalDate licenseDate) {
         this.licenseDate = licenseDate;
+    }
+
+    public Integer getLicenseType() {
+        return licenseType;
+    }
+
+    public void setLicenseType(Integer licenseType) {
+        this.licenseType = licenseType;
     }
 }

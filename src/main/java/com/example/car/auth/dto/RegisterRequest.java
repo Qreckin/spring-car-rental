@@ -35,10 +35,15 @@ public class RegisterRequest {
     @Past(message = "License retrieval date must be in the past")
     private LocalDate licenseDate;
 
+    @NotNull(message = "License type must not be null")
+    @Min(value = 0, message = "Gear type must be either 0 or 1")
+    @Max(value = 1, message = "Gear type must be either 0 or 1")
+    private Integer licenseType;
+
     public RegisterRequest() {
     }
 
-    public RegisterRequest(String username, String password, String fullName, String phoneNumber, String email, LocalDate birthDate, LocalDate licenseDate) {
+    public RegisterRequest(String username, String password, String fullName, String phoneNumber, String email, LocalDate birthDate, LocalDate licenseDate, Integer licenseType) {
         this.username = username;
         this.password = password;
         this.fullName = fullName;
@@ -46,6 +51,7 @@ public class RegisterRequest {
         this.email = email;
         this.birthDate = birthDate;
         this.licenseDate = licenseDate;
+        this.licenseType = licenseType;
     }
 
     // Getters and Setters
@@ -104,5 +110,13 @@ public class RegisterRequest {
 
     public void setLicenseDate(LocalDate licenseDate) {
         this.licenseDate = licenseDate;
+    }
+
+    public Integer getLicenseType() {
+        return licenseType;
+    }
+
+    public void setLicenseType(Integer licenseType) {
+        this.licenseType = licenseType;
     }
 }

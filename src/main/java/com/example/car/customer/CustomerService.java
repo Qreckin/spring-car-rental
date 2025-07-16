@@ -43,6 +43,7 @@ public class CustomerService {
         String newFullName = customerRequestDTO.getFullName();
         LocalDate newBirthDate = customerRequestDTO.getBirthDate();
         LocalDate newLicenseDate = customerRequestDTO.getLicenseDate();
+        Enums.GearType newLicenseType = Enums.GearType.fromValue(customerRequestDTO.getLicenseType());
         String newPassword = customerRequestDTO.getPassword();
 
         if (newEmail != null) {
@@ -103,6 +104,12 @@ public class CustomerService {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New license date cannot be same with the previous license date"));
             customer.setLicenseDate(newLicenseDate);
+        }
+
+        if (newLicenseType != null){
+            if (customer.getLicenseType().equals(newLicenseType))
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new CustomResponseEntity(CustomResponseEntity.CONFLICT, "New license type cannot be same with the previous license type"));
+            customer.setLicenseType(newLicenseType);
         }
 
         if (newPassword != null) {
@@ -187,8 +194,11 @@ public class CustomerService {
     }
 
 
-    public ResponseEntity<CustomResponseEntity> filterCustomers(UUID id, String email, String fullName, String phoneNumber, LocalDate birthDate, LocalDate licenseDate, String username) {
-        List<Customer> customers = customerRepository.filterCustomers(id, email, fullName, phoneNumber, birthDate, licenseDate, username);
+    public ResponseEntity<CustomResponseEntity> filterCustomers(UUID id, String email, String fullName, String phoneNumber, LocalDate birthDate, LocalDate licenseDate, Integer licenseTypeValue,String username) {
+        Enums.GearType licenseType = null;
+        if (licenseTypeValue != null)
+            licenseType = Enums.GearType.fromValue(licenseTypeValue);
+        List<Customer> customers = customerRepository.filterCustomers(id, email, fullName, phoneNumber, birthDate, licenseDate, licenseType, username);
         List<CustomerDTO> customerDTOs = customers.stream().map(CustomerDTO::new).toList(); // Use .collect(Collectors.toList()) if Java < 16
 
         CustomResponseEntity response = new CustomResponseEntity(CustomResponseEntity.OK, customerDTOs);
