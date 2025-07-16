@@ -8,13 +8,14 @@ import com.example.car.customer.CustomerService;
 import com.example.car.customer.DTO.CustomerDTO;
 import com.example.car.enums.Enums;
 import com.example.car.exception.*;
-import com.example.car.rental.DTO.AddRentalResponse;
+import com.example.car.rental.DTO.*;
 import com.example.car.rental.DTO.RentalDTO;
 import com.example.car.rental.DTO.RentalRequestDTO;
 import com.example.car.rental.DTO.RentalUpdateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -87,9 +88,9 @@ public class RentalService {
 
         rentalRepository.save(rental);
 
-        String PNR = rental.getId().toString().replace("-", "").substring(0, 8).toUpperCase();
-        rental.setPNR(PNR);
         AddRentalResponse response = new AddRentalResponse(rental.getId(), rental.getPNR());
+
+
         return ResponseEntity.ok(CustomResponseEntity.OK(response));
     }
 

@@ -10,6 +10,8 @@ import java.util.UUID;
 public class RentalDTO {
     private final UUID id;
 
+    private final String pnr;
+
     private final LocalDateTime rentalStartDate;
     private final LocalDateTime rentalEndDate;
 
@@ -32,6 +34,7 @@ public class RentalDTO {
         this.customerID = rental.getCustomer().getId();
         this.activatedAt = rental.getActivatedAt();
         this.completedAt = rental.getCompletedAt();
+        this.pnr = rental.getPNR();
     }
 
     public UUID getId() {
@@ -64,5 +67,9 @@ public class RentalDTO {
 
     public LocalDateTime getCompletedAt() {
         return completedAt;
+    }
+
+    public String getPnr() {
+        return pnr;
     }
 }
