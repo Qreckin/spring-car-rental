@@ -37,6 +37,10 @@ public class CustomResponseEntity {
         return new CustomResponseEntity(0, "SUCCESS", result);
     }
 
+    public static CustomResponseEntity BAD_REQUEST(Object result){
+        return new CustomResponseEntity(Enums.Errors.BAD_REQUEST.getValue(), "BAD REQUEST", result);
+    }
+
     // Getters and setters
     public Integer getStatus() {
         return status;

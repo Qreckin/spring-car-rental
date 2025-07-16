@@ -74,12 +74,10 @@ public class Enums {
             this.value = value;
         }
 
-        @JsonValue
         public int getValue() {
             return value;
         }
 
-        @JsonCreator
         public static Status fromValue(int value) {
             for (Status status : Status.values()) {
                 if (status.getValue() == value) {

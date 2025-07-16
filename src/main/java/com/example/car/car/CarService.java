@@ -1,6 +1,7 @@
 package com.example.car.car;
 
 import com.example.car.CustomResponseEntity;
+import com.example.car.car.DTO.AddCarResponse;
 import com.example.car.car.DTO.CarDTO;
 import com.example.car.car.DTO.CarRequestDTO;
 import com.example.car.enums.Enums;
@@ -76,7 +77,7 @@ public class CarService {
 
     // If every car is erroneous, throw 400 but if at least 1 of them is correct, create correct ones and give 200 response
     public ResponseEntity<CustomResponseEntity> addCars(List<CarRequestDTO> carRequestDTOList) {
-        Map<String, String> resultMap = new LinkedHashMap<>();
+        List<AddCarResponse> responses = new ArrayList<>();
 
         for (int i = 0; i < carRequestDTOList.size(); i++) {
             CarRequestDTO dto = carRequestDTOList.get(i);
@@ -91,21 +92,24 @@ public class CarService {
                             .append(violation.getMessage())
                             .append("; ");
                 }
-                resultMap.put(carKey, "Invalid: " + errorMessage.toString());
+                AddCarResponse response = new AddCarResponse(null, dto.getLicensePlate(), CustomResponseEntity.BAD_REQUEST(errorMessage));
+                responses.add(response);
                 continue;
             }
 
             Car car = new Car(dto);
             carRepository.save(car);
-            resultMap.put(carKey, "Successfully created");
+
+            AddCarResponse response = new AddCarResponse(car.getId(), car.getLicensePlate(), CustomResponseEntity.OK("Successfully created"));
+            responses.add(response);
         }
 
         // Determine the status code based on whether any errors occurred
-        boolean allUnsuccessful = resultMap.values().stream().allMatch(msg -> msg.startsWith("Invalid"));
+        boolean allUnsuccessful = responses.stream().allMatch(msg -> msg.getCode().getMessage().startsWith("Invalid"));
         HttpStatus status = allUnsuccessful ? HttpStatus.BAD_REQUEST : HttpStatus.OK;
 
         return ResponseEntity.status(status)
-                .body(new CustomResponseEntity(allUnsuccessful ? CustomResponseEntity.BAD_REQUEST : CustomResponseEntity.OK, resultMap));
+                .body(new CustomResponseEntity(allUnsuccessful ? CustomResponseEntity.BAD_REQUEST : CustomResponseEntity.OK, responses));
     }
 
 

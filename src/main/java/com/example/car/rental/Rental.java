@@ -17,6 +17,9 @@ public class Rental extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID) // Automatically increment id
     private UUID id;
 
+    @Transient
+    private String PNR;
+
     private LocalDateTime rentalStartDate;
     private LocalDateTime rentalEndDate;
 
@@ -115,5 +118,13 @@ public class Rental extends BaseEntity {
 
     public void setCompletedAt(LocalDateTime completedAt) {
         this.completedAt = completedAt;
+    }
+
+    public String getPNR() {
+        return PNR;
+    }
+
+    public void setPNR(String PNR) {
+        this.PNR = PNR;
     }
 }

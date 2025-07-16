@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
+import java.util.UUID;
+
 @RestController
 public class RegisterController {
 
@@ -68,6 +71,9 @@ public class RegisterController {
                 customer
         );
 
-        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Customer has been created successfully"));
+        HashMap<String, UUID> response = new HashMap<>();
+        response.put("ID", customer.getId());
+
+        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, response));
     }
 }

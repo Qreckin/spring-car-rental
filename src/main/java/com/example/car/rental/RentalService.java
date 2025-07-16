@@ -8,6 +8,7 @@ import com.example.car.customer.CustomerService;
 import com.example.car.customer.DTO.CustomerDTO;
 import com.example.car.enums.Enums;
 import com.example.car.exception.*;
+import com.example.car.rental.DTO.AddRentalResponse;
 import com.example.car.rental.DTO.RentalDTO;
 import com.example.car.rental.DTO.RentalRequestDTO;
 import com.example.car.rental.DTO.RentalUpdateDTO;
@@ -19,10 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class RentalService {
@@ -64,6 +62,12 @@ public class RentalService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Customer license is not sufficient to rent this car"));
         }
 
+        Enums.GearType customerLicenseType = customer.getLicenseType();
+        Enums.GearType carGearType = car.getGearType();
+        if (customerLicenseType.equals(Enums.GearType.AUTOMATIC) && !customerLicenseType.equals(carGearType)){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Customer license type is not suitable for driving this car"));
+        }
+
         // Check if car is occupied in this time interval
         List<Rental> overlaps = findOverlappingRentals(carId, start, end);
         if (!overlaps.isEmpty())
@@ -83,7 +87,10 @@ public class RentalService {
 
         rentalRepository.save(rental);
 
-        return ResponseEntity.ok(new CustomResponseEntity(CustomResponseEntity.OK, "Rental has been created successfully"));
+        String PNR = rental.getId().toString().replace("-", "").substring(0, 8).toUpperCase();
+        rental.setPNR(PNR);
+        AddRentalResponse response = new AddRentalResponse(rental.getId(), rental.getPNR());
+        return ResponseEntity.ok(CustomResponseEntity.OK(response));
     }
 
     public ResponseEntity<CustomResponseEntity> activateRental(UUID id, LocalDateTime activationTime){
@@ -274,12 +281,12 @@ public class RentalService {
         return null;
     }
 
-    public ResponseEntity<CustomResponseEntity> filterRentals(UUID customerId, UUID carId, Integer statusValue, LocalDateTime startDate, LocalDateTime endDate) {
+    public ResponseEntity<CustomResponseEntity> filterRentals(UUID carId, Integer statusValue, LocalDateTime startDate, LocalDateTime endDate) {
         Enums.Status status = null;
         if (statusValue != null)
            status = Enums.Status.fromValue(statusValue);
 
-        List<Rental> rentals = rentalRepository.filterRentals(customerId, carId, status, startDate, endDate);
+        List<Rental> rentals = rentalRepository.filterRentals(carId, status, startDate, endDate);
         List<RentalDTO> rentalsDTO = rentals.stream().map(RentalDTO::new).toList();
 
         return ResponseEntity.ok(CustomResponseEntity.OK(rentalsDTO));
