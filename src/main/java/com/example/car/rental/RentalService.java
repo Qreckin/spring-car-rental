@@ -274,7 +274,11 @@ public class RentalService {
         return null;
     }
 
-    public ResponseEntity<CustomResponseEntity> filterRentals(UUID customerId, UUID carId, Enums.Status status, LocalDateTime startDate, LocalDateTime endDate) {
+    public ResponseEntity<CustomResponseEntity> filterRentals(UUID customerId, UUID carId, Integer statusValue, LocalDateTime startDate, LocalDateTime endDate) {
+        Enums.Status status = null;
+        if (statusValue != null)
+           status = Enums.Status.fromValue(statusValue);
+
         List<Rental> rentals = rentalRepository.filterRentals(customerId, carId, status, startDate, endDate);
         List<RentalDTO> rentalsDTO = rentals.stream().map(RentalDTO::new).toList();
 

@@ -35,7 +35,10 @@ public class CarService {
     }
     // Self-describing
 
-    public ResponseEntity<CustomResponseEntity> filterCars(String make, String model, String color, Integer year, Integer requiredLicenseYear, Integer minPrice, Integer maxPrice, UUID id, String category, Enums.GearType gearType, String licensePlate, Integer kilometer, LocalDateTime start, LocalDateTime end) {
+    public ResponseEntity<CustomResponseEntity> filterCars(String make, String model, String color, Integer year, Integer requiredLicenseYear, Integer minPrice, Integer maxPrice, UUID id, String category, Integer gearTypeValue, String licensePlate, Integer kilometer, LocalDateTime start, LocalDateTime end) {
+        Enums.GearType gearType = null;
+        if (gearTypeValue != null)
+            gearType = Enums.GearType.fromValue(gearTypeValue);
 
         if (start != null && start.isBefore(LocalDateTime.now())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new CustomResponseEntity(CustomResponseEntity.BAD_REQUEST, "Start date must not be in the past"));
@@ -119,7 +122,7 @@ public class CarService {
         Double newDailyPrice = carRequestDTO.getDailyPrice();
         Integer newKilometer = carRequestDTO.getKilometer();
         String newCategory = carRequestDTO.getCategory();
-        Enums.GearType newGearType = carRequestDTO.getGearType();
+        Enums.GearType newGearType = Enums.GearType.fromValue(carRequestDTO.getGearType());
         String newLicensePlate = carRequestDTO.getLicensePlate();
 
         if (newMake != null) {

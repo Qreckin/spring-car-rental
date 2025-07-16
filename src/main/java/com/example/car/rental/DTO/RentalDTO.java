@@ -13,7 +13,7 @@ public class RentalDTO {
     private final LocalDateTime rentalStartDate;
     private final LocalDateTime rentalEndDate;
 
-    private final Enums.Status status;
+    private final Integer status;
 
     private final UUID carID;
 
@@ -27,7 +27,7 @@ public class RentalDTO {
         this.id = rental.getId();
         this.rentalStartDate = rental.getRentalStartDate();
         this.rentalEndDate = rental.getRentalEndDate();
-        this.status = rental.getStatus();
+        this.status = rental.getStatus().getValue();
         this.carID = rental.getCar().getId();
         this.customerID = rental.getCustomer().getId();
         this.activatedAt = rental.getActivatedAt();
@@ -46,7 +46,7 @@ public class RentalDTO {
         return rentalEndDate;
     }
 
-    public Enums.Status getStatus() {
+    public Integer getStatus() {
         return status;
     }
 

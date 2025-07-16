@@ -51,7 +51,6 @@ public class Enums {
             return value;
         }
 
-        @JsonCreator
         public static GearType fromValue(int value) {
             for (GearType type : GearType.values()) {
                 if (type.value == value) {
@@ -61,10 +60,6 @@ public class Enums {
             throw new IllegalArgumentException("Invalid GearType value: " + value);
         }
 
-        @JsonValue
-        public int toValue() {
-            return value;
-        }
     }
 
     public enum Status {

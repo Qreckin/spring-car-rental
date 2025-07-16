@@ -41,7 +41,7 @@ public class CarController {
             @RequestParam(required = false) Integer maxPrice,
             @RequestParam(required = false) UUID id,
             @RequestParam(required = false) String category,
-            @RequestParam(required = false) Enums.GearType gearType,
+            @RequestParam(required = false) Integer gearType,
             @RequestParam(required = false) String licensePlate,
             @RequestParam(required = false) Integer kilometer,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,

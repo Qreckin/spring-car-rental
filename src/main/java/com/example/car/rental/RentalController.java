@@ -36,7 +36,7 @@ public class RentalController {
     public ResponseEntity<CustomResponseEntity> filterRentals(
             @RequestParam(required = false) UUID customerId,
             @RequestParam(required = false) UUID carId,
-            @RequestParam(required = false) Enums.Status status,
+            @RequestParam(required = false) Integer status,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
         return rentalService.filterRentals(customerId, carId, status, startDate, endDate);

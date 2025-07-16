@@ -4,7 +4,6 @@ import com.example.car.car.Car;
 import com.example.car.common.BaseEntity;
 import com.example.car.customer.Customer;
 import com.example.car.enums.Enums;
-import com.example.car.enums.StatusConverter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
@@ -23,7 +22,6 @@ public class Rental extends BaseEntity {
 
     private Double totalPricePaidByCustomer;
 
-    @Convert(converter = StatusConverter.class)
     private Enums.Status status;
 
     private LocalDateTime activatedAt;

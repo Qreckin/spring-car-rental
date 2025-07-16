@@ -21,7 +21,7 @@ public class CarDTO {
 
     private String category;
 
-    private Enums.GearType gearType;
+    private Integer gearType;
 
     private String licensePlate;
     private Double totalPrice;
@@ -44,7 +44,7 @@ public class CarDTO {
                 .map(RentalDTO::new)
                 .toList();
         this.category = car.getCategory();
-        this.gearType = car.getGearType();
+        this.gearType = car.getGearType().getValue();
         this.licensePlate = car.getLicensePlate();
     }
 
@@ -88,11 +88,11 @@ public class CarDTO {
         this.category = category;
     }
 
-    public Enums.GearType getGearType() {
+    public Integer getGearType() {
         return gearType;
     }
 
-    public void setGearType(Enums.GearType gearType) {
+    public void setGearType(Integer gearType) {
         this.gearType = gearType;
     }
 

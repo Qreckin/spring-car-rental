@@ -2,6 +2,7 @@ package com.example.car.car.DTO;
 
 import com.example.car.enums.Enums;
 import com.example.car.validation.NotEmptyIfPresent;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.validation.constraints.*;
 public class CarRequestDTO {
     @NotEmptyIfPresent
@@ -29,7 +30,9 @@ public class CarRequestDTO {
     @NotEmptyIfPresent
     private String category;
 
-    private Enums.GearType gearType;
+    @Min(value = 0, message = "Gear type must be either 0 or 1")
+    @Max(value = 1, message = "Gear type must be either 0 or 1")
+    private Integer gearType;
 
     @NotEmptyIfPresent
     private String licensePlate;
@@ -101,11 +104,11 @@ public class CarRequestDTO {
         this.category = category;
     }
 
-    public Enums.GearType getGearType() {
+    public Integer getGearType() {
         return gearType;
     }
 
-    public void setGearType(Enums.GearType gearType) {
+    public void setGearType(Integer gearType) {
         this.gearType = gearType;
     }
 

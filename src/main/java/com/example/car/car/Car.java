@@ -57,7 +57,7 @@ public class Car extends BaseEntity {
         setKilometer(carRequestDTO.getKilometer());
         setCategory(carRequestDTO.getCategory());
         setLicensePlate(carRequestDTO.getLicensePlate());
-        setGearType(carRequestDTO.getGearType());
+        setGearType(Enums.GearType.fromValue(carRequestDTO.getGearType()));
     }
 
     public UUID getId() {
