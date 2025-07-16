@@ -21,8 +21,8 @@ public interface RentalRepository extends JpaRepository<Rental, UUID>{
             "r.deletedAt IS NULL AND " +
             "(:carId IS NULL OR r.car.id = :carId) AND " +
             "(:status IS NULL OR r.status = :status) AND " +
-            "(:startDate IS NULL OR r.rentalStartDate >= :startDate) AND " +
-            "(:endDate IS NULL OR r.rentalEndDate <= :endDate)")
+            "(CAST(:startDate AS timestamp) IS NULL OR r.rentalStartDate >= CAST(:startDate AS timestamp)) AND " +
+            "(CAST(:endDate AS timestamp) IS NULL OR r.rentalEndDate <= CAST(:endDate AS timestamp))")
     List<Rental> filterRentals(
             @Param("carId") UUID carId,
             @Param("status") Enums.Status status,

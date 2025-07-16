@@ -6,6 +6,8 @@ import com.example.car.customer.Customer;
 import com.example.car.enums.Enums;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jdk.jfr.Timestamp;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -21,6 +23,7 @@ public class Rental extends BaseEntity {
     private String PNR;
 
     private LocalDateTime rentalStartDate;
+
     private LocalDateTime rentalEndDate;
 
     private Double totalPricePaidByCustomer;
