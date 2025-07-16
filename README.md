@@ -76,3 +76,22 @@ To run the application locally, follow these instructions.
    ```bash
    git clone https://github.com/Qreckin/spring-car-rental.git
    cd spring-car-rental
+2. **Create a PostgreSQL database**
+
+   Ensure PostgreSQL is installed and running on your machine. Then, create a new database named `carrentaldb` (or any name you prefer):
+
+   ```sql
+   CREATE DATABASE carrentaldb;
+3. **Configure application properties**
+   
+# Database Configuration
+spring.datasource.url=jdbc:postgresql://localhost:5432/carrentaldb
+spring.datasource.username=your_database_username
+spring.datasource.password=your_database_password
+
+# JPA Configuration (optional but recommended for development)
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+# JWT Configuration
+jwt.secret=your_secure_jwt_secret_key
